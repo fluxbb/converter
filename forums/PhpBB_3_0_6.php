@@ -3,8 +3,9 @@
 define('FORUM_VERSION', '1.4');
 define('FORUM_DB_REVISION', 2);
 
-class PhpBB_3_0_6 extends Forum
+class PhpBB_3_0_8 extends Forum
 {
+	// TODO: Prefix!!!
 	function initialize($db)
 	{
 		$db->set_names('utf8');
@@ -33,23 +34,29 @@ class PhpBB_3_0_6 extends Forum
 
 	function convert_categories($db, $fluxbb)
 	{
+		// FIXME: Subforums might cause difficulties
 		$result = $db->query_build(array(
-			'SELECT'	=> 'id, cat_name, disp_position',
-			'FROM'		=> 'categories',
+			'SELECT'	=> 'forum_id AS id, forum_name AS cat_name',
+			'FROM'		=> 'phpbb_forums',
+			'WHERE'		=> 'forum_type = 0',
+			'ORDER BY'	=> 'left_id ASC'
 		));
 
 		message('Processing %d categories', $db->num_rows($result));
+		$i = 1;
 		while ($cur_cat = $db->fetch_assoc($result))
 		{
+			$cur_cat['disp_position'] = $i;
 			$fluxbb->add_row('categories', $cur_cat);
+			$i++;
 		}
 	}
 
 	function convert_censoring($db, $fluxbb)
 	{
 		$result = $db->query_build(array(
-			'SELECT'	=> 'id, search_for, replace_with',
-			'FROM'		=> 'censoring',
+			'SELECT'	=> 'word_id AS id, word AS search_for, replacement AS replace_with',
+			'FROM'		=> 'phpbb_words',
 		));
 
 		message('Processing %d censors', $db->num_rows($result));
@@ -59,6 +66,7 @@ class PhpBB_3_0_6 extends Forum
 		}
 	}
 
+	// TODO
 	function convert_config($db, $fluxbb)
 	{
 		$old_config = array();
@@ -157,6 +165,7 @@ class PhpBB_3_0_6 extends Forum
 		}
 	}
 	
+	// TODO!!!
 	function convert_forums($db, $fluxbb)
 	{
 		$result = $db->query_build(array(
@@ -171,6 +180,7 @@ class PhpBB_3_0_6 extends Forum
 		}
 	}
 	
+	// TODO!!!
 	function convert_forum_perms($db, $fluxbb)
 	{
 		$result = $db->query_build(array(
@@ -187,6 +197,7 @@ class PhpBB_3_0_6 extends Forum
 		}
 	}
 
+	// TODO!!!
 	function convert_groups($db, $fluxbb)
 	{
 		$result = $db->query_build(array(
@@ -203,6 +214,7 @@ class PhpBB_3_0_6 extends Forum
 		}
 	}
 
+	// TODO
 	function convert_posts($db, $fluxbb)
 	{
 		$result = $db->query_build(array(
@@ -217,6 +229,7 @@ class PhpBB_3_0_6 extends Forum
 		}
 	}
 
+	// TODO
 	function convert_ranks($db, $fluxbb)
 	{
 		$result = $db->query_build(array(
@@ -231,6 +244,7 @@ class PhpBB_3_0_6 extends Forum
 		}
 	}
 
+	// TODO
 	function convert_reports($db, $fluxbb)
 	{
 		$result = $db->query_build(array(
@@ -245,6 +259,7 @@ class PhpBB_3_0_6 extends Forum
 		}
 	}
 
+	// TODO
 	function convert_subscriptions($db, $fluxbb)
 	{
 		$result = $db->query_build(array(
@@ -262,8 +277,8 @@ class PhpBB_3_0_6 extends Forum
 	function convert_topics($db, $fluxbb)
 	{
 		$result = $db->query_build(array(
-			'SELECT'	=> 'id, poster, subject, posted, first_post_id, last_post, last_post_id, last_poster, num_views, num_replies, closed, sticky, moved_to, forum_id',
-			'FROM'		=> 'topics',
+			'SELECT'	=> 'topic_id AS id, topic_first_poster_name AS poster, topic_title AS subject, topic_time AS posted, topic_first_post_id AS first_post_id, topic_last_post_time AS last_post, topic_last_post_id AS last_post_id, topic_last_poster_name AS last_poster, topic_views AS num_views, topic_replies AS num_replies, IF(topic_status=1, 1, 0) AS closed, IF(topic_type=1, 1, 0) AS sticky, topic_moved_id AS moved_to, forum_id',
+			'FROM'		=> 'phpbb_topics',
 		));
 		
 		message ('Processing %d topics', $db->num_rows($result));
@@ -273,6 +288,7 @@ class PhpBB_3_0_6 extends Forum
 		}
 	}
 
+	// TODO
 	function convert_users($db, $fluxbb)
 	{
 		$result = $db->query_build(array(
@@ -292,6 +308,7 @@ class PhpBB_3_0_6 extends Forum
 		}
 	}
 	
+	// TODO
 	function grp2grp($id)
 	{
 		static $mapping;
