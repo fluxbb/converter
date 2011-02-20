@@ -639,9 +639,9 @@ class FluxBB
 		$this->db->create_table('search_words', $this->schemas['search_words']);
 	}
 	
-	function init_subscriptions()
+	function init_topic_subscriptions()
 	{
-		$this->schemas['subscriptions'] = array(
+		$this->schemas['topic_subscriptions'] = array(
 			'FIELDS'		=> array(
 				'user_id'		=> array(
 					'datatype'		=> 'INT(10) UNSIGNED',
@@ -657,7 +657,28 @@ class FluxBB
 			'PRIMARY KEY'	=> array('user_id', 'topic_id')
 		);
 	
-		$this->db->create_table('subscriptions', $this->schemas['subscriptions']);
+		$this->db->create_table('topic_subscriptions', $this->schemas['topic_subscriptions']);
+	}
+	
+	function init_forum_subscriptions()
+	{
+		$this->schemas['forum_subscriptions'] = array(
+			'FIELDS'		=> array(
+				'user_id'		=> array(
+					'datatype'		=> 'INT(10) UNSIGNED',
+					'allow_null'	=> false,
+					'default'		=> '0'
+				),
+				'forum_id'		=> array(
+					'datatype'		=> 'INT(10) UNSIGNED',
+					'allow_null'	=> false,
+					'default'		=> '0'
+				)
+			),
+			'PRIMARY KEY'	=> array('user_id', 'forum_id')
+		);
+	
+		$this->db->create_table('forum_subscriptions', $this->schemas['forum_subscriptions']);
 	}
 	
 	function init_topics()

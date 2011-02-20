@@ -260,17 +260,32 @@ class PhpBB_3_0_8 extends Forum
 	}
 
 	// TODO
-	function convert_subscriptions($db, $fluxbb)
+	function convert_topic_subscriptions($db, $fluxbb)
 	{
 		$result = $db->query_build(array(
 			'SELECT'	=> 'user_id, topic_id',
-			'FROM'		=> 'subscriptions',
+			'FROM'		=> 'topic_subscriptions',
 		));
 		
-		message('Processing %d subscriptions', $db->num_rows($result));
+		message('Processing %d topic subscriptions', $db->num_rows($result));
 		while ($cur_sub = $db->fetch_assoc($result))
 		{
-			$fluxbb->add_row('subscriptions', $cur_sub);
+			$fluxbb->add_row('topic_subscriptions', $cur_sub);
+		}
+	}
+	
+	// TODO
+	function convert_forum_subscriptions($db, $fluxbb)
+	{
+		$result = $db->query_build(array(
+			'SELECT'	=> 'user_id, forum_id',
+			'FROM'		=> 'forum_subscriptions',
+		));
+		
+		message('Processing %d forum subscriptions', $db->num_rows($result));
+		while ($cur_sub = $db->fetch_assoc($result))
+		{
+			$fluxbb->add_row('forum_subscriptions', $cur_sub);
 		}
 	}
 

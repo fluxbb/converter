@@ -238,7 +238,7 @@ class PunBB_1_3 extends Forum
 		}
 	}
 
-	function convert_subscriptions($db, $fluxbb)
+	function convert_topic_subscriptions($db, $fluxbb)
 	{
 		$result = $db->query_build(array(
 			'SELECT'	=> 'user_id, topic_id',
@@ -248,8 +248,13 @@ class PunBB_1_3 extends Forum
 		message('Processing %d subscriptions', $db->num_rows($result));
 		while ($cur_sub = $db->fetch_assoc($result))
 		{
-			$fluxbb->add_row('subscriptions', $cur_sub);
+			$fluxbb->add_row('topic_subscriptions', $cur_sub);
 		}
+	}
+	
+	function convert_forum_subscriptions($db, $fluxbb)
+	{
+		message('No forum subscriptions', $db->num_rows($result));
 	}
 
 	function convert_topics($db, $fluxbb)
