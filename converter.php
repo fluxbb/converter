@@ -18,7 +18,7 @@ if (isset($_POST['submit']))
 		'type'			=> isset($_POST['convert_to']) && isset($forums[$_POST['convert_to']]) ? $_POST['convert_to'] : error('You entered an invalid forum software.'.$_POST['convert_to'], __FILE__, __LINE__),
 		'base_url'		=> isset($_POST['base_url']) ? trim($_POST['base_url']) : '', // TODO: utf8_trim()? is_url()?
 		'default_lang'	=> isset($_POST['new_language']) && in_array($_POST['new_language'], $languages) ? $_POST['new_language'] : 'English',
-		'default_style'	=> isset($_POST['new_style']) && in_array($_POST['new_style'], $styles) ? $_POST['new_style'] : 'Oxygen'
+		'default_style'	=> isset($_POST['new_style']) && in_array($_POST['new_style'], $styles) ? $_POST['new_style'] : 'Air'
 	);
 
 	$old_db_config = array(
