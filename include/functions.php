@@ -10,7 +10,7 @@ function message()
 	$args = func_get_args();
 	$message = count($args) > 0 ? array_shift($args) : '';
 
-	echo vsprintf($message, $args)."\n";
+	echo vsprintf($message, $args)."\n".'<br />';
 }
 
 function get_microtime()
