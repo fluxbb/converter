@@ -15,7 +15,7 @@ class PunBB_1_3 extends Forum
 		$result = $db->query_build(array(
 			'SELECT'	=> 'id, username, ip, email, message, expire, ban_creator',
 			'FROM'		=> 'bans',
-		));
+		)) or error('Unable to fetch bans', __FILE__, __LINE__, $db->error());
 
 		message('Processing %d bans', $db->num_rows($result));
 		while ($cur_ban = $db->fetch_assoc($result))
@@ -29,7 +29,7 @@ class PunBB_1_3 extends Forum
 		$result = $db->query_build(array(
 			'SELECT'	=> 'id, cat_name, disp_position',
 			'FROM'		=> 'categories',
-		));
+		)) or error('Unable to fetch categories', __FILE__, __LINE__, $db->error());
 
 		message('Processing %d categories', $db->num_rows($result));
 		while ($cur_cat = $db->fetch_assoc($result))
@@ -43,7 +43,7 @@ class PunBB_1_3 extends Forum
 		$result = $db->query_build(array(
 			'SELECT'	=> 'id, search_for, replace_with',
 			'FROM'		=> 'censoring',
-		));
+		)) or error('Unable to fetch censoring', __FILE__, __LINE__, $db->error());
 
 		message('Processing %d censors', $db->num_rows($result));
 		while ($cur_censor = $db->fetch_assoc($result))
@@ -59,7 +59,7 @@ class PunBB_1_3 extends Forum
 		$result = $db->query_build(array(
 			'SELECT'	=> 'conf_name, conf_value',
 			'FROM'		=> 'config',
-		));
+		)) or error('Unable to fetch config', __FILE__, __LINE__, $db->error());
 
 		message('Processing config');
 		while ($cur_config = $db->fetch_assoc($result))
@@ -79,7 +79,7 @@ class PunBB_1_3 extends Forum
 		$result = $db->query_build(array(
 			'SELECT'	=> 'id, forum_name, forum_desc, redirect_url, moderators, num_topics, num_posts, last_post, last_post_id, last_poster, sort_by, disp_position, cat_id',
 			'FROM'		=> 'forums',
-		));
+		)) or error('Unable to fetch forums', __FILE__, __LINE__, $db->error());
 
 		message('Processing %d forums', $db->num_rows($result));
 		while ($cur_forum = $db->fetch_assoc($result))
@@ -93,7 +93,7 @@ class PunBB_1_3 extends Forum
 		$result = $db->query_build(array(
 			'SELECT'	=> 'group_id, forum_id, read_forum, post_replies, post_topics',
 			'FROM'		=> 'forum_perms',
-		));
+		)) or error('Unable to fetch forum perms', __FILE__, __LINE__, $db->error());
 
 		message('Processing %d forum_perms', $db->num_rows($result));
 		while ($cur_perm = $db->fetch_assoc($result))
@@ -109,7 +109,7 @@ class PunBB_1_3 extends Forum
 		$result = $db->query_build(array(
 			'SELECT'	=> 'g_id, g_title, g_user_title, g_moderator, g_mod_edit_users, g_mod_rename_users, g_mod_change_passwords, g_mod_ban_users, g_read_board, g_view_users, g_post_replies, g_post_topics, g_edit_posts, g_delete_posts, g_delete_topics, g_set_title, g_search, g_search_users, g_send_email, g_post_flood, g_search_flood, g_email_flood',
 			'FROM'		=> 'groups',
-		));
+		)) or error('Unable to fetch groups', __FILE__, __LINE__, $db->error());
 
 		message('Processing %d groups', $db->num_rows($result));
 		while ($cur_group = $db->fetch_assoc($result))
@@ -125,7 +125,7 @@ class PunBB_1_3 extends Forum
 		$result = $db->query_build(array(
 			'SELECT'	=> 'id, poster, poster_id, poster_ip, poster_email, message, hide_smilies, posted, edited, edited_by, topic_id',
 			'FROM'		=> 'posts',
-		));
+		)) or error('Unable to fetch posts', __FILE__, __LINE__, $db->error());
 
 		message('Processing %d posts', $db->num_rows($result));
 		while ($cur_post = $db->fetch_assoc($result))
@@ -139,7 +139,7 @@ class PunBB_1_3 extends Forum
 		$result = $db->query_build(array(
 			'SELECT'	=> 'id, rank, min_posts',
 			'FROM'		=> 'ranks',
-		));
+		)) or error('Unable to fetch ranks', __FILE__, __LINE__, $db->error());
 
 		message('Processing %d ranks', $db->num_rows($result));
 		while ($cur_rank = $db->fetch_assoc($result))
@@ -153,7 +153,7 @@ class PunBB_1_3 extends Forum
 		$result = $db->query_build(array(
 			'SELECT'	=> 'id, post_id, topic_id, forum_id, reported_by, created, message, zapped, zapped_by',
 			'FROM'		=> 'reports',
-		));
+		)) or error('Unable to fetch reports', __FILE__, __LINE__, $db->error());
 
 		message('Processing %d reports', $db->num_rows($result));
 		while ($cur_report = $db->fetch_assoc($result))
@@ -167,7 +167,7 @@ class PunBB_1_3 extends Forum
 		$result = $db->query_build(array(
 			'SELECT'	=> 'user_id, topic_id',
 			'FROM'		=> 'subscriptions',
-		));
+		)) or error('Unable to fetch subscriptions', __FILE__, __LINE__, $db->error());
 
 		message('Processing %d subscriptions', $db->num_rows($result));
 		while ($cur_sub = $db->fetch_assoc($result))
@@ -186,7 +186,7 @@ class PunBB_1_3 extends Forum
 		$result = $db->query_build(array(
 			'SELECT'	=> 'id, poster, subject, posted, first_post_id, last_post, last_post_id, last_poster, num_views, num_replies, closed, sticky, moved_to, forum_id',
 			'FROM'		=> 'topics',
-		));
+		)) or error('Unable to fetch topics', __FILE__, __LINE__, $db->error());
 
 		message ('Processing %d topics', $db->num_rows($result));
 		while ($cur_topic = $db->fetch_assoc($result))
@@ -200,7 +200,7 @@ class PunBB_1_3 extends Forum
 		$result = $db->query_build(array(
 			'SELECT'	=> 'id, group_id, username, email, title, realname, url, jabber, icq, msn, aim, yahoo, location, signature, disp_topics, disp_posts, email_setting, notify_with_post, auto_notify, show_smilies, show_img, show_img_sig, show_avatars, show_sig, timezone, dst, time_format, date_format, language, style, num_posts, last_post, last_search, last_email_sent, registered, registration_ip, last_visit, admin_note, activate_string, activate_key',
 			'FROM'		=> 'users',
-		));
+		)) or error('Unable to fetch users', __FILE__, __LINE__, $db->error());
 
 		message('Processing %d users', $db->num_rows($result));
 		while ($cur_user = $db->fetch_assoc($result))

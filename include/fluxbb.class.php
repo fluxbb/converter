@@ -985,7 +985,7 @@ class FluxBB
 			'INSERT'	=> implode(', ', array_keys($data)),
 			'INTO'		=> $table,
 			'VALUES'	=> implode(', ', array_values($data)),
-		));
+		)) or error('Unable to insert values', __FILE__, __LINE__, $this->db->error());
 
 		// TODO: Check the query was successful
 	}

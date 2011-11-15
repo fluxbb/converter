@@ -1,8 +1,8 @@
 <?php
 
-function error($message, $file, $line)
+function error($message, $file = __FILE__, $line = __LINE__, $db_error = false)
 {
-	exit($message."\n");
+	exit($message."\n".'<br />'.($db_error ? $db_error['error_msg'] : ''));
 }
 
 function message()
