@@ -5,7 +5,6 @@ define('FORUM_DB_REVISION', 2);
 
 class PhpBB_3_0_8 extends Forum
 {
-	// TODO: Prefix!!!
 	function initialize($db)
 	{
 		$db->set_names('utf8');
@@ -16,10 +15,15 @@ class PhpBB_3_0_8 extends Forum
 
 	function convert_bans($db, $fluxbb)
 	{
-		// TODO: fetch username (left join users on ban_userid)
 		$result = $db->query_build(array(
-			'SELECT'	=> 'ban_id AS id, ban_ip AS ip, ban_email AS email, ban_reason AS message, ban_end AS expire',
-			'FROM'		=> 'banlist',
+			'SELECT'	=> 'b.ban_id AS id, u.username AS username, b.ban_ip AS ip, b.ban_email AS email, b.ban_reason AS message, b.ban_end AS expire',
+			'JOINS'        => array(
+				array(
+					'LEFT JOIN'	=> 'users AS u',
+					'ON'		=> 'u.user_id=b.ban_userid'
+				),
+			),
+			'FROM'		=> 'banlist AS b',
 		)) or error('Unable to fetch bans', __FILE__, __LINE__, $db->error());
 
 		message('Processing %d bans', $db->num_rows($result));
@@ -63,7 +67,6 @@ class PhpBB_3_0_8 extends Forum
 		}
 	}
 
-	// TODO
 	function convert_config($db, $fluxbb)
 	{
 		$old_config = array();
@@ -80,7 +83,13 @@ class PhpBB_3_0_8 extends Forum
 		$this->new_config['o_board_title']			= $old_config['sitename'];
 		$this->new_config['o_board_desc']			= $old_config['site_desc'];
 		$this->new_config['o_admin_email']			= $old_config['board_email'];
+		$this->new_config['o_server_timezone']		= $old_config['board_timezone'];
+		$this->new_config['o_disp_topics_default']	= $old_config['topics_per_page'];
+		$this->new_config['o_disp_posts_default']	= $old_config['posts_per_page'];
 		$this->new_config['o_webmaster_email']		= $old_config['board_email'];
+		$this->new_config['o_smtp_host']			= $old_config['smtp_host'];
+		$this->new_config['o_smtp_user']			= $old_config['smtp_username'];
+		$this->new_config['o_smtp_pass']			= $old_config['smtp_password'];
 
 		foreach ($this->new_config as $key => $value)
 		{
@@ -129,7 +138,7 @@ class PhpBB_3_0_8 extends Forum
 		$result = $db->query_build(array(
 			'SELECT'	=> 'group_id AS g_id, group_name AS g_title, group_name AS g_user_title',
 			'FROM'		=> 'groups',
-			'WHERE'		=> 'group_id > 6'
+			'WHERE'		=> 'group_id > 7'
 		)) or error('Unable to fetch groups', __FILE__, __LINE__, $db->error());
 
 		message('Processing %d groups', $db->num_rows($result));
@@ -141,18 +150,17 @@ class PhpBB_3_0_8 extends Forum
 		}
 	}
 
-	// TODO
 	function convert_posts($db, $fluxbb)
 	{
 		$result = $db->query_build(array(
 			'SELECT'	=> 'p.post_id AS id, u.username AS poster, p.poster_id AS poster_id, p.post_time AS posted, p.poster_ip AS poster_ip, p.post_text AS message, p.topic_id AS topic_id',
-			'FROM'		=> 'posts AS p',
 			'JOINS'        => array(
 				array(
 					'LEFT JOIN'	=> 'users AS u',
 					'ON'		=> 'u.user_id=p.poster_id'
 				),
-			)
+			),
+			'FROM'		=> 'posts AS p',
 		)) or error('Unable to fetch posts', __FILE__, __LINE__, $db->error());
 
 		message('Processing %d posts', $db->num_rows($result));
@@ -164,70 +172,72 @@ class PhpBB_3_0_8 extends Forum
 		}
 	}
 
-	// TODO
-//	function convert_ranks($db, $fluxbb)
-//	{
-//		$result = $db->query_build(array(
-//			'SELECT'	=> 'id, rank, min_posts',
-//			'FROM'		=> 'ranks',
-//		)) or error('Unable to fetch ranks', __FILE__, __LINE__, $db->error());
+	function convert_ranks($db, $fluxbb)
+	{
+		$result = $db->query_build(array(
+			'SELECT'	=> 'rank_id AS id, rank_title AS rank, rank_min AS min_posts',
+			'FROM'		=> 'ranks',
+		)) or error('Unable to fetch ranks', __FILE__, __LINE__, $db->error());
 
-//		message('Processing %d ranks', $db->num_rows($result));
-//		while ($cur_rank = $db->fetch_assoc($result))
-//		{
-//			$fluxbb->add_row('ranks', $cur_rank);
-//		}
-//	}
+		message('Processing %d ranks', $db->num_rows($result));
+		while ($cur_rank = $db->fetch_assoc($result))
+		{
+			$fluxbb->add_row('ranks', $cur_rank);
+		}
+	}
 
-	// TODO
-//	function convert_reports($db, $fluxbb)
-//	{
-//		$result = $db->query_build(array(
-//			'SELECT'	=> 'id, post_id, topic_id, forum_id, reported_by, created, message, zapped, zapped_by',
-//			'FROM'		=> 'reports',
-//		)) or error('Unable to fetch reports', __FILE__, __LINE__, $db->error());
+	function convert_reports($db, $fluxbb)
+	{
+		$result = $db->query_build(array(
+			'SELECT'	=> 'r.report_id AS id, r.post_id, p.topic_id, p.forum_id, r.user_notify AS reported_by, r.report_time AS created, r.report_text AS message, r.report_closed AS zapped, NULL AS zapped_by',
+			'JOINS'        => array(
+				array(
+					'LEFT JOIN'	=> 'posts AS p',
+					'ON'		=> 'r.post_id=p.post_id'
+				),
+			),
+			'FROM'		=> 'reports AS r',
+		)) or error('Unable to fetch reports', __FILE__, __LINE__, $db->error());
 
-//		message('Processing %d reports', $db->num_rows($result));
-//		while ($cur_report = $db->fetch_assoc($result))
-//		{
-//			$fluxbb->add_row('reports', $cur_report);
-//		}
-//	}
+		message('Processing %d reports', $db->num_rows($result));
+		while ($cur_report = $db->fetch_assoc($result))
+		{
+			$fluxbb->add_row('reports', $cur_report);
+		}
+	}
 
-	// TODO
-//	function convert_topic_subscriptions($db, $fluxbb)
-//	{
-//		$result = $db->query_build(array(
-//			'SELECT'	=> 'user_id, topic_id',
-//			'FROM'		=> 'topic_subscriptions',
-//		)) or error('Unable to fetch topic subscriptions', __FILE__, __LINE__, $db->error());
+	function convert_topic_subscriptions($db, $fluxbb)
+	{
+		$result = $db->query_build(array(
+			'SELECT'	=> 'user_id, topic_id',
+			'FROM'		=> 'topics_watch',
+		)) or error('Unable to fetch topic subscriptions', __FILE__, __LINE__, $db->error());
 
-//		message('Processing %d topic subscriptions', $db->num_rows($result));
-//		while ($cur_sub = $db->fetch_assoc($result))
-//		{
-//			$fluxbb->add_row('topic_subscriptions', $cur_sub);
-//		}
-//	}
+		message('Processing %d topic subscriptions', $db->num_rows($result));
+		while ($cur_sub = $db->fetch_assoc($result))
+		{
+			$fluxbb->add_row('topic_subscriptions', $cur_sub);
+		}
+	}
 
-	// TODO
-//	function convert_forum_subscriptions($db, $fluxbb)
-//	{
-//		$result = $db->query_build(array(
-//			'SELECT'	=> 'user_id, forum_id',
-//			'FROM'		=> 'forum_subscriptions',
-//		)) or error('Unable to fetch forum subscriptions', __FILE__, __LINE__, $db->error());
+	function convert_forum_subscriptions($db, $fluxbb)
+	{
+		$result = $db->query_build(array(
+			'SELECT'	=> 'user_id, forum_id',
+			'FROM'		=> 'forums_watch',
+		)) or error('Unable to fetch forum subscriptions', __FILE__, __LINE__, $db->error());
 
-//		message('Processing %d forum subscriptions', $db->num_rows($result));
-//		while ($cur_sub = $db->fetch_assoc($result))
-//		{
-//			$fluxbb->add_row('forum_subscriptions', $cur_sub);
-//		}
-//	}
+		message('Processing %d forum subscriptions', $db->num_rows($result));
+		while ($cur_sub = $db->fetch_assoc($result))
+		{
+			$fluxbb->add_row('forum_subscriptions', $cur_sub);
+		}
+	}
 
 	function convert_topics($db, $fluxbb)
 	{
 		$result = $db->query_build(array(
-			'SELECT'	=> 'topic_id AS id, topic_first_poster_name AS poster, topic_title AS subject, topic_time AS posted, topic_first_post_id AS first_post_id, topic_last_post_time AS last_post, topic_last_post_id AS last_post_id, topic_last_poster_name AS last_poster, topic_views AS num_views, topic_replies AS num_replies, IF(topic_status=1, 1, 0) AS closed, IF(topic_type=1, 1, 0) AS sticky, topic_moved_id AS moved_to, forum_id',
+			'SELECT'	=> 'topic_id AS id, topic_first_poster_name AS poster, topic_title AS subject, topic_time AS posted, topic_first_post_id AS first_post_id, topic_last_post_time AS last_post, topic_last_post_id AS last_post_id, topic_last_poster_name AS last_poster, topic_views AS num_views, topic_replies AS num_replies, IF(topic_status=1, 1, 0) AS closed, IF(topic_type=1, 1, 0) AS sticky, IF(topic_moved_id=0, NULL, topic_moved_id) AS moved_to, forum_id',
 			'FROM'		=> 'topics',
 		)) or error('Unable to fetch topics', __FILE__, __LINE__, $db->error());
 
@@ -238,7 +248,6 @@ class PhpBB_3_0_8 extends Forum
 		}
 	}
 
-	// TODO
 	function convert_users($db, $fluxbb)
 	{
 		$result = $db->query_build(array(
@@ -261,7 +270,6 @@ class PhpBB_3_0_8 extends Forum
 		}
 	}
 
-	// TODO
 	function grp2grp($id)
 	{
 		static $mapping;
