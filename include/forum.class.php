@@ -178,8 +178,8 @@ class Forum
 		$result = $fluxbb->db->query_build(array(
 			'SELECT'	=> 'id',
 			'FROM'		=> 'users',
-			'WHERE'		=> 'id <> 1'
-		));
+			'WHERE'		=> 'id=1'
+		)) or error('Unable to fetch guest user', __FILE__, __LINE__, $db->error());
 
 		if (!$fluxbb->db->num_rows($result))
 		{
@@ -220,7 +220,7 @@ class Forum
 			'SELECT'	=> 'g_id',
 			'FROM'		=> 'groups',
 			'WHERE'		=> 'g_id IN (1, 2, 3, 4)'
-		));
+		)) or error('Unable to fetch groups', __FILE__, __LINE__, $db->error());
 
 		$existing_groups = array();
 		while ($cur_group = $fluxbb->db->fetch_assoc($result))
