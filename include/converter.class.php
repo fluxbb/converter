@@ -33,7 +33,7 @@ class Converter
 		$this->old_db = $old_db;
 		$this->forum = $forum;
 		$this->fluxbb = $fluxbb;
-		
+
 		$this->start = get_microtime();
 	}
 
@@ -44,17 +44,23 @@ class Converter
 			$start = get_microtime();
 
 			message('%s %s', $convert ? 'Converting' : 'Initializing', $name);
-			
+
+			if ($convert && $this->fluxbb->db->table_exists($name))
+				$this->fluxbb->db->drop_table($name);
+
 			call_user_func(array($this->fluxbb, 'init_'.$name));
 
 			if ($convert)
 				call_user_func(array($this->forum, 'convert_'.$name), $this->old_db, $this->fluxbb);
-			
+
+			if (is_callable(array($this->forum, 'check_'.$name)))
+				call_user_func(array($this->forum, 'check_'.$name), $this->old_db, $this->fluxbb);
+
 			message('Completed in %s seconds', number_format(get_microtime() - $start, 2));
 			message();
 		}
 	}
-	
+
 	function get_time()
 	{
 		return get_microtime() - $this->start;

@@ -52,10 +52,10 @@ class FluxBB
 			),
 			'PRIMARY KEY'	=> array('id')
 		);
-		
+
 		$this->db->create_table('bans', $this->schemas['bans']);
 	}
-	
+
 	function init_categories()
 	{
 		$this->schemas['categories'] = array(
@@ -77,10 +77,10 @@ class FluxBB
 			),
 			'PRIMARY KEY'	=> array('id')
 		);
-	
+
 		$this->db->create_table('categories', $this->schemas['categories']);
 	}
-	
+
 	function init_censoring()
 	{
 		$this->schemas['censoring'] = array(
@@ -102,10 +102,10 @@ class FluxBB
 			),
 			'PRIMARY KEY'	=> array('id')
 		);
-	
+
 		$this->db->create_table('censoring', $this->schemas['censoring']);
 	}
-	
+
 	function init_config()
 	{
 		$this->schemas['config'] = array(
@@ -122,10 +122,10 @@ class FluxBB
 			),
 			'PRIMARY KEY'	=> array('conf_name')
 		);
-	
+
 		$this->db->create_table('config', $this->schemas['config']);
 	}
-	
+
 	function init_forum_perms()
 	{
 		$this->schemas['forum_perms'] = array(
@@ -158,10 +158,10 @@ class FluxBB
 			),
 			'PRIMARY KEY'	=> array('group_id', 'forum_id')
 		);
-	
+
 		$this->db->create_table('forum_perms', $this->schemas['forum_perms']);
 	}
-	
+
 	function init_forums()
 	{
 		$this->schemas['forums'] = array(
@@ -227,10 +227,10 @@ class FluxBB
 			),
 			'PRIMARY KEY'	=> array('id')
 		);
-	
+
 		$this->db->create_table('forums', $this->schemas['forums']);
 	}
-	
+
 	function init_groups()
 	{
 		$this->schemas['groups'] = array(
@@ -346,10 +346,10 @@ class FluxBB
 			),
 			'PRIMARY KEY'	=> array('g_id')
 		);
-	
+
 		$this->db->create_table('groups', $this->schemas['groups']);
 	}
-	
+
 	function init_online()
 	{
 		$this->schemas['online'] = array(
@@ -392,19 +392,19 @@ class FluxBB
 			),
 			'ENGINE'		=> 'HEAP'
 		);
-	
+
 		if ($this->db_type == 'mysql' || $this->db_type == 'mysqli' || $this->db_type == 'mysql_innodb' || $this->db_type == 'mysqli_innodb')
 		{
 			$this->schemas['online']['UNIQUE KEYS']['user_id_ident_idx'] = array('user_id', 'ident(25)');
 			$this->schemas['online']['INDEXES']['ident_idx'] = array('ident(25)');
 		}
-	
+
 		if ($this->db_type == 'mysql_innodb' || $this->db_type == 'mysqli_innodb')
 			$this->schemas['online']['ENGINE'] = 'InnoDB';
-	
+
 		$this->db->create_table('online', $this->schemas['online']);
 	}
-	
+
 	function init_posts()
 	{
 		$this->schemas['posts'] = array(
@@ -465,10 +465,10 @@ class FluxBB
 				'multi_idx'		=> array('poster_id', 'topic_id')
 			)
 		);
-	
+
 		$this->db->create_table('posts', $this->schemas['posts']);
 	}
-	
+
 	function init_ranks()
 	{
 		$this->schemas['ranks'] = array(
@@ -490,10 +490,10 @@ class FluxBB
 			),
 			'PRIMARY KEY'	=> array('id')
 		);
-	
+
 		$this->db->create_table('ranks', $this->schemas['ranks']);
 	}
-	
+
 	function init_reports()
 	{
 		$this->schemas['reports'] = array(
@@ -545,10 +545,10 @@ class FluxBB
 				'zapped_idx'	=> array('zapped')
 			)
 		);
-	
+
 		$this->db->create_table('reports', $this->schemas['reports']);
 	}
-	
+
 	function init_search_cache()
 	{
 		$this->schemas['search_cache'] = array(
@@ -573,13 +573,13 @@ class FluxBB
 				'ident_idx'	=> array('ident')
 			)
 		);
-	
+
 		if ($this->db_type == 'mysql' || $this->db_type == 'mysqli' || $this->db_type == 'mysql_innodb' || $this->db_type == 'mysqli_innodb')
 			$this->schemas['search_cache']['INDEXES']['ident_idx'] = array('ident(8)');
-	
+
 		$this->db->create_table('search_cache', $this->schemas['search_cache']);
 	}
-	
+
 	function init_search_matches()
 	{
 		$this->schemas['search_matches'] = array(
@@ -605,10 +605,10 @@ class FluxBB
 				'post_id_idx'	=> array('post_id')
 			)
 		);
-	
+
 		$this->db->create_table('search_matches', $this->schemas['search_matches']);
 	}
-	
+
 	function init_search_words()
 	{
 		$this->schemas['search_words'] = array(
@@ -629,16 +629,16 @@ class FluxBB
 				'id_idx'	=> array('id')
 			)
 		);
-	
+
 		if ($this->db_type == 'sqlite')
 		{
 			$this->schemas['search_words']['PRIMARY KEY'] = array('id');
 			$this->schemas['search_words']['UNIQUE KEYS'] = array('word_idx'	=> array('word'));
 		}
-	
+
 		$this->db->create_table('search_words', $this->schemas['search_words']);
 	}
-	
+
 	function init_topic_subscriptions()
 	{
 		$this->schemas['topic_subscriptions'] = array(
@@ -656,10 +656,10 @@ class FluxBB
 			),
 			'PRIMARY KEY'	=> array('user_id', 'topic_id')
 		);
-	
+
 		$this->db->create_table('topic_subscriptions', $this->schemas['topic_subscriptions']);
 	}
-	
+
 	function init_forum_subscriptions()
 	{
 		$this->schemas['forum_subscriptions'] = array(
@@ -677,10 +677,10 @@ class FluxBB
 			),
 			'PRIMARY KEY'	=> array('user_id', 'forum_id')
 		);
-	
+
 		$this->db->create_table('forum_subscriptions', $this->schemas['forum_subscriptions']);
 	}
-	
+
 	function init_topics()
 	{
 		$this->schemas['topics'] = array(
@@ -761,10 +761,10 @@ class FluxBB
 				'first_post_id_idx'	=> array('first_post_id')
 			)
 		);
-	
+
 		$this->db->create_table('topics', $this->schemas['topics']);
 	}
-	
+
 	function init_users()
 	{
 		$this->schemas['users'] = array(
@@ -962,20 +962,20 @@ class FluxBB
 				'username_idx'		=> array('username')
 			)
 		);
-	
+
 		if ($this->db_type == 'mysql' || $this->db_type == 'mysqli' || $this->db_type == 'mysql_innodb' || $this->db_type == 'mysqli_innodb')
 			$this->schemas['users']['INDEXES']['username_idx'] = array('username(8)');
-	
+
 		$this->db->create_table('users', $this->schemas['users']);
 	}
 
-	function add_row($table, $data)
+	function add_row($table, $data, $ignore_column_count = false)
 	{
 		$fields = array_keys($this->schemas[$table]['FIELDS']);
 		$keys = array_keys($data);
 		$diff = array_diff($fields, $keys);
 
-		if (count($fields) != count($keys) || !empty($diff))
+		if (!$ignore_column_count && (count($fields) != count($keys) || !empty($diff)))
 			error('Field list doesn\'t match for '.$table.' table.', __FILE__, __LINE__);
 
 		foreach ($data as $key => $value)
@@ -999,11 +999,11 @@ class FluxBB
 		else
 			return md5($str);
 	}
-	
+
 	function random_pass($len)
 	{
 		static $chars;
-		
+
 		if (!isset($chars))
 			$chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
 
