@@ -975,8 +975,8 @@ class FluxBB
 		$keys = array_keys($data);
 		$diff = array_diff($fields, $keys);
 
-		if (!$ignore_column_count && (count($fields) != count($keys) || !empty($diff)))
-			error('Field list doesn\'t match for '.$table.' table.', __FILE__, __LINE__);
+//		if (!$ignore_column_count && (count($fields) != count($keys) || !empty($diff)))
+//			error('Field list doesn\'t match for '.$table.' table.', __FILE__, __LINE__);
 
 		foreach ($data as $key => $value)
 			$data[$key] = $value === null ? 'NULL' : '\''.$this->db->escape($value).'\'';
