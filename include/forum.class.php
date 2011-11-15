@@ -182,38 +182,17 @@ class Forum
 		)) or error('Unable to fetch guest user', __FILE__, __LINE__, $db->error());
 
 		if (!$fluxbb->db->num_rows($result))
-		{
-			$guest_user = array(
-				'id'		=> 1,
-				'group_id'	=> 3,
-				'username'	=> 'Guest',
-			);
-
-			$fluxbb->add_row('users', $guest_user, true);
-		}
+			$fluxbb->add_row('users', array('id' => 1, 'group_id' => 3, 'username' => 'Guest'), true);
 	}
 
 	// Add default user groups when they do not exist
 	function check_groups($db, $fluxbb)
 	{
 		$default_groups = array(
-			1 => array(
-				'g_id'		=> 1,
-				'g_title'	=> 'Administrator'
-			),
-			2 => array(
-				'g_id'		=> 2,
-				'g_title'	=> 'Moderator',
-				'g_moderator'=> 1,
-			),
-			3 => array(
-				'g_id'		=> 3,
-				'g_title'	=> 'Guest'
-			),
-			4 => array(
-				'g_id'		=> 4,
-				'g_title'	=> 'Member'
-			),
+			1 => array('g_id' => '1', 'g_title' => 'Administrators', 'g_user_title' => 'Administrator', 'g_moderator' => '0', 'g_mod_edit_users' => '0', 'g_mod_rename_users' => '0', 'g_mod_change_passwords' => '0', 'g_mod_ban_users' => '0', 'g_read_board' => '1', 'g_view_users' => '1', 'g_post_replies' => '1', 'g_post_topics' => '1', 'g_edit_posts' => '1', 'g_delete_posts' => '1', 'g_delete_topics' => '1', 'g_set_title' => '1', 'g_search' => '1', 'g_search_users' => '1', 'g_send_email' => '1', 'g_post_flood' => '0', 'g_search_flood' => '0', 'g_email_flood' => '0', 'g_report_flood' => '0'),
+			2 => array('g_id' => '2', 'g_title' => 'Moderators', 'g_user_title' => 'Moderator', 'g_moderator' => '1', 'g_mod_edit_users' => '1', 'g_mod_rename_users' => '1', 'g_mod_change_passwords' => '1', 'g_mod_ban_users' => '1', 'g_read_board' => '1', 'g_view_users' => '1', 'g_post_replies' => '1', 'g_post_topics' => '1', 'g_edit_posts' => '1', 'g_delete_posts' => '1', 'g_delete_topics' => '1', 'g_set_title' => '1', 'g_search' => '1', 'g_search_users' => '1', 'g_send_email' => '1', 'g_post_flood' => '0', 'g_search_flood' => '0', 'g_email_flood' => '0', 'g_report_flood' => '0'),
+			3 => array('g_id' => '3', 'g_title' => 'Guests', 'g_user_title' => '', 'g_moderator' => '0', 'g_mod_edit_users' => '0', 'g_mod_rename_users' => '0', 'g_mod_change_passwords' => '0', 'g_mod_ban_users' => '0', 'g_read_board' => '1', 'g_view_users' => '1', 'g_post_replies' => '0', 'g_post_topics' => '0', 'g_edit_posts' => '0', 'g_delete_posts' => '0', 'g_delete_topics' => '0', 'g_set_title' => '0', 'g_search' => '1', 'g_search_users' => '1', 'g_send_email' => '0', 'g_post_flood' => '60', 'g_search_flood' => '30', 'g_email_flood' => '0', 'g_report_flood' => '0'),
+			4 => array('g_id' => '4', 'g_title' => 'Members', 'g_user_title' => '', 'g_moderator' => '0', 'g_mod_edit_users' => '0', 'g_mod_rename_users' => '0', 'g_mod_change_passwords' => '0', 'g_mod_ban_users' => '0', 'g_read_board' => '1', 'g_view_users' => '1', 'g_post_replies' => '1', 'g_post_topics' => '1', 'g_edit_posts' => '1', 'g_delete_posts' => '1', 'g_delete_topics' => '1', 'g_set_title' => '0', 'g_search' => '1', 'g_search_users' => '1', 'g_send_email' => '1', 'g_post_flood' => '60', 'g_search_flood' => '30', 'g_email_flood' => '60', 'g_report_flood' => '60'),
 		);
 
 		$result = $fluxbb->db->query_build(array(

@@ -342,6 +342,11 @@ class FluxBB
 					'datatype'		=> 'SMALLINT(6)',
 					'allow_null'	=> false,
 					'default'		=> '60'
+				),
+				'g_report_flood'			=> array(
+					'datatype'		=> 'SMALLINT(6)',
+					'allow_null'	=> false,
+					'default'		=> '60'
 				)
 			),
 			'PRIMARY KEY'	=> array('g_id')

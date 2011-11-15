@@ -8,6 +8,9 @@ class SMF_2 extends Forum
 	function initialize($db)
 	{
 		$db->set_names('utf8');
+
+		if (!$db->table_exists('members'))
+			error('Selected database does not contain valid SMF installation', __FILE__, __LINE__);
 	}
 
 	function convert_bans($db, $fluxbb)
@@ -226,7 +229,7 @@ class SMF_2 extends Forum
 	function convert_topics($db, $fluxbb)
 	{
 		$result = $db->query_build(array(
-			'SELECT'	=> 't.id_topic AS id, t.num_views AS num_views, t.num_replies AS num_replies, t.is_sticky AS sticky, t.locked AS closed, t.id_board AS forum_id, m.subject AS subject, m.poster_time AS posted, m.id_msg AS first_post_id, lm.poster_time AS last_post, lm.poster_name AS last_poster, lm.id_msg AS last_post_id',
+			'SELECT'	=> 't.id_topic AS id, m.poster_name AS poster, t.num_views AS num_views, t.num_replies AS num_replies, t.is_sticky AS sticky, t.locked AS closed, t.id_board AS forum_id, m.subject AS subject, m.poster_time AS posted, m.id_msg AS first_post_id, lm.poster_time AS last_post, lm.poster_name AS last_poster, lm.id_msg AS last_post_id',
 			'FROM'		=> 'topics AS t',
 			'JOINS'        => array(
 				array(
@@ -297,7 +300,12 @@ class SMF_2 extends Forum
 	// TODO: remove $db variable
 	function uid2uid($id, $db, $next = false)
 	{
-		if ($id == 1)
+		// id=0 is a SMF's guest user
+		if ($id == 0)
+			return 1;
+
+		// id=1 is reserved for the guest user
+		elseif ($id == 1)
 		{
 			$result = $db->query_build(array(
 				'SELECT'	=> 'id_member',
@@ -324,7 +332,7 @@ class SMF_2 extends Forum
 			'#\\[ftp=(.*?)\](.*?)\[/ftp\]#is',
 			'#\\[font=(.*?)\](.*?)\[/font\]#is',
 			'#\\[size=(.*?)\](.*?)\[/size\]#is',
-			'#\\[list\](.*?)\[/list\]#is',
+			'#\\[list=?.*?\](.*?)\[/list\]#is',
 			'#\\[li\](.*?)\[/li\]#is',
 
 			// Table
@@ -357,8 +365,8 @@ class SMF_2 extends Forum
 			'[url=$1]$2[/url]',
 			'$2',
 			'$2',
-			'[b]List:[/b]$1'."\n",
-			'·$1'."\n",
+			'[list]$1[/list]',
+			'[*]$1[/*]',
 
 			// Table
 			'$1',

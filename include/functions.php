@@ -97,5 +97,5 @@ function get_languages()
 function get_styles()
 {
 	// TODO: Determine them from the forum package (where is it?)
-	return array('Oxygen', 'Cobalt');
+	return array('Air', 'Oxygen', 'Cobalt');
 }

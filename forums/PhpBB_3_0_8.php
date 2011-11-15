@@ -301,7 +301,7 @@ class PhpBB_3_0_8 extends Forum
 			'#\[list:[a-z0-9]{8}\]#i',
 			'#\[/list:[a-z0-9]:[a-z0-9]{8}\]#i',
 			'#\[\*:[a-z0-9]{8}\]#i',
-			'#\[/\*:m:[a-z0-9]{8}\]#i',
+			'#\[/\*:[a-z0-9]{8}\]#i',
 
 			// Colors
 			'#\[color=(.*?):[a-z0-9]{8}\]#i',
@@ -344,7 +344,7 @@ class PhpBB_3_0_8 extends Forum
 			'[/u]',
 
 			// Lists
-			'[list=]',
+			'[list]',
 			'[list]',
 			'[/list]',
 			'[*]',

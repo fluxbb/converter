@@ -226,7 +226,7 @@ else
 <?php
 
 	foreach ($styles as $name)
-		echo "\t\t\t\t\t\t".'<option value="'.$name.'"'.(($name == 'Oxygen') ? ' selected="selected"' : '').'>'.$name.'</option>'."\n";
+		echo "\t\t\t\t\t\t".'<option value="'.$name.'"'.(($name == 'Air') ? ' selected="selected"' : '').'>'.$name.'</option>'."\n";
 
 ?>
 					</select>
