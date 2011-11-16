@@ -81,14 +81,12 @@ class Converter
 		// No more work to do?
 		if (!isset($keys[++$current]))
 		{
-			echo '<meta http-equiv="refresh" content="0; url=converter.php?stage=results">';
 			$_SESSION['fluxbb_converter']['time'] = get_microtime() - $this->start;
-			exit;
+			redirect('converter.php?stage=results');
 		}
 
 		$next_stage = $keys[$current];
-		echo '<meta http-equiv="refresh" content="0; url=converter.php?stage='.htmlspecialchars($next_stage).'">';
-		exit;
+		redirect('converter.php?stage='.htmlspecialchars($next_stage));
 	}
 
 	function get_time()

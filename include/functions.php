@@ -15,6 +15,12 @@ function message()
 	$_SESSION['fluxbb_converter']['messages'][] = vsprintf($message, $args);
 }
 
+function redirect($url, $time = 0)
+{
+	echo '<meta http-equiv="refresh" content="'.$time.'; url='.$url.'">';
+	exit;
+}
+
 function get_microtime()
 {
 	list($usec, $sec) = explode(' ', microtime());
