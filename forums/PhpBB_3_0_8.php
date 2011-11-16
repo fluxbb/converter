@@ -5,6 +5,10 @@ define('FORUM_DB_REVISION', 2);
 
 class PhpBB_3_0_8 extends Forum
 {
+	public $forum_tables = array(
+		'posts'		=> array('posts', 'post_id'),
+	);
+
 	function initialize()
 	{
 		$this->db->set_names('utf8');
@@ -150,7 +154,7 @@ class PhpBB_3_0_8 extends Forum
 		}
 	}
 
-	function convert_posts()
+	function convert_posts($start_from)
 	{
 		$result = $this->db->query_build(array(
 			'SELECT'	=> 'p.post_id AS id, u.username AS poster, p.poster_id AS poster_id, p.post_time AS posted, p.poster_ip AS poster_ip, p.post_text AS message, p.topic_id AS topic_id',
@@ -161,15 +165,19 @@ class PhpBB_3_0_8 extends Forum
 				),
 			),
 			'FROM'		=> 'posts AS p',
+			'WHERE'		=> 'p.post_id > '.$start_from,
+			'LIMIT'		=> 30,
 		)) or error('Unable to fetch posts', __FILE__, __LINE__, $this->db->error());
 
-		message('Processing %d posts', $this->db->num_rows($result));
+		message('Processing %d posts (%d - %d)', $this->db->num_rows($result), $start_from, $start_from + 30);
 		while ($cur_post = $this->db->fetch_assoc($result))
 		{
+			$start_from = $cur_post['id'];
 			$cur_post['message'] = $this->convert_message(html_entity_decode($cur_post['message']));
 
 			$this->fluxbb->add_row('posts', $cur_post);
 		}
+		return $start_from;
 	}
 
 	function convert_ranks()

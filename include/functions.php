@@ -11,13 +11,11 @@ function message()
 	$message = count($args) > 0 ? array_shift($args) : '';
 
 	echo vsprintf($message, $args)."\n".'<br />';
-
-	$_SESSION['fluxbb_converter']['messages'][] = vsprintf($message, $args);
 }
 
-function redirect($url, $time = 0)
+function redirect($stage, $start_from = 0, $time = 0)
 {
-	echo '<meta http-equiv="refresh" content="'.$time.'; url='.$url.'">';
+	echo '<meta http-equiv="refresh" content="'.$time.'; url=converter.php?stage='.htmlspecialchars($stage).($start_from > 0 ? '&start_from='.$start_from : '').'">';
 	exit;
 }
 

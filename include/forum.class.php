@@ -188,7 +188,7 @@ class Forum
 			'SELECT'	=> 'id',
 			'FROM'		=> 'users',
 			'WHERE'		=> 'id=1'
-		)) or error('Unable to fetch guest user', __FILE__, __LINE__, $db->error());
+		)) or error('Unable to fetch guest user', __FILE__, __LINE__, $this->db->error());
 
 		if (!$this->fluxbb->db->num_rows($result))
 			$this->fluxbb->add_row('users', array('id' => 1, 'group_id' => 3, 'username' => 'Guest'), true);
@@ -208,7 +208,7 @@ class Forum
 			'SELECT'	=> 'g_id',
 			'FROM'		=> 'groups',
 			'WHERE'		=> 'g_id IN (1, 2, 3, 4)'
-		)) or error('Unable to fetch groups', __FILE__, __LINE__, $db->error());
+		)) or error('Unable to fetch groups', __FILE__, __LINE__, $this->db->error());
 
 		$existing_groups = array();
 		while ($cur_group = $this->fluxbb->db->fetch_assoc($result))
@@ -219,6 +219,22 @@ class Forum
 			if (!in_array($g_id, $existing_groups))
 				$this->fluxbb->add_row('groups', $cur_group, true);
 		}
+	}
+
+	// Check is more to do
+	function is_more($stage, $start_from)
+	{
+		if (!isset($this->forum_tables[$stage]))
+			return false;
+
+		$result = $this->db->query_build(array(
+			'SELECT'	=> 1,
+			'FROM'		=> $this->forum_tables[$stage][0],
+			'WHERE'		=> $this->forum_tables[$stage][1].' > '.$start_from,
+			'LIMIT'		=> 1,
+		)) or error('Unable to fetch num rows', __FILE__, __LINE__, $this->db->error());
+
+		return $this->db->num_rows($result);
 	}
 
 }

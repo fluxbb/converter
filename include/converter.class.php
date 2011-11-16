@@ -44,14 +44,13 @@ class Converter
 		}
 	}
 
-	function convert($name)
+	function convert($name, $start_from = 0)
 	{
+		$keys = array_keys($this->tables);
+
+		// Start from beginning
 		if (!isset($name))
-		{
-			// Start from beginning
-			$keys = array_keys($this->tables);
 			$name = $keys[0];
-		}
 
 		$start = get_microtime();
 		$convert = $this->tables[$name];
@@ -64,29 +63,27 @@ class Converter
 		call_user_func(array($this->forum->fluxbb, 'init_'.$name));
 
 		if ($convert)
-			call_user_func(array($this->forum, 'convert_'.$name));
+		{
+			$start_from = call_user_func(array($this->forum, 'convert_'.$name), $start_from);
+			if ($this->forum->is_more($name, $start_from))
+				redirect($name, $start_from);
+		}
 
 		if (is_callable(array($this->forum, 'check_'.$name)))
 			call_user_func(array($this->forum, 'check_'.$name));
 
-		message('Completed in %s seconds', number_format(get_microtime() - $start, 2));
-		message();
-	}
-
-	function redirect_to_next_stage($stage)
-	{
-		$keys = array_keys($this->tables);
-		$current = array_search($stage, $keys);
+		// Redirect to the next stage
+		$current = array_search($name, $keys);
 
 		// No more work to do?
 		if (!isset($keys[++$current]))
 		{
 			$_SESSION['fluxbb_converter']['time'] = get_microtime() - $this->start;
-			redirect('converter.php?stage=results');
+			redirect('results');
 		}
 
 		$next_stage = $keys[$current];
-		redirect('converter.php?stage='.htmlspecialchars($next_stage));
+		redirect($next_stage);
 	}
 
 	function get_time()

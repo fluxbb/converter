@@ -7,6 +7,7 @@ require SCRIPT_ROOT.'include/functions.php';
 
 session_start();
 $stage = isset($_GET['stage']) ? $_GET['stage'] : null;
+$start_from = isset($_GET['start_from']) ? $_GET['start_from'] : 0;
 
 $forums = get_forums();
 $engines = get_engines();
@@ -39,21 +40,7 @@ if (isset($_SESSION['fluxbb_converter']))
 		<h1>FluxBB Forum Converter</h1>
 <?php
 
-if (isset($stage) && $stage == 'results')
-{
-
-?>
-
-		<div class="message">
-			<p><?php echo sprintf('Conversion completed in %s seconds! Results below:', number_format($_SESSION['fluxbb_converter']['time'], 2)) ?></p>
-		</div>
-
-		<p><?php echo implode('<br />'."\n", $_SESSION['fluxbb_converter']['messages']); ?></p>
-
-<?php
-}
-
-else if (isset($_POST['submit']) || isset($stage))
+if (isset($_POST['submit']) || isset($stage))
 {
 	if (isset($_POST['submit']))
 	{
@@ -82,7 +69,7 @@ else if (isset($_POST['submit']) || isset($stage))
 			'prefix'	=> isset($_POST['new_prefix']) ? trim($_POST['new_prefix']) : ''
 		);
 
-		$_SESSION['fluxbb_converter'] = array('forum_config' => $forum_config, 'old_db_config' => $old_db_config, 'new_db_config' => $new_db_config, 'messages' => array());
+		$_SESSION['fluxbb_converter'] = array('forum_config' => $forum_config, 'old_db_config' => $old_db_config, 'new_db_config' => $new_db_config);
 	}
 
 	// Check we aren't trying to convert to the same database
@@ -112,13 +99,24 @@ else if (isset($_POST['submit']) || isset($stage))
 	// Start the conversion process
 	require SCRIPT_ROOT.'include/converter.class.php';
 	$converter = new Converter($forum);
-	$converter->convert($stage);
 
-	$converter->redirect_to_next_stage($stage);
+	if ($stage != 'results')
+	{
+		$converter->convert($stage, $start_from);
+	}
 
-	// Finished! :-)
-	message('--------------------------------------------------------');
-	message('Conversion completed in %s seconds', number_format($converter->get_time(), 2));
+	// Show the results page
+	else
+	{
+
+?>
+
+		<div class="message">
+			<p><?php echo sprintf('Conversion completed in %s seconds!', number_format($_SESSION['fluxbb_converter']['time'], 2)) ?></p>
+		</div>
+<?php
+
+	}
 
 	// TODO: Try to create config file, set styles etc. for everybody
 }
