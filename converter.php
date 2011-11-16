@@ -5,11 +5,21 @@ define('SCRIPT_ROOT', './');
 // Include the common functions
 require SCRIPT_ROOT.'include/functions.php';
 
+session_start();
+$stage = isset($_GET['stage']) ? $_GET['stage'] : null;
 
 $forums = get_forums();
 $engines = get_engines();
 $languages = get_languages();
 $styles = get_styles();
+
+$forum_config = $old_db_config = $new_db_config = array();
+if (isset($_SESSION['fluxbb_converter']))
+{
+	$forum_config = $_SESSION['fluxbb_converter']['forum_config'];
+	$old_db_config = $_SESSION['fluxbb_converter']['old_db_config'];
+	$new_db_config = $_SESSION['fluxbb_converter']['new_db_config'];
+}
 
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
@@ -29,33 +39,51 @@ $styles = get_styles();
 		<h1>FluxBB Forum Converter</h1>
 <?php
 
-
-if (isset($_POST['submit']))
+if (isset($stage) && $stage == 'results')
 {
-	$forum_config = array(
-		'type'			=> isset($_POST['convert_to']) && isset($forums[$_POST['convert_to']]) ? $_POST['convert_to'] : error('You entered an invalid forum software.'.$_POST['convert_to'], __FILE__, __LINE__),
-		'base_url'		=> isset($_POST['base_url']) ? trim($_POST['base_url']) : '', // TODO: utf8_trim()? is_url()?
-		'default_lang'	=> isset($_POST['new_language']) && in_array($_POST['new_language'], $languages) ? $_POST['new_language'] : 'English',
-		'default_style'	=> isset($_POST['new_style']) && in_array($_POST['new_style'], $styles) ? $_POST['new_style'] : 'Air'
-	);
 
-	$old_db_config = array(
-		'type'		=> isset($_POST['old_type']) && in_array($_POST['old_type'], $engines) ? $_POST['old_type'] : error('Database type for old forum is invalid.', __FILE__, __LINE__),
-		'host'		=> isset($_POST['old_host']) ? trim($_POST['old_host']) : error('You have to enter a database host for the old forum.', __FILE__, __LINE__),
-		'username'	=> isset($_POST['old_user']) ? trim($_POST['old_user']) : error('You have to enter a database username for the old forum.', __FILE__, __LINE__),
-		'password'	=> isset($_POST['old_pass']) ? $_POST['old_pass'] : '',
-		'name'		=> isset($_POST['old_name']) ? trim($_POST['old_name']) : error('You have to enter a database name for the old forum.', __FILE__, __LINE__),
-		'prefix'	=> isset($_POST['old_prefix']) ? trim($_POST['old_prefix']) : ''
-	);
+?>
 
-	$new_db_config = array(
-		'type'		=> isset($_POST['new_type']) && in_array($_POST['new_type'], $engines) ? $_POST['new_type'] : error('Database type for old forum is invalid.', __FILE__, __LINE__),
-		'host'		=> isset($_POST['new_host']) ? trim($_POST['new_host']) : error('You have to enter a database host for the old forum.', __FILE__, __LINE__),
-		'username'	=> isset($_POST['new_user']) ? trim($_POST['new_user']) : error('You have to enter a database username for the old forum.', __FILE__, __LINE__),
-		'password'	=> isset($_POST['new_pass']) ? $_POST['new_pass'] : '',
-		'name'		=> isset($_POST['new_name']) ? trim($_POST['new_name']) : error('You have to enter a database name for the old forum.', __FILE__, __LINE__),
-		'prefix'	=> isset($_POST['new_prefix']) ? trim($_POST['new_prefix']) : ''
-	);
+		<div class="message">
+			<p><?php echo sprintf('Conversion completed in %s seconds! Results below:', number_format($_SESSION['fluxbb_converter']['time'], 2)) ?></p>
+		</div>
+
+		<p><?php echo implode('<br />'."\n", $_SESSION['fluxbb_converter']['messages']); ?></p>
+
+<?php
+}
+
+else if (isset($_POST['submit']) || isset($stage))
+{
+	if (isset($_POST['submit']))
+	{
+		$forum_config = array(
+			'type'			=> isset($_POST['convert_to']) && isset($forums[$_POST['convert_to']]) ? $_POST['convert_to'] : error('You entered an invalid forum software.'.$_POST['convert_to'], __FILE__, __LINE__),
+			'base_url'		=> isset($_POST['base_url']) ? trim($_POST['base_url']) : '', // TODO: utf8_trim()? is_url()?
+			'default_lang'	=> isset($_POST['new_language']) && in_array($_POST['new_language'], $languages) ? $_POST['new_language'] : 'English',
+			'default_style'	=> isset($_POST['new_style']) && in_array($_POST['new_style'], $styles) ? $_POST['new_style'] : 'Air'
+		);
+
+		$old_db_config = array(
+			'type'		=> isset($_POST['old_type']) && in_array($_POST['old_type'], $engines) ? $_POST['old_type'] : error('Database type for old forum is invalid.', __FILE__, __LINE__),
+			'host'		=> isset($_POST['old_host']) ? trim($_POST['old_host']) : error('You have to enter a database host for the old forum.', __FILE__, __LINE__),
+			'username'	=> isset($_POST['old_user']) ? trim($_POST['old_user']) : error('You have to enter a database username for the old forum.', __FILE__, __LINE__),
+			'password'	=> isset($_POST['old_pass']) ? $_POST['old_pass'] : '',
+			'name'		=> isset($_POST['old_name']) ? trim($_POST['old_name']) : error('You have to enter a database name for the old forum.', __FILE__, __LINE__),
+			'prefix'	=> isset($_POST['old_prefix']) ? trim($_POST['old_prefix']) : ''
+		);
+
+		$new_db_config = array(
+			'type'		=> isset($_POST['new_type']) && in_array($_POST['new_type'], $engines) ? $_POST['new_type'] : error('Database type for old forum is invalid.', __FILE__, __LINE__),
+			'host'		=> isset($_POST['new_host']) ? trim($_POST['new_host']) : error('You have to enter a database host for the old forum.', __FILE__, __LINE__),
+			'username'	=> isset($_POST['new_user']) ? trim($_POST['new_user']) : error('You have to enter a database username for the old forum.', __FILE__, __LINE__),
+			'password'	=> isset($_POST['new_pass']) ? $_POST['new_pass'] : '',
+			'name'		=> isset($_POST['new_name']) ? trim($_POST['new_name']) : error('You have to enter a database name for the old forum.', __FILE__, __LINE__),
+			'prefix'	=> isset($_POST['new_prefix']) ? trim($_POST['new_prefix']) : ''
+		);
+
+		$_SESSION['fluxbb_converter'] = array('forum_config' => $forum_config, 'old_db_config' => $old_db_config, 'new_db_config' => $new_db_config, 'messages' => array());
+	}
 
 	// Check we aren't trying to convert to the same database
 	//if ($old_db_config['name'] == $new_db_config['name'])
@@ -84,7 +112,9 @@ if (isset($_POST['submit']))
 	// Start the conversion process
 	require SCRIPT_ROOT.'include/converter.class.php';
 	$converter = new Converter($forum);
-	$converter->convert_all();
+	$converter->convert($stage);
+
+	$converter->redirect_to_next_stage($stage);
 
 	// Finished! :-)
 	message('--------------------------------------------------------');
@@ -108,7 +138,7 @@ else
 
 				<div class="fset">
 					<label>Base URL</label>
-					<input type="text" name="base_url" />
+					<input type="text" name="base_url"<?php if (isset($forum_config['base_url'])) echo ' value="'.htmlspecialchars($forum_config['base_url']).'"' ?> />
 					<span>The URL (Uniform Resource Locator) where your forum can be found.</span>
 				</div>
 			</fieldset>
@@ -122,7 +152,7 @@ else
 <?php
 
 	foreach ($forums as $key => $name)
-		echo "\t\t\t\t\t\t".'<option value="'.$key.'">'.$name.'</option>'."\n";
+		echo "\t\t\t\t\t\t".'<option value="'.$key.'"'.(isset($forum_config['type']) && $forum_config['type'] == $key ? ' selected="selected"' : '').'>'.$name.'</option>'."\n";
 
 ?>
 					</select>
@@ -135,7 +165,7 @@ else
 <?php
 
 	foreach ($engines as $name)
-		echo "\t\t\t\t\t\t".'<option value="'.$name.'">'.$name.'</option>'."\n";
+		echo "\t\t\t\t\t\t".'<option value="'.$name.'"'.(isset($old_db_config['type']) && $old_db_config['type'] == $name ? ' selected="selected"' : '').'>'.$name.'</option>'."\n";
 
 ?>
 					</select>
@@ -143,27 +173,27 @@ else
 
 				<div class="fset">
 					<label>Database host</label>
-					<input type="text" name="old_host" />
+					<input type="text" name="old_host"<?php if (isset($old_db_config['host'])) echo ' value="'.htmlspecialchars($old_db_config['host']).'"' ?> />
 				</div>
 
 				<div class="fset">
 					<label>Database name</label>
-					<input type="text" name="old_name" />
+					<input type="text" name="old_name"<?php if (isset($old_db_config['name'])) echo ' value="'.htmlspecialchars($old_db_config['name']).'"' ?> />
 				</div>
 
 				<div class="fset">
 					<label>Database user</label>
-					<input type="text" name="old_user" />
+					<input type="text" name="old_user"<?php if (isset($old_db_config['username'])) echo ' value="'.htmlspecialchars($old_db_config['username']).'"' ?> />
 				</div>
 
 				<div class="fset">
 					<label>Database password</label>
-					<input type="text" name="old_pass" />
+					<input type="text" name="old_pass"<?php if (isset($old_db_config['password'])) echo ' value="'.htmlspecialchars($old_db_config['password']).'"' ?> />
 				</div>
 
 				<div class="fset">
 					<label>Database table prefix</label>
-					<input type="text" name="old_prefix" />
+					<input type="text" name="old_prefix"<?php if (isset($old_db_config['prefix'])) echo ' value="'.htmlspecialchars($old_db_config['prefix']).'"' ?> />
 				</div>
 			</fieldset>
 
@@ -176,7 +206,7 @@ else
 <?php
 
 	foreach ($engines as $name)
-		echo "\t\t\t\t\t\t".'<option value="'.$name.'">'.$name.'</option>'."\n";
+		echo "\t\t\t\t\t\t".'<option value="'.$name.'"'.(isset($new_db_config['type']) && $new_db_config['type'] == $name ? ' selected="selected"' : '').'>'.$name.'</option>'."\n";
 
 ?>
 					</select>
@@ -184,27 +214,27 @@ else
 
 				<div class="fset">
 					<label>Database host</label>
-					<input type="text" name="new_host" />
+					<input type="text" name="new_host"<?php if (isset($new_db_config['host'])) echo ' value="'.htmlspecialchars($new_db_config['host']).'"' ?> />
 				</div>
 
 				<div class="fset">
 					<label>Database name</label>
-					<input type="text" name="new_name" />
+					<input type="text" name="new_name"<?php if (isset($new_db_config['name'])) echo ' value="'.htmlspecialchars($new_db_config['name']).'"' ?> />
 				</div>
 
 				<div class="fset">
 					<label>Database user</label>
-					<input type="text" name="new_user" />
+					<input type="text" name="new_user"<?php if (isset($new_db_config['username'])) echo ' value="'.htmlspecialchars($new_db_config['username']).'"' ?> />
 				</div>
 
 				<div class="fset">
 					<label>Database password</label>
-					<input type="text" name="new_pass" />
+					<input type="text" name="new_pass"<?php if (isset($new_db_config['password'])) echo ' value="'.htmlspecialchars($new_db_config['password']).'"' ?> />
 				</div>
 
 				<div class="fset">
 					<label>Database table prefix</label>
-					<input type="text" name="new_prefix" />
+					<input type="text" name="new_prefix"<?php if (isset($new_db_config['prefix'])) echo ' value="'.htmlspecialchars($new_db_config['prefix']).'"' ?> />
 				</div>
 
 				<div class="fset">
@@ -212,8 +242,12 @@ else
 					<select name="new_language">
 <?php
 
+	$default_lang = 'English';
+	if (isset($forum_config['default_lang']))
+		$default_lang = $forum_config['default_lang'];
+
 	foreach ($languages as $name)
-		echo "\t\t\t\t\t\t".'<option value="'.$name.'"'.(($name == 'English') ? ' selected="selected"' : '').'>'.$name.'</option>'."\n";
+		echo "\t\t\t\t\t\t".'<option value="'.$name.'"'.(($name == $default_lang) ? ' selected="selected"' : '').'>'.$name.'</option>'."\n";
 
 ?>
 					</select>
@@ -225,8 +259,12 @@ else
 					<select name="new_style">
 <?php
 
+	$default_style = 'Air';
+	if (isset($forum_config['default_style']))
+		$default_style = $forum_config['default_style'];
+
 	foreach ($styles as $name)
-		echo "\t\t\t\t\t\t".'<option value="'.$name.'"'.(($name == 'Air') ? ' selected="selected"' : '').'>'.$name.'</option>'."\n";
+		echo "\t\t\t\t\t\t".'<option value="'.$name.'"'.(($name == $default_style) ? ' selected="selected"' : '').'>'.$name.'</option>'."\n";
 
 ?>
 					</select>

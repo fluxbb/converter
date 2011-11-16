@@ -11,6 +11,8 @@ function message()
 	$message = count($args) > 0 ? array_shift($args) : '';
 
 	echo vsprintf($message, $args)."\n".'<br />';
+
+	$_SESSION['fluxbb_converter']['messages'][] = vsprintf($message, $args);
 }
 
 function get_microtime()

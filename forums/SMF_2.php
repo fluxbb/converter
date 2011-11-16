@@ -52,7 +52,26 @@ class SMF_2 extends Forum
 
 	function convert_censoring()
 	{
-		// Nothing to do. Censoring conversion is in conver_config()
+		$old_config = array();
+
+		$result = $this->db->query_build(array(
+			'SELECT'	=> 'variable, value',
+			'FROM'		=> 'settings',
+			'WHERE'		=> 'variable IN (\'censor_vulgar\', \'censor_proper\')'
+		)) or error('Unable to fetch config', __FILE__, __LINE__, $this->db->error());
+
+		message('Processing censoring');
+		while ($cur_config = $this->db->fetch_assoc($result))
+			$old_config[$cur_config['variable']] = $cur_config['value'];
+
+		$censor_words = array_combine(explode("\n", $old_config['censor_vulgar']), explode("\n", $old_config['censor_proper']));
+		foreach ($censor_words as $vulgar => $valid)
+		{
+			$this->fluxbb->add_row('censoring', array(
+				'search_for'	=> $vulgar,
+				'replace_with'	=> $valid,
+			));
+		}
 	}
 
 	function convert_config()
@@ -77,16 +96,6 @@ class SMF_2 extends Forum
 			$this->fluxbb->add_row('config', array(
 				'conf_name'		=> $key,
 				'conf_value'	=> $value,
-			));
-		}
-
-		// Convert censoring
-		$censor_words = array_combine(explode("\n", $old_config['censor_vulgar']), explode("\n", $old_config['censor_proper']));
-		foreach ($censor_words as $vulgar => $valid)
-		{
-			$this->fluxbb->add_row('censoring', array(
-				'search_for'	=> $vulgar,
-				'replace_with'	=> $valid,
 			));
 		}
 	}
