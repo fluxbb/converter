@@ -7,13 +7,22 @@ class Forum
 	var $base_url;
 	var $new_config = array();
 
-	function init_config($db, $forum_config)
+	public $db;
+	public $fluxbb;
+
+	function __construct($db, $fluxbb)
+	{
+		$this->db = $db;
+		$this->fluxbb = $fluxbb;
+	}
+
+	function init_config($forum_config)
 	{
 		$this->default_lang = $forum_config['default_lang'];
 		$this->default_style = $forum_config['default_style'];
 		$this->base_url = $forum_config['base_url'];
 
-		$this->initialize($db);
+		$this->initialize();
 
 		$this->new_config = array(
 			'o_cur_version'				=> FORUM_VERSION,
@@ -97,96 +106,96 @@ class Forum
 		);
 	}
 
-	function initialize($db)
+	function initialize()
 	{
 		message('%s: Not implemented', __FUNCTION__);
 	}
 
-	function convert_bans($db, $fluxbb)
+	function convert_bans()
 	{
 		message('%s: Not implemented', __FUNCTION__);
 	}
 
-	function convert_categories($db, $fluxbb)
+	function convert_categories()
 	{
 		message('%s: Not implemented', __FUNCTION__);
 	}
 
-	function convert_censoring($db, $fluxbb)
+	function convert_censoring()
 	{
 		message('%s: Not implemented', __FUNCTION__);
 	}
 
-	function convert_config($db, $fluxbb)
+	function convert_config()
 	{
 		message('%s: Not implemented', __FUNCTION__);
 	}
 
-	function convert_forums($db, $fluxbb)
+	function convert_forums()
 	{
 		message('%s: Not implemented', __FUNCTION__);
 	}
 
-	function convert_forum_perms($db, $fluxbb)
+	function convert_forum_perms()
 	{
 		message('%s: Not implemented', __FUNCTION__);
 	}
 
-	function convert_groups($db, $fluxbb)
+	function convert_groups()
 	{
 		message('%s: Not implemented', __FUNCTION__);
 	}
 
-	function convert_posts($db, $fluxbb)
+	function convert_posts()
 	{
 		message('%s: Not implemented', __FUNCTION__);
 	}
 
-	function convert_ranks($db, $fluxbb)
+	function convert_ranks()
 	{
 		message('%s: Not implemented', __FUNCTION__);
 	}
 
-	function convert_reports($db, $fluxbb)
+	function convert_reports()
 	{
 		message('%s: Not implemented', __FUNCTION__);
 	}
 
-	function convert_topic_subscriptions($db, $fluxbb)
+	function convert_topic_subscriptions()
 	{
 		message('%s: Not implemented', __FUNCTION__);
 	}
 
-	function convert_forum_subscriptions($db, $fluxbb)
+	function convert_forum_subscriptions()
 	{
 		message('%s: Not implemented', __FUNCTION__);
 	}
 
-	function convert_topics($db, $fluxbb)
+	function convert_topics()
 	{
 		message('%s: Not implemented', __FUNCTION__);
 	}
 
-	function convert_users($db, $fluxbb)
+	function convert_users()
 	{
 		message('%s: Not implemented', __FUNCTION__);
 	}
 
 	// Add default guest user when it does not exist
-	function check_users($db, $fluxbb)
+	function check_users()
 	{
-		$result = $fluxbb->db->query_build(array(
+		$result = $this->fluxbb->db->query_build(array(
 			'SELECT'	=> 'id',
 			'FROM'		=> 'users',
 			'WHERE'		=> 'id=1'
 		)) or error('Unable to fetch guest user', __FILE__, __LINE__, $db->error());
 
-		if (!$fluxbb->db->num_rows($result))
-			$fluxbb->add_row('users', array('id' => 1, 'group_id' => 3, 'username' => 'Guest'), true);
+		if (!$this->fluxbb->db->num_rows($result))
+			$this->fluxbb->add_row('users', array('id' => 1, 'group_id' => 3, 'username' => 'Guest'), true);
 	}
 
 	// Add default user groups when they do not exist
-	function check_groups($db, $fluxbb)
+	function check_groups()
 	{
 		$default_groups = array(
 			1 => array('g_id' => '1', 'g_title' => 'Administrators', 'g_user_title' => 'Administrator', 'g_moderator' => '0', 'g_mod_edit_users' => '0', 'g_mod_rename_users' => '0', 'g_mod_change_passwords' => '0', 'g_mod_ban_users' => '0', 'g_read_board' => '1', 'g_view_users' => '1', 'g_post_replies' => '1', 'g_post_topics' => '1', 'g_edit_posts' => '1', 'g_delete_posts' => '1', 'g_delete_topics' => '1', 'g_set_title' => '1', 'g_search' => '1', 'g_search_users' => '1', 'g_send_email' => '1', 'g_post_flood' => '0', 'g_search_flood' => '0', 'g_email_flood' => '0', 'g_report_flood' => '0'),
@@ -195,20 +204,20 @@ class Forum
 			4 => array('g_id' => '4', 'g_title' => 'Members', 'g_user_title' => '', 'g_moderator' => '0', 'g_mod_edit_users' => '0', 'g_mod_rename_users' => '0', 'g_mod_change_passwords' => '0', 'g_mod_ban_users' => '0', 'g_read_board' => '1', 'g_view_users' => '1', 'g_post_replies' => '1', 'g_post_topics' => '1', 'g_edit_posts' => '1', 'g_delete_posts' => '1', 'g_delete_topics' => '1', 'g_set_title' => '0', 'g_search' => '1', 'g_search_users' => '1', 'g_send_email' => '1', 'g_post_flood' => '60', 'g_search_flood' => '30', 'g_email_flood' => '60', 'g_report_flood' => '60'),
 		);
 
-		$result = $fluxbb->db->query_build(array(
+		$result = $this->fluxbb->db->query_build(array(
 			'SELECT'	=> 'g_id',
 			'FROM'		=> 'groups',
 			'WHERE'		=> 'g_id IN (1, 2, 3, 4)'
 		)) or error('Unable to fetch groups', __FILE__, __LINE__, $db->error());
 
 		$existing_groups = array();
-		while ($cur_group = $fluxbb->db->fetch_assoc($result))
+		while ($cur_group = $this->fluxbb->db->fetch_assoc($result))
 			$existing_groups[] = $cur_group['g_id'];
 
 		foreach ($default_groups as $g_id => $cur_group)
 		{
 			if (!in_array($g_id, $existing_groups))
-				$fluxbb->add_row('groups', $cur_group, true);
+				$this->fluxbb->add_row('groups', $cur_group, true);
 		}
 	}
 

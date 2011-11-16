@@ -5,17 +5,17 @@ define('FORUM_DB_REVISION', 2);
 
 class PhpBB_3_0_8 extends Forum
 {
-	function initialize($db)
+	function initialize()
 	{
-		$db->set_names('utf8');
+		$this->db->set_names('utf8');
 
-		if (!$db->table_exists('users'))
+		if (!$this->db->table_exists('users'))
 			error('Selected database does not contain valid phpBB installation', __FILE__, __LINE__);
 	}
 
-	function convert_bans($db, $fluxbb)
+	function convert_bans()
 	{
-		$result = $db->query_build(array(
+		$result = $this->db->query_build(array(
 			'SELECT'	=> 'b.ban_id AS id, u.username AS username, b.ban_ip AS ip, b.ban_email AS email, b.ban_reason AS message, b.ban_end AS expire',
 			'JOINS'        => array(
 				array(
@@ -24,60 +24,60 @@ class PhpBB_3_0_8 extends Forum
 				),
 			),
 			'FROM'		=> 'banlist AS b',
-		)) or error('Unable to fetch bans', __FILE__, __LINE__, $db->error());
+		)) or error('Unable to fetch bans', __FILE__, __LINE__, $this->db->error());
 
-		message('Processing %d bans', $db->num_rows($result));
-		while ($cur_ban = $db->fetch_assoc($result))
+		message('Processing %d bans', $this->db->num_rows($result));
+		while ($cur_ban = $this->db->fetch_assoc($result))
 		{
-			$fluxbb->add_row('bans', $cur_ban);
+			$this->fluxbb->add_row('bans', $cur_ban);
 		}
 	}
 
-	function convert_categories($db, $fluxbb)
+	function convert_categories()
 	{
 		// FIXME: Subforums might cause difficulties
-		$result = $db->query_build(array(
+		$result = $this->db->query_build(array(
 			'SELECT'	=> 'forum_id AS id, forum_name AS cat_name',
 			'FROM'		=> 'forums',
 			'WHERE'		=> 'forum_type = 0',
 			'ORDER BY'	=> 'left_id ASC'
-		)) or error('Unable to fetch categories', __FILE__, __LINE__, $db->error());
+		)) or error('Unable to fetch categories', __FILE__, __LINE__, $this->db->error());
 
-		message('Processing %d categories', $db->num_rows($result));
+		message('Processing %d categories', $this->db->num_rows($result));
 		$i = 1;
-		while ($cur_cat = $db->fetch_assoc($result))
+		while ($cur_cat = $this->db->fetch_assoc($result))
 		{
 			$cur_cat['disp_position'] = $i;
-			$fluxbb->add_row('categories', $cur_cat);
+			$this->fluxbb->add_row('categories', $cur_cat);
 			$i++;
 		}
 	}
 
-	function convert_censoring($db, $fluxbb)
+	function convert_censoring()
 	{
-		$result = $db->query_build(array(
+		$result = $this->db->query_build(array(
 			'SELECT'	=> 'word_id AS id, word AS search_for, replacement AS replace_with',
 			'FROM'		=> 'words',
-		)) or error('Unable to fetch words', __FILE__, __LINE__, $db->error());
+		)) or error('Unable to fetch words', __FILE__, __LINE__, $this->db->error());
 
-		message('Processing %d censors', $db->num_rows($result));
-		while ($cur_censor = $db->fetch_assoc($result))
+		message('Processing %d censors', $this->db->num_rows($result));
+		while ($cur_censor = $this->db->fetch_assoc($result))
 		{
-			$fluxbb->add_row('censoring', $cur_censor);
+			$this->fluxbb->add_row('censoring', $cur_censor);
 		}
 	}
 
-	function convert_config($db, $fluxbb)
+	function convert_config()
 	{
 		$old_config = array();
 
-		$result = $db->query_build(array(
+		$result = $this->db->query_build(array(
 			'SELECT'	=> 'config_name, config_value',
 			'FROM'		=> 'config',
-		)) or error('Unable to fetch config', __FILE__, __LINE__, $db->error());
+		)) or error('Unable to fetch config', __FILE__, __LINE__, $this->db->error());
 
 		message('Processing config');
-		while ($cur_config = $db->fetch_assoc($result))
+		while ($cur_config = $this->db->fetch_assoc($result))
 			$old_config[$cur_config['config_name']] = $cur_config['config_value'];
 
 		$this->new_config['o_board_title']			= $old_config['sitename'];
@@ -93,66 +93,66 @@ class PhpBB_3_0_8 extends Forum
 
 		foreach ($this->new_config as $key => $value)
 		{
-			$fluxbb->add_row('config', array(
+			$this->fluxbb->add_row('config', array(
 				'conf_name'		=> $key,
 				'conf_value'	=> $value,
 			));
 		}
 	}
 
-	function convert_forums($db, $fluxbb)
+	function convert_forums()
 	{
-		$result = $db->query_build(array(
+		$result = $this->db->query_build(array(
 			'SELECT'	=> 'forum_id AS id, forum_name AS forum_name, forum_desc AS forum_desc, forum_link AS redirect_url, forum_topics AS num_topics, forum_posts AS num_posts, left_id AS disp_position, forum_last_poster_name AS last_poster, forum_last_post_id AS last_post_id, forum_last_post_time AS last_post, parent_id AS cat_id',
 			'FROM'		=> 'forums',
 			'WHERE'		=> 'forum_type <> 0',
 			'ORDER BY'	=> 'left_id ASC'
-		)) or error('Unable to fetch forums', __FILE__, __LINE__, $db->error());
+		)) or error('Unable to fetch forums', __FILE__, __LINE__, $this->db->error());
 
-		message('Processing %d forums', $db->num_rows($result));
-		while ($cur_forum = $db->fetch_assoc($result))
+		message('Processing %d forums', $this->db->num_rows($result));
+		while ($cur_forum = $this->db->fetch_assoc($result))
 		{
-			$fluxbb->add_row('forums', $cur_forum);
+			$this->fluxbb->add_row('forums', $cur_forum);
 		}
 	}
 
 	// TODO!!!
-//	function convert_forum_perms($db, $fluxbb)
+//	function convert_forum_perms()
 //	{
-//		$result = $db->query_build(array(
+//		$result = $this->db->query_build(array(
 //			'SELECT'	=> 'group_id, forum_id, read_forum, post_replies, post_topics',
 //			'FROM'		=> 'forum_perms',
-//		)) or error('Unable to fetch forum perms', __FILE__, __LINE__, $db->error());
+//		)) or error('Unable to fetch forum perms', __FILE__, __LINE__, $this->db->error());
 
-//		message('Processing %d forum_perms', $db->num_rows($result));
-//		while ($cur_perm = $db->fetch_assoc($result))
+//		message('Processing %d forum_perms', $this->db->num_rows($result));
+//		while ($cur_perm = $this->db->fetch_assoc($result))
 //		{
 //			$cur_perm['group_id'] = $this->grp2grp($cur_perm['group_id']);
 
-//			$fluxbb->add_row('forum_perms', $cur_perm);
+//			$this->fluxbb->add_row('forum_perms', $cur_perm);
 //		}
 //	}
 
-	function convert_groups($db, $fluxbb)
+	function convert_groups()
 	{
-		$result = $db->query_build(array(
+		$result = $this->db->query_build(array(
 			'SELECT'	=> 'group_id AS g_id, group_name AS g_title, group_name AS g_user_title',
 			'FROM'		=> 'groups',
 			'WHERE'		=> 'group_id > 7'
-		)) or error('Unable to fetch groups', __FILE__, __LINE__, $db->error());
+		)) or error('Unable to fetch groups', __FILE__, __LINE__, $this->db->error());
 
-		message('Processing %d groups', $db->num_rows($result));
-		while ($cur_group = $db->fetch_assoc($result))
+		message('Processing %d groups', $this->db->num_rows($result));
+		while ($cur_group = $this->db->fetch_assoc($result))
 		{
 //			$cur_group['g_id'] = $this->grp2grp($cur_group['g_id']);
 
-			$fluxbb->add_row('groups', $cur_group);
+			$this->fluxbb->add_row('groups', $cur_group);
 		}
 	}
 
-	function convert_posts($db, $fluxbb)
+	function convert_posts()
 	{
-		$result = $db->query_build(array(
+		$result = $this->db->query_build(array(
 			'SELECT'	=> 'p.post_id AS id, u.username AS poster, p.poster_id AS poster_id, p.post_time AS posted, p.poster_ip AS poster_ip, p.post_text AS message, p.topic_id AS topic_id',
 			'JOINS'        => array(
 				array(
@@ -161,34 +161,34 @@ class PhpBB_3_0_8 extends Forum
 				),
 			),
 			'FROM'		=> 'posts AS p',
-		)) or error('Unable to fetch posts', __FILE__, __LINE__, $db->error());
+		)) or error('Unable to fetch posts', __FILE__, __LINE__, $this->db->error());
 
-		message('Processing %d posts', $db->num_rows($result));
-		while ($cur_post = $db->fetch_assoc($result))
+		message('Processing %d posts', $this->db->num_rows($result));
+		while ($cur_post = $this->db->fetch_assoc($result))
 		{
 			$cur_post['message'] = $this->convert_message(html_entity_decode($cur_post['message']));
 
-			$fluxbb->add_row('posts', $cur_post);
+			$this->fluxbb->add_row('posts', $cur_post);
 		}
 	}
 
-	function convert_ranks($db, $fluxbb)
+	function convert_ranks()
 	{
-		$result = $db->query_build(array(
+		$result = $this->db->query_build(array(
 			'SELECT'	=> 'rank_id AS id, rank_title AS rank, rank_min AS min_posts',
 			'FROM'		=> 'ranks',
-		)) or error('Unable to fetch ranks', __FILE__, __LINE__, $db->error());
+		)) or error('Unable to fetch ranks', __FILE__, __LINE__, $this->db->error());
 
-		message('Processing %d ranks', $db->num_rows($result));
-		while ($cur_rank = $db->fetch_assoc($result))
+		message('Processing %d ranks', $this->db->num_rows($result));
+		while ($cur_rank = $this->db->fetch_assoc($result))
 		{
-			$fluxbb->add_row('ranks', $cur_rank);
+			$this->fluxbb->add_row('ranks', $cur_rank);
 		}
 	}
 
-	function convert_reports($db, $fluxbb)
+	function convert_reports()
 	{
-		$result = $db->query_build(array(
+		$result = $this->db->query_build(array(
 			'SELECT'	=> 'r.report_id AS id, r.post_id, p.topic_id, p.forum_id, r.user_notify AS reported_by, r.report_time AS created, r.report_text AS message, r.report_closed AS zapped, NULL AS zapped_by',
 			'JOINS'        => array(
 				array(
@@ -197,76 +197,76 @@ class PhpBB_3_0_8 extends Forum
 				),
 			),
 			'FROM'		=> 'reports AS r',
-		)) or error('Unable to fetch reports', __FILE__, __LINE__, $db->error());
+		)) or error('Unable to fetch reports', __FILE__, __LINE__, $this->db->error());
 
-		message('Processing %d reports', $db->num_rows($result));
-		while ($cur_report = $db->fetch_assoc($result))
+		message('Processing %d reports', $this->db->num_rows($result));
+		while ($cur_report = $this->db->fetch_assoc($result))
 		{
-			$fluxbb->add_row('reports', $cur_report);
+			$this->fluxbb->add_row('reports', $cur_report);
 		}
 	}
 
-	function convert_topic_subscriptions($db, $fluxbb)
+	function convert_topic_subscriptions()
 	{
-		$result = $db->query_build(array(
+		$result = $this->db->query_build(array(
 			'SELECT'	=> 'user_id, topic_id',
 			'FROM'		=> 'topics_watch',
-		)) or error('Unable to fetch topic subscriptions', __FILE__, __LINE__, $db->error());
+		)) or error('Unable to fetch topic subscriptions', __FILE__, __LINE__, $this->db->error());
 
-		message('Processing %d topic subscriptions', $db->num_rows($result));
-		while ($cur_sub = $db->fetch_assoc($result))
+		message('Processing %d topic subscriptions', $this->db->num_rows($result));
+		while ($cur_sub = $this->db->fetch_assoc($result))
 		{
-			$fluxbb->add_row('topic_subscriptions', $cur_sub);
+			$this->fluxbb->add_row('topic_subscriptions', $cur_sub);
 		}
 	}
 
-	function convert_forum_subscriptions($db, $fluxbb)
+	function convert_forum_subscriptions()
 	{
-		$result = $db->query_build(array(
+		$result = $this->db->query_build(array(
 			'SELECT'	=> 'user_id, forum_id',
 			'FROM'		=> 'forums_watch',
-		)) or error('Unable to fetch forum subscriptions', __FILE__, __LINE__, $db->error());
+		)) or error('Unable to fetch forum subscriptions', __FILE__, __LINE__, $this->db->error());
 
-		message('Processing %d forum subscriptions', $db->num_rows($result));
-		while ($cur_sub = $db->fetch_assoc($result))
+		message('Processing %d forum subscriptions', $this->db->num_rows($result));
+		while ($cur_sub = $this->db->fetch_assoc($result))
 		{
-			$fluxbb->add_row('forum_subscriptions', $cur_sub);
+			$this->fluxbb->add_row('forum_subscriptions', $cur_sub);
 		}
 	}
 
-	function convert_topics($db, $fluxbb)
+	function convert_topics()
 	{
-		$result = $db->query_build(array(
+		$result = $this->db->query_build(array(
 			'SELECT'	=> 'topic_id AS id, topic_first_poster_name AS poster, topic_title AS subject, topic_time AS posted, topic_first_post_id AS first_post_id, topic_last_post_time AS last_post, topic_last_post_id AS last_post_id, topic_last_poster_name AS last_poster, topic_views AS num_views, topic_replies AS num_replies, IF(topic_status=1, 1, 0) AS closed, IF(topic_type=1, 1, 0) AS sticky, IF(topic_moved_id=0, NULL, topic_moved_id) AS moved_to, forum_id',
 			'FROM'		=> 'topics',
-		)) or error('Unable to fetch topics', __FILE__, __LINE__, $db->error());
+		)) or error('Unable to fetch topics', __FILE__, __LINE__, $this->db->error());
 
-		message ('Processing %d topics', $db->num_rows($result));
-		while ($cur_topic = $db->fetch_assoc($result))
+		message ('Processing %d topics', $this->db->num_rows($result));
+		while ($cur_topic = $this->db->fetch_assoc($result))
 		{
-			$fluxbb->add_row('topics', $cur_topic);
+			$this->fluxbb->add_row('topics', $cur_topic);
 		}
 	}
 
-	function convert_users($db, $fluxbb)
+	function convert_users()
 	{
-		$result = $db->query_build(array(
+		$result = $this->db->query_build(array(
 			'SELECT'	=> 'user_id AS id, group_id AS group_id, username AS username, user_password AS password, user_website AS url, user_icq AS icq, user_msnm AS msn, user_aim AS aim, user_yim AS yahoo, user_posts AS num_posts, user_from AS location, user_allow_viewemail AS email_setting, user_timezone AS timezone, user_lastvisit AS last_visit, user_sig AS signature, user_email AS email',
 			'FROM'		=> 'users',
 			'WHERE'		=> 'group_id <> 6'
-		)) or error('Unable to fetch users', __FILE__, __LINE__, $db->error());
+		)) or error('Unable to fetch users', __FILE__, __LINE__, $this->db->error());
 
-		message('Processing %d users', $db->num_rows($result));
-		while ($cur_user = $db->fetch_assoc($result))
+		message('Processing %d users', $this->db->num_rows($result));
+		while ($cur_user = $this->db->fetch_assoc($result))
 		{
 			$cur_user['group_id'] = $this->grp2grp($cur_user['group_id']);
-//			$cur_user['password'] = $fluxbb->pass_hash($fluxbb->random_pass(20));
+//			$cur_user['password'] = $this->fluxbb->pass_hash($this->fluxbb->random_pass(20));
 			$cur_user['language'] = $this->default_lang;
 			$cur_user['style'] = $this->default_style;
 			$cur_user['email_setting'] = !$cur_user['email_setting'];
 			$cur_user['signature'] = $this->convert_message($cur_user['signature']);
 
-			$fluxbb->add_row('users', $cur_user);
+			$this->fluxbb->add_row('users', $cur_user);
 		}
 	}
 

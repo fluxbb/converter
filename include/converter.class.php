@@ -2,9 +2,7 @@
 
 class Converter
 {
-	var $old_db;
 	var $forum;
-	var $fluxbb;
 	var $start;
 
 	var $tables = array(
@@ -28,11 +26,9 @@ class Converter
 		'users'					=> true,
 	);
 
-	function Converter($old_db, $forum, $fluxbb)
+	function Converter($forum)
 	{
-		$this->old_db = $old_db;
 		$this->forum = $forum;
-		$this->fluxbb = $fluxbb;
 
 		$this->start = get_microtime();
 	}
@@ -45,16 +41,16 @@ class Converter
 
 			message('%s %s', $convert ? 'Converting' : 'Initializing', $name);
 
-			if ($convert && $this->fluxbb->db->table_exists($name))
-				$this->fluxbb->db->drop_table($name);
+			if ($convert && $this->forum->fluxbb->db->table_exists($name))
+				$this->forum->fluxbb->db->drop_table($name);
 
-			call_user_func(array($this->fluxbb, 'init_'.$name));
+			call_user_func(array($this->forum->fluxbb, 'init_'.$name));
 
 			if ($convert)
-				call_user_func(array($this->forum, 'convert_'.$name), $this->old_db, $this->fluxbb);
+				call_user_func(array($this->forum, 'convert_'.$name));
 
 			if (is_callable(array($this->forum, 'check_'.$name)))
-				call_user_func(array($this->forum, 'check_'.$name), $this->old_db, $this->fluxbb);
+				call_user_func(array($this->forum, 'check_'.$name));
 
 			message('Completed in %s seconds', number_format(get_microtime() - $start, 2));
 			message();

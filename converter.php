@@ -78,12 +78,12 @@ if (isset($_POST['submit']))
 
 	// Load the migration script
 	require SCRIPT_ROOT.'include/forum.class.php';
-	$forum = load_forum($forum_config['type']);
-	$forum->init_config($old_db, $forum_config);
+	$forum = load_forum($forum_config['type'], $old_db, $fluxbb);
+	$forum->init_config($forum_config);
 
 	// Start the conversion process
 	require SCRIPT_ROOT.'include/converter.class.php';
-	$converter = new Converter($old_db, $forum, $fluxbb);
+	$converter = new Converter($forum);
 	$converter->convert_all();
 
 	// Finished! :-)

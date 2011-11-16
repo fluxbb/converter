@@ -34,7 +34,7 @@ function connect_database($db_config)
 	return new $class($db_config['host'], $db_config['username'], $db_config['password'], $db_config['name'], $db_config['prefix'], false);
 }
 
-function load_forum($forum_type)
+function load_forum($forum_type, $db, $fluxbb)
 {
 	if (!class_exists($forum_type))
 	{
@@ -44,7 +44,7 @@ function load_forum($forum_type)
 		require SCRIPT_ROOT.'forums/'.$forum_type.'.php';
 	}
 
-	return new $forum_type();
+	return new $forum_type($db, $fluxbb);
 }
 
 // Get all forum softwares
