@@ -120,18 +120,23 @@ class PunBB_1_3 extends Forum
 		}
 	}
 
-	function convert_posts()
+	function convert_posts($start_at)
 	{
 		$result = $this->db->query_build(array(
 			'SELECT'	=> 'id, poster, poster_id, poster_ip, poster_email, message, hide_smilies, posted, edited, edited_by, topic_id',
 			'FROM'		=> 'posts',
+			'WHERE'		=> 'id > '.$start_at,
+			'LIMIT'		=> PER_PAGE,
 		)) or error('Unable to fetch posts', __FILE__, __LINE__, $this->db->error());
 
-		message('Processing %d posts', $this->db->num_rows($result));
+		message('Processing %d posts (%d - %d)', $this->db->num_rows($result), $start_at, $start_at + PER_PAGE);
 		while ($cur_post = $this->db->fetch_assoc($result))
 		{
+			$start_at = $cur_post['id'];
 			$this->fluxbb->add_row('posts', $cur_post);
 		}
+
+		$this->redirect('posts', 'id', $start_at);
 	}
 
 	function convert_ranks()
@@ -181,18 +186,24 @@ class PunBB_1_3 extends Forum
 //		message('No forum subscriptions', $this->db->num_rows($result));
 //	}
 
-	function convert_topics()
+	function convert_topics($start_at)
 	{
 		$result = $this->db->query_build(array(
 			'SELECT'	=> 'id, poster, subject, posted, first_post_id, last_post, last_post_id, last_poster, num_views, num_replies, closed, sticky, moved_to, forum_id',
 			'FROM'		=> 'topics',
+			'WHERE'		=> 'id > '.$start_at,
+			'LIMIT'		=> PER_PAGE,
 		)) or error('Unable to fetch topics', __FILE__, __LINE__, $this->db->error());
 
-		message ('Processing %d topics', $this->db->num_rows($result));
+		message('Processing %d topics (%d - %d)', $this->db->num_rows($result), $start_at, $start_at + PER_PAGE);
 		while ($cur_topic = $this->db->fetch_assoc($result))
 		{
+			$start_at = $cur_topic['id'];
+
 			$this->fluxbb->add_row('topics', $cur_topic);
 		}
+
+		$this->redirect('topics', 'id', $start_at);
 	}
 
 	function convert_users()

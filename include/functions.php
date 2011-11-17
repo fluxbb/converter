@@ -13,9 +13,9 @@ function message()
 	echo vsprintf($message, $args)."\n".'<br />';
 }
 
-function redirect($stage, $start_from = 0, $time = 0)
+function redirect($stage, $start_at = 0, $time = 0)
 {
-	echo '<meta http-equiv="refresh" content="'.$time.'; url=converter.php?stage='.htmlspecialchars($stage).($start_from > 0 ? '&start_from='.$start_from : '').'">';
+	echo '<meta http-equiv="refresh" content="'.$time.'; url=converter.php?stage='.htmlspecialchars($stage).($start_at > 0 ? '&start_at='.$start_at : '').'">';
 	exit;
 }
 

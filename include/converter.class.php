@@ -36,21 +36,23 @@ class Converter
 			$this->start = $_SESSION['fluxbb_converter']['start'];
 	}
 
-	function convert_all()
-	{
-		foreach ($this->tables as $name => $convert)
-		{
-			$this->convert($name);
-		}
-	}
+//	function convert_all()
+//	{
+//		foreach ($this->tables as $name => $convert)
+//		{
+//			$this->convert($name);
+//		}
+//	}
 
-	function convert($name, $start_from = 0)
+	function convert($name, $start_at = 0)
 	{
 		$keys = array_keys($this->tables);
 
 		// Start from beginning
 		if (!isset($name))
 			$name = $keys[0];
+
+		$this->forum->stage = $name;
 
 		$start = get_microtime();
 		$convert = $this->tables[$name];
@@ -63,11 +65,7 @@ class Converter
 		call_user_func(array($this->forum->fluxbb, 'init_'.$name));
 
 		if ($convert)
-		{
-			$start_from = call_user_func(array($this->forum, 'convert_'.$name), $start_from);
-			if ($this->forum->is_more($name, $start_from))
-				redirect($name, $start_from);
-		}
+			call_user_func(array($this->forum, 'convert_'.$name), $start_at);
 
 		if (is_callable(array($this->forum, 'check_'.$name)))
 			call_user_func(array($this->forum, 'check_'.$name));

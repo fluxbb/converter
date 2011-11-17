@@ -2,12 +2,15 @@
 
 define('SCRIPT_ROOT', './');
 
+// The number of items to process per page view (lower this if the script times out)
+define('PER_PAGE', 1000);
+
 // Include the common functions
 require SCRIPT_ROOT.'include/functions.php';
 
 session_start();
 $stage = isset($_GET['stage']) ? $_GET['stage'] : null;
-$start_from = isset($_GET['start_from']) ? $_GET['start_from'] : 0;
+$start_at = isset($_GET['start_at']) ? $_GET['start_at'] : 0;
 
 $forums = get_forums();
 $engines = get_engines();
@@ -102,7 +105,7 @@ if (isset($_POST['submit']) || isset($stage))
 
 	if ($stage != 'results')
 	{
-		$converter->convert($stage, $start_from);
+		$converter->convert($stage, $start_at);
 	}
 
 	// Show the results page

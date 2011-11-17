@@ -9,6 +9,7 @@ class Forum
 
 	public $db;
 	public $fluxbb;
+	public $stage;
 
 	function __construct($db, $fluxbb)
 	{
@@ -221,20 +222,18 @@ class Forum
 		}
 	}
 
-	// Check is more to do
-	function is_more($stage, $start_from)
+	// Check whether current table has more rows - if yes, redirect to the next page of the current stage
+	function redirect($old_table, $old_field, $start_at)
 	{
-		if (!isset($this->forum_tables[$stage]))
-			return false;
-
 		$result = $this->db->query_build(array(
 			'SELECT'	=> 1,
-			'FROM'		=> $this->forum_tables[$stage][0],
-			'WHERE'		=> $this->forum_tables[$stage][1].' > '.$start_from,
+			'FROM'		=> $old_table,
+			'WHERE'		=> $old_field.' > '.$start_at,
 			'LIMIT'		=> 1,
 		)) or error('Unable to fetch num rows', __FILE__, __LINE__, $this->db->error());
 
-		return $this->db->num_rows($result);
+		if ($this->db->num_rows($result))
+			redirect($this->stage, $start_at);
 	}
 
 }
