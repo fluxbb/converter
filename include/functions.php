@@ -1,11 +1,11 @@
 <?php
 
-function error($message, $file = __FILE__, $line = __LINE__, $db_error = false)
-{
-	exit($message."\n".'<br />'.($db_error ? $db_error['error_msg'] : ''));
-}
+//function error($message, $file = __FILE__, $line = __LINE__, $db_error = false)
+//{
+//	exit($message."\n".'<br />'.($db_error ? $db_error['error_msg'] : ''));
+//}
 
-function message()
+function conv_message()
 {
 	$args = func_get_args();
 	$message = count($args) > 0 ? array_shift($args) : '';
@@ -13,17 +13,59 @@ function message()
 	echo vsprintf($message, $args)."\n".'<br />';
 }
 
-function redirect($stage, $start_at = 0, $time = 0)
+function conv_redirect($stage, $start_at = 0, $time = 0)
 {
-	echo '<meta http-equiv="refresh" content="'.$time.'; url=converter.php?stage='.htmlspecialchars($stage).($start_at > 0 ? '&start_at='.$start_at : '').'">';
+	global $lang_install, $lang_convert, $default_style;
+
+	$contents = ob_get_clean();
+
+?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="refresh" content="<?php echo $time ?>; url=index.php?stage=<?php echo htmlspecialchars($stage).($start_at > 0 ? '&start_at='.$start_at : '') ?>">
+<title><?php echo $lang_install['FluxBB Installation'] ?></title>
+<link rel="stylesheet" type="text/css" href="../style/<?php echo $default_style ?>.css" />
+</head>
+<body>
+
+<div id="puninstall" class="pun">
+<div class="top-box"><div><!-- Top Corners --></div></div>
+<div class="punwrap">
+
+<div class="blockform">
+	<h2><span><?php echo $lang_convert['Converting'] ?></span></h2>
+	<div class="box">
+		<div class="fakeform">
+			<div class="inform">
+				<div class="forminfo">
+					<?php echo $contents ?>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+</div>
+
+</div>
+<div class="end-box"><div><!-- Bottom Corners --></div></div>
+</div>
+
+</body>
+</html>
+<?php
 	exit;
+
 }
 
-function get_microtime()
-{
-	list($usec, $sec) = explode(' ', microtime());
-	return ((float)$usec + (float)$sec);
-}
+//function get_microtime()
+//{
+//	list($usec, $sec) = explode(' ', microtime());
+//	return ((float)$usec + (float)$sec);
+//}
 
 function connect_database($db_config)
 {
@@ -54,7 +96,7 @@ function load_forum($forum_type, $db, $fluxbb)
 }
 
 // Get all forum softwares
-function get_forums()
+function forum_list_forums()
 {
 	$forums = array();
 
@@ -77,7 +119,7 @@ function get_forums()
 }
 
 // Get all database engines
-function get_engines()
+function forum_list_engines()
 {
 	$engines = array();
 
@@ -90,18 +132,4 @@ function get_engines()
 	asort($engines);
 
 	return $engines;
-}
-
-// Get all installed language packs
-function get_languages()
-{
-	// TODO: Determine them from the forum package (where is it?)
-	return array('Deutsch', 'English', 'Espanol');
-}
-
-// Get all installed styles
-function get_styles()
-{
-	// TODO: Determine them from the forum package (where is it?)
-	return array('Air', 'Oxygen', 'Cobalt');
 }

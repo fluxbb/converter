@@ -26,23 +26,16 @@ class Converter
 		'users'					=> true,
 	);
 
-	function Converter($forum)
+	function __construct($forum)
 	{
 		$this->forum = $forum;
-
-		if (!isset($_SESSION['fluxbb_converter']['start']))
-			$_SESSION['fluxbb_converter']['start'] = $this->start = get_microtime();
-		else
-			$this->start = $_SESSION['fluxbb_converter']['start'];
 	}
 
-//	function convert_all()
-//	{
-//		foreach ($this->tables as $name => $convert)
-//		{
-//			$this->convert($name);
-//		}
-//	}
+	function validate()
+	{
+		if (is_callable(array($this->forum, 'validate')))
+			$this->forum->validate();
+	}
 
 	function convert($name, $start_at = 0)
 	{
@@ -50,25 +43,25 @@ class Converter
 
 		// Start from beginning
 		if (!isset($name))
+		{
+			$this->initialize();
 			$name = $keys[0];
+		}
+
+		if (in_array($name, array('users', 'groups')) && $start_at == 0)
+			$start_at = ($name == 'users') ? 2 : 4;
 
 		$this->forum->stage = $name;
 
 		$start = get_microtime();
 		$convert = $this->tables[$name];
 
-		message('%s %s', $convert ? 'Converting' : 'Initializing', $name);
-
-		if ($convert && $this->forum->fluxbb->db->table_exists($name))
-			$this->forum->fluxbb->db->drop_table($name);
-
-		call_user_func(array($this->forum->fluxbb, 'init_'.$name));
-
 		if ($convert)
-			call_user_func(array($this->forum, 'convert_'.$name), $start_at);
-
-		if (is_callable(array($this->forum, 'check_'.$name)))
-			call_user_func(array($this->forum, 'check_'.$name));
+		{
+			conv_message('%s %s', 'Converting', $name);
+			if (is_callable(array($this->forum, 'convert_'.$name)))
+				call_user_func(array($this->forum, 'convert_'.$name), $start_at);
+		}
 
 		// Redirect to the next stage
 		$current = array_search($name, $keys);
@@ -76,12 +69,53 @@ class Converter
 		// No more work to do?
 		if (!isset($keys[++$current]))
 		{
-			$_SESSION['fluxbb_converter']['time'] = get_microtime() - $this->start;
-			redirect('results');
+			$this->finnish();
+//			$_SESSION['fluxbb_converter']['time'] = get_microtime() - $this->start;
+			conv_redirect('results');
 		}
 
 		$next_stage = $keys[$current];
-		redirect($next_stage);
+		conv_redirect($next_stage);
+	}
+
+	function initialize()
+	{
+		$this->forum->fluxbb->db->truncate_table('bans');
+		$this->forum->fluxbb->db->truncate_table('categories');
+		$this->forum->fluxbb->db->truncate_table('censoring');
+		$this->forum->fluxbb->db->truncate_table('forums');
+		$this->forum->fluxbb->db->truncate_table('forum_perms');
+		$this->forum->fluxbb->db->truncate_table('online');
+		$this->forum->fluxbb->db->truncate_table('posts');
+		$this->forum->fluxbb->db->truncate_table('ranks');
+		$this->forum->fluxbb->db->truncate_table('reports');
+		$this->forum->fluxbb->db->truncate_table('search_cache');
+		$this->forum->fluxbb->db->truncate_table('search_matches');
+		$this->forum->fluxbb->db->truncate_table('search_words');
+		$this->forum->fluxbb->db->truncate_table('topic_subscriptions');
+		$this->forum->fluxbb->db->truncate_table('forum_subscriptions');
+		$this->forum->fluxbb->db->truncate_table('topics');
+//		$this->forum->fluxbb->db->truncate_table('users');
+		$this->forum->fluxbb->db->query('DELETE FROM '.$this->forum->fluxbb->db->prefix.'users WHERE id > 1');
+		$this->forum->fluxbb->db->query('DELETE FROM '.$this->forum->fluxbb->db->prefix.'groups WHERE g_id > 4');
+	}
+
+	function finnish()
+	{
+		$this->generate_cache();
+	}
+
+	function generate_cache()
+	{
+		// Load the cache script
+		require_once PUN_ROOT.'include/cache.php';
+
+		// Generate cache
+		generate_bans_cache();
+		generate_quickjump_cache();
+		generate_config_cache();
+		generate_ranks_cache();
+		generate_users_info_cache();
 	}
 
 	function get_time()
