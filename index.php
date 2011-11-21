@@ -114,6 +114,19 @@ if (!defined('FORUM_CACHE_DIR'))
 if (!function_exists('version_compare') || version_compare(PHP_VERSION, MIN_PHP_VERSION, '<'))
 	exit(sprintf($lang_install['You are running error'], 'PHP', PHP_VERSION, FORUM_VERSION, MIN_PHP_VERSION));
 
+// Load cached config
+if (file_exists(FORUM_CACHE_DIR.'cache_config.php'))
+	include FORUM_CACHE_DIR.'cache_config.php';
+
+if (isset($_GET['alert_dupe_users']))
+{
+	if (empty($_SESSION['converter']['dupe_users']))
+		error($lang_convert['Bad request']);
+
+	alert_dupe_users();
+	unset($_SESSION['converter']['dupe_users']);
+}
+
 // Default database configuration
 $db_config = array(
 	'type'			=> $db_type,
@@ -151,16 +164,16 @@ if (isset($_POST['form_sent']))
 	if (substr($forum_config['base_url'], -1) == '/')
 		$forum_config['base_url'] = substr($forum_config['base_url'], 0, -1);
 
-	$_SESSION['fluxbb_converter'] = array('forum_config' => $forum_config, 'old_db_config' => $old_db_config);
+	$_SESSION['converter'] = array('forum_config' => $forum_config, 'old_db_config' => $old_db_config);
 }
-else if (isset($_SESSION['fluxbb_converter']))
+else if (isset($_SESSION['converter']))
 {
-	$forum_config = $_SESSION['fluxbb_converter']['forum_config'];
-	$old_db_config = $_SESSION['fluxbb_converter']['old_db_config'];
+	$forum_config = $_SESSION['converter']['forum_config'];
+	$old_db_config = $_SESSION['converter']['old_db_config'];
 }
 
 
-if (isset($_POST['form_sent']) || isset($_GET['stage']))
+if (isset($_POST['form_sent']) || (isset($_GET['stage']) && $_GET['stage'] != 'results'))
 {
 	$stage = isset($_GET['stage']) ? $_GET['stage'] : null;
 	$start_at = isset($_GET['start_at']) ? $_GET['start_at'] : 0;
@@ -180,6 +193,15 @@ if (isset($_POST['form_sent']) || isset($_GET['stage']))
 	$db = connect_database($db_config);
 	$old_db = connect_database($old_db_config);
 
+	if (!defined('PUN_CONFIG_LOADED'))
+	{
+		if (!defined('FORUM_CACHE_FUNCTIONS_LOADED'))
+			require PUN_ROOT.'include/cache.php';
+
+		generate_config_cache();
+		require FORUM_CACHE_DIR.'cache_config.php';
+	}
+
 	// Load fluxbb wrapper
 	require SCRIPT_ROOT.'include/fluxbb.class.php';
 	$fluxbb = new FluxBB($db, $db_config['type']);
@@ -196,12 +218,12 @@ if (isset($_POST['form_sent']) || isset($_GET['stage']))
 	if (!isset($stage))
 		$converter->validate();
 
-	if ($stage != 'results')
-		$converter->convert($stage, $start_at);
-//	else
-//		unset($_SESSION['fluxbb_converter']);
+	$converter->convert($stage, $start_at);
+}
 
-	// Show the results page
+// Show the results page
+elseif (isset($_GET['stage']) && $_GET['stage'] == 'results')
+{
 
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
@@ -209,7 +231,7 @@ if (isset($_POST['form_sent']) || isset($_GET['stage']))
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title><?php echo $lang_install['FluxBB Installation'] ?></title>
+<title><?php echo $lang_convert['FluxBB converter'] ?></title>
 <link rel="stylesheet" type="text/css" href="../style/<?php echo $default_style ?>.css" />
 </head>
 <body>
@@ -221,8 +243,8 @@ if (isset($_POST['form_sent']) || isset($_GET['stage']))
 <div id="brdheader" class="block">
 	<div class="box">
 		<div id="brdtitle" class="inbox">
-			<h1><span><?php echo $lang_install['FluxBB Installation'] ?></span></h1>
-			<div id="brddesc"><p><?php echo $lang_install['FluxBB has been installed'] ?></p></div>
+			<h1><span><?php echo $lang_convert['FluxBB converter'] ?></span></h1>
+			<div id="brddesc"><p><?php echo $lang_convert['Conversion completed'] ?></p></div>
 		</div>
 	</div>
 </div>
@@ -230,12 +252,43 @@ if (isset($_POST['form_sent']) || isset($_GET['stage']))
 <div id="brdmain">
 
 <div class="blockform">
-	<h2><span><?php echo $lang_install['Final instructions'] ?></span></h2>
+
+<?php if (!empty($_SESSION['converter']['dupe_users'])) : ?>
+	<h2><span><?php echo $lang_convert['Username dupes head'] ?></span></h2>
+	<div class="box">
+		<form method="post" action="index.php?stage=results&alert_dupe_users">
+			<div class="inform">
+				<div class="forminfo">
+					<p style="font-size: 1.1em"><?php echo $lang_convert['Error info 1'] ?></p>
+					<p style="font-size: 1.1em"><?php echo $lang_convert['Error info 2'] ?></p>
+				</div>
+			</div>
+			<div class="inform">
+				<fieldset>
+					<legend><?php echo $lang_convert['Username dupes'] ?></legend>
+					<div class="infldset">
+						<p>
+<?php
+			foreach ($_SESSION['converter']['dupe_users'] as $id => $cur_user)
+				echo sprintf($lang_convert['was renamed to'], $cur_user['username'], $cur_user['new_username']).'<br />'."\n";
+
+?>
+						</p>
+					</div>
+				</fieldset>
+			</div>
+
+			<p class="buttons"><input type="submit" name="rename" value="<?php echo $lang_convert['Alert users'] ?>" /></p>
+		</form>
+	</div>
+<?php endif; ?>
+
+	<h2><span><?php echo $lang_convert['Final instructions'] ?></span></h2>
 	<div class="box">
 		<div class="fakeform">
 			<div class="inform">
 				<div class="forminfo">
-					<p><?php echo $lang_install['FluxBB fully installed'] ?></p>
+					<p><?php printf($lang_convert['Database converted'], '../index.php') ?></p>
 				</div>
 			</div>
 		</div>
@@ -336,8 +389,8 @@ function process_form(the_form)
 <div id="brdheader" class="block">
 	<div class="box">
 		<div id="brdtitle" class="inbox">
-			<h1><span><?php echo $lang_install['FluxBB Installation'] ?></span></h1>
-			<div id="brddesc"><p><?php echo $lang_install['Install message'] ?></p><p><?php echo $lang_install['Welcome'] ?></p></div>
+			<h1><span><?php echo $lang_convert['FluxBB converter'] ?></span></h1>
+			<div id="brddesc"><p><?php echo $lang_convert['Convert message'] ?></p></div>
 		</div>
 	</div>
 </div>

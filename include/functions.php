@@ -133,3 +133,35 @@ function forum_list_engines()
 
 	return $engines;
 }
+
+
+function alert_dupe_users()
+{
+	global $pun_config;
+
+	require PUN_ROOT.'include/email.php';
+
+	foreach ($_SESSION['converter']['dupe_users'] as $cur_user)
+	{
+		// Email the user alerting them of the change
+		if (file_exists(PUN_ROOT.'lang/'.$cur_user['language'].'/mail_templates/rename.tpl'))
+			$mail_tpl = trim(file_get_contents(PUN_ROOT.'lang/'.$cur_user['language'].'/mail_templates/rename.tpl'));
+		else if (file_exists(PUN_ROOT.'lang/'.$pun_config['o_default_lang'].'/mail_templates/rename.tpl'))
+			$mail_tpl = trim(file_get_contents(PUN_ROOT.'lang/'.$pun_config['o_default_lang'].'/mail_templates/rename.tpl'));
+		else
+			$mail_tpl = trim(file_get_contents(PUN_ROOT.'lang/English/mail_templates/rename.tpl'));
+
+		// The first row contains the subject
+		$first_crlf = strpos($mail_tpl, "\n");
+		$mail_subject = trim(substr($mail_tpl, 8, $first_crlf-8));
+		$mail_message = trim(substr($mail_tpl, $first_crlf));
+
+		$mail_subject = str_replace('<board_title>', $pun_config['o_board_title'], $mail_subject);
+		$mail_message = str_replace('<base_url>', get_base_url().'/', $mail_message);
+		$mail_message = str_replace('<old_username>', $cur_user['username'], $mail_message);
+		$mail_message = str_replace('<new_username>', $cur_user['new_username'], $mail_message);
+		$mail_message = str_replace('<board_mailer>', $pun_config['o_board_title'], $mail_message);
+
+		pun_mail($cur_user['email'], $mail_subject, $mail_message);
+	}
+}

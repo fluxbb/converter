@@ -241,7 +241,7 @@ class PunBB_1_3 extends Forum
 	//		$cur_user['language'] = $this->default_lang;
 //			$cur_user['style'] = $this->default_style;
 
-			$this->fluxbb->add_row('users', $cur_user);
+			$this->fluxbb->add_row('users', $cur_user, array($this->fluxbb, 'error_users'));
 		}
 
 		$this->redirect('users', 'id', $start_at);

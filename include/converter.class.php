@@ -56,12 +56,9 @@ class Converter
 		$start = get_microtime();
 		$convert = $this->tables[$name];
 
-		if ($convert)
-		{
-			conv_message('%s %s', 'Converting', $name);
-			if (is_callable(array($this->forum, 'convert_'.$name)))
-				call_user_func(array($this->forum, 'convert_'.$name), $start_at);
-		}
+		conv_message('%s %s', 'Converting', $name);
+		if ($convert && is_callable(array($this->forum, 'convert_'.$name)))
+			call_user_func(array($this->forum, 'convert_'.$name), $start_at);
 
 		// Redirect to the next stage
 		$current = array_search($name, $keys);
@@ -102,6 +99,13 @@ class Converter
 
 	function finnish()
 	{
+		// Handle users dupe
+		if (!empty($_SESSION['converter']['dupe_users']))
+		{
+			foreach ($_SESSION['converter']['dupe_users'] as $cur_user)
+				$this->forum->fluxbb->convert_users_dupe($cur_user);
+		}
+
 		$this->generate_cache();
 	}
 
