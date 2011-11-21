@@ -173,6 +173,10 @@ class SMF_1_1_11 extends Forum
 		)) or error('Unable to fetch messages', __FILE__, __LINE__, $this->db->error());
 
 		conv_message('Processing %d posts', $this->db->num_rows($result));
+
+		if (!$this->db->num_rows($result))
+			return;
+
 		while ($cur_post = $this->db->fetch_assoc($result))
 		{
 			$start_at = $cur_post['id'];
@@ -265,6 +269,10 @@ class SMF_1_1_11 extends Forum
 		)) or error('Unable to fetch topics', __FILE__, __LINE__, $this->db->error());
 
 		conv_message('Processing %d topics (%d - %d)', $this->db->num_rows($result), $start_at, $start_at + PER_PAGE);
+
+		if (!$this->db->num_rows($result))
+			return;
+
 		while ($cur_topic = $this->db->fetch_assoc($result))
 		{
 			$start_at = $cur_topic['id'];
@@ -287,6 +295,10 @@ class SMF_1_1_11 extends Forum
 		)) or error('Unable to fetch users', __FILE__, __LINE__, $this->db->error());
 
 		conv_message('Processing %d users (%d - %d)', $this->db->num_rows($result), $start_at, $start_at + PER_PAGE);
+
+		if (!$this->db->num_rows($result))
+			return;
+
 		while ($cur_user = $this->db->fetch_assoc($result))
 		{
 			$start_at = $cur_user['id'];

@@ -49,7 +49,7 @@ class Converter
 		}
 
 		if (in_array($name, array('users', 'groups')) && $start_at == 0)
-			$start_at = ($name == 'users') ? 2 : 4;
+			$start_at = ($name == 'users') ? 1 : 4;
 
 		$this->forum->stage = $name;
 

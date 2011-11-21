@@ -143,6 +143,10 @@ class PunBB_1_3 extends Forum
 		)) or error('Unable to fetch posts', __FILE__, __LINE__, $this->db->error());
 
 		conv_message('Processing %d posts (%d - %d)', $this->db->num_rows($result), $start_at, $start_at + PER_PAGE);
+
+		if (!$this->db->num_rows($result))
+			return;
+
 		while ($cur_post = $this->db->fetch_assoc($result))
 		{
 			$start_at = $cur_post['id'];
@@ -209,6 +213,10 @@ class PunBB_1_3 extends Forum
 		)) or error('Unable to fetch topics', __FILE__, __LINE__, $this->db->error());
 
 		conv_message('Processing %d topics (%d - %d)', $this->db->num_rows($result), $start_at, $start_at + PER_PAGE);
+
+		if (!$this->db->num_rows($result))
+			return;
+
 		while ($cur_topic = $this->db->fetch_assoc($result))
 		{
 			$start_at = $cur_topic['id'];

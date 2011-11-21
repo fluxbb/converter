@@ -176,6 +176,10 @@ class PhpBB_3_0_8 extends Forum
 		)) or error('Unable to fetch posts', __FILE__, __LINE__, $this->db->error());
 
 		conv_message('Processing %d posts (%d - %d)', $this->db->num_rows($result), $start_at, $start_at + PER_PAGE);
+
+		if (!$this->db->num_rows($result))
+			return;
+
 		while ($cur_post = $this->db->fetch_assoc($result))
 		{
 			$start_at = $cur_post['id'];
@@ -259,6 +263,10 @@ class PhpBB_3_0_8 extends Forum
 		)) or error('Unable to fetch topics', __FILE__, __LINE__, $this->db->error());
 
 		conv_message('Processing %d topics (%d - %d)', $this->db->num_rows($result), $start_at, $start_at + PER_PAGE);
+
+		if (!$this->db->num_rows($result))
+			return;
+
 		while ($cur_topic = $this->db->fetch_assoc($result))
 		{
 			$start_at = $cur_topic['id'];
@@ -273,9 +281,9 @@ class PhpBB_3_0_8 extends Forum
 	function convert_users($start_at)
 	{
 		$result = $this->db->query_build(array(
-			'SELECT'	=> 'user_id AS id, group_id AS group_id, username AS username, user_password AS password, user_website AS url, user_icq AS icq, user_msnm AS msn, user_aim AS aim, user_yim AS yahoo, user_posts AS num_posts, user_from AS location, user_allow_viewemail AS email_setting, user_timezone AS timezone, user_lastvisit AS last_visit, user_sig AS signature, user_email AS email',
+			'SELECT'	=> 'user_id AS id, group_id AS group_id, username AS username, user_password AS password, user_website AS url, user_icq AS icq, user_msnm AS msn, user_aim AS aim, user_yim AS yahoo, user_posts AS num_posts, user_from AS location, user_allow_viewemail AS email_setting, user_timezone AS timezone, user_regdate AS registered, user_lastvisit AS last_visit, user_sig AS signature, user_email AS email',
 			'FROM'		=> 'users',
-			'WHERE'		=> 'group_id <> 6 AND user_id > 1 AND user_id > '.$start_at,
+			'WHERE'		=> 'group_id <> 6 AND user_id > '.$start_at,
 			'LIMIT'		=> PER_PAGE,
 		)) or error('Unable to fetch users', __FILE__, __LINE__, $this->db->error());
 
@@ -287,6 +295,7 @@ class PhpBB_3_0_8 extends Forum
 		while ($cur_user = $this->db->fetch_assoc($result))
 		{
 			$start_at = $cur_user['id'];
+			$cur_user['username'] = html_entity_decode($cur_user['username']);
 			$cur_user['group_id'] = $this->grp2grp($cur_user['group_id']);
 //			$cur_user['password'] = $this->fluxbb->pass_hash($this->fluxbb->random_pass(20));
 			$cur_user['email_setting'] = !$cur_user['email_setting'];
