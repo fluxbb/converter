@@ -7,7 +7,13 @@
 
 function conv_message()
 {
+	global $lang_convert;
+
 	$args = func_get_args();
+
+	if (isset($lang_convert[$args[0]]))
+		$args[0] = $lang_convert[$args[0]];
+
 	$message = count($args) > 0 ? array_shift($args) : '';
 
 	echo vsprintf($message, $args)."\n".'<br />';
@@ -36,7 +42,7 @@ function conv_redirect($stage, $start_at = 0, $time = 0)
 <div class="punwrap">
 
 <div class="blockform">
-	<h2><span><?php echo $lang_convert['Converting'] ?></span></h2>
+	<h2><span><?php echo $lang_convert['Converting header'] ?></span></h2>
 	<div class="box">
 		<div class="fakeform">
 			<div class="inform">

@@ -33,7 +33,7 @@ class SMF_2 extends Forum
 			'FROM'		=> 'ban_items AS b',
 		)) or error('Unable to fetch bans', __FILE__, __LINE__, $this->db->error());
 
-		conv_message('Processing %d bans', $this->db->num_rows($result));
+		conv_message('Processing', 'bans', $this->db->num_rows($result));
 		while ($cur_ban = $this->db->fetch_assoc($result))
 		{
 			$cur_ban['ip'] = implode('.', array($cur_ban['ip_low1'], $cur_ban['ip_low2'], $cur_ban['ip_low3'], $cur_ban['ip_low4']));
@@ -50,7 +50,7 @@ class SMF_2 extends Forum
 			'FROM'		=> 'categories',
 		)) or error('Unable to fetch categories', __FILE__, __LINE__, $this->db->error());
 
-		conv_message('Processing %d categories', $this->db->num_rows($result));
+		conv_message('Processing', 'categories', $this->db->num_rows($result));
 		while ($cur_cat = $this->db->fetch_assoc($result))
 		{
 			$this->fluxbb->add_row('categories', $cur_cat);
@@ -128,7 +128,7 @@ class SMF_2 extends Forum
 			'FROM'		=> 'boards AS b',
 		)) or error('Unable to fetch forums', __FILE__, __LINE__, $this->db->error());
 
-		conv_message('Processing %d forums', $this->db->num_rows($result));
+		conv_message('Processing', 'forums', $this->db->num_rows($result));
 		while ($cur_forum = $this->db->fetch_assoc($result))
 		{
 			$this->fluxbb->add_row('forums', $cur_forum);
@@ -142,7 +142,7 @@ class SMF_2 extends Forum
 //			'FROM'		=> 'forum_perms',
 //		)) or error('Unable to fetch forum perms', __FILE__, __LINE__, $this->db->error());
 
-//		conv_message('Processing %d forum_perms', $this->db->num_rows($result));
+//		conv_message('Processing', 'forum_perms', $this->db->num_rows($result));
 //		while ($cur_perm = $this->db->fetch_assoc($result))
 //		{
 //			$cur_perm['group_id'] = $this->grp2grp($cur_perm['group_id']);
@@ -159,7 +159,7 @@ class SMF_2 extends Forum
 			'WHERE'		=> 'min_posts = -1 AND id_group > 3'
 		)) or error('Unable to fetch groups', __FILE__, __LINE__, $this->db->error());
 
-		conv_message('Processing %d groups', $this->db->num_rows($result));
+		conv_message('Processing', 'groups', $this->db->num_rows($result));
 		while ($cur_group = $this->db->fetch_assoc($result))
 		{
 			$cur_group['g_id'] = $this->grp2grp($cur_group['g_id']);
@@ -178,7 +178,7 @@ class SMF_2 extends Forum
 			'LIMIT'		=> PER_PAGE,
 		)) or error('Unable to fetch posts', __FILE__, __LINE__, $this->db->error());
 
-		conv_message('Processing %d posts (%d - %d)', $this->db->num_rows($result), $start_at, $start_at + PER_PAGE);
+		conv_message('Processing rows', 'posts', $this->db->num_rows($result), $start_at, $start_at + PER_PAGE);
 
 		if (!$this->db->num_rows($result))
 			return;
@@ -203,7 +203,7 @@ class SMF_2 extends Forum
 			'WHERE'		=> 'min_posts <> -1',
 		)) or error('Unable to fetch ranks', __FILE__, __LINE__, $this->db->error());
 
-		conv_message('Processing %d ranks', $this->db->num_rows($result));
+		conv_message('Processing', 'ranks', $this->db->num_rows($result));
 		while ($cur_rank = $this->db->fetch_assoc($result))
 		{
 			$this->fluxbb->add_row('ranks', $cur_rank);
@@ -217,7 +217,7 @@ class SMF_2 extends Forum
 			'FROM'		=> 'log_reported',
 		)) or error('Unable to fetch reports', __FILE__, __LINE__, $this->db->error());
 
-		conv_message('Processing %d reports', $this->db->num_rows($result));
+		conv_message('Processing', 'reports', $this->db->num_rows($result));
 		while ($cur_report = $this->db->fetch_assoc($result))
 		{
 			$this->fluxbb->add_row('reports', $cur_report);
@@ -232,7 +232,7 @@ class SMF_2 extends Forum
 			'WHERE'		=> 'id_topic > 0',
 		)) or error('Unable to fetch topic subscriptions', __FILE__, __LINE__, $this->db->error());
 
-		conv_message('Processing %d topic subscriptions', $this->db->num_rows($result));
+		conv_message('Processing', 'topic subscriptions', $this->db->num_rows($result));
 		while ($cur_sub = $this->db->fetch_assoc($result))
 		{
 			$this->fluxbb->add_row('topic_subscriptions', $cur_sub);
@@ -247,7 +247,7 @@ class SMF_2 extends Forum
 			'WHERE'		=> 'id_board > 0',
 		)) or error('Unable to fetch forum subscriptions', __FILE__, __LINE__, $this->db->error());
 
-		conv_message('Processing %d forum subscriptions', $this->db->num_rows($result));
+		conv_message('Processing', 'forum subscriptions', $this->db->num_rows($result));
 		while ($cur_sub = $this->db->fetch_assoc($result))
 		{
 			$this->fluxbb->add_row('forum_subscriptions', $cur_sub);
@@ -273,7 +273,7 @@ class SMF_2 extends Forum
 			'LIMIT'		=> PER_PAGE,
 		)) or error('Unable to fetch topics', __FILE__, __LINE__, $this->db->error());
 
-		conv_message('Processing %d topics (%d - %d)', $this->db->num_rows($result), $start_at, $start_at + PER_PAGE);
+		conv_message('Processing rows', 'topics', $this->db->num_rows($result), $start_at, $start_at + PER_PAGE);
 
 		if (!$this->db->num_rows($result))
 			return;
@@ -300,7 +300,7 @@ class SMF_2 extends Forum
 			'LIMIT'		=> PER_PAGE,
 		)) or error('Unable to fetch users', __FILE__, __LINE__, $this->db->error());
 
-		conv_message('Processing %d users', $this->db->num_rows($result));
+		conv_message('Processing rows', 'users', $this->db->num_rows($result), $start_at, $start_at + PER_PAGE);
 
 		if (!$this->db->num_rows($result))
 			return;

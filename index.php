@@ -90,17 +90,17 @@ require SCRIPT_ROOT.'include/functions.php';
 session_start();
 
 // If we've been passed a default language, use it
-$install_lang = isset($_REQUEST['install_lang']) ? trim($_REQUEST['install_lang']) : (isset($_SESSION['install_lang']) ? $_SESSION['install_lang'] : 'English');
-$_SESSION['install_lang'] = $install_lang;
+$convert_lang = isset($_REQUEST['convert_lang']) ? trim($_REQUEST['convert_lang']) : (isset($_SESSION['converter']['lang']) ? $_SESSION['converter']['lang'] : 'English');
+$_SESSION['install_lang'] = $convert_lang;
 
 // If such a language pack doesn't exist, or isn't up-to-date enough to translate this page, default to English
-if (!file_exists(PUN_ROOT.'lang/'.$install_lang.'/install.php'))
-	$install_lang = 'English';
+if (!file_exists(PUN_ROOT.'lang/'.$convert_lang.'/install.php'))
+	$convert_lang = 'English';
 
-require PUN_ROOT.'lang/'.$install_lang.'/install.php';
+//require PUN_ROOT.'lang/'.$convert_lang.'/install.php';
 
-if (file_exists(SCRIPT_ROOT.'lang/'.$install_lang.'/convert.php'))
-	require SCRIPT_ROOT.'lang/'.$install_lang.'/convert.php';
+if (file_exists(SCRIPT_ROOT.'lang/'.$convert_lang.'/convert.php'))
+	require SCRIPT_ROOT.'lang/'.$convert_lang.'/convert.php';
 else
 	require SCRIPT_ROOT.'lang/English/convert.php';
 
@@ -112,7 +112,7 @@ if (!defined('FORUM_CACHE_DIR'))
 
 // Make sure we are running at least MIN_PHP_VERSION
 if (!function_exists('version_compare') || version_compare(PHP_VERSION, MIN_PHP_VERSION, '<'))
-	exit(sprintf($lang_install['You are running error'], 'PHP', PHP_VERSION, FORUM_VERSION, MIN_PHP_VERSION));
+	exit(sprintf($lang_convert['You are running error'], 'PHP', PHP_VERSION, FORUM_VERSION, MIN_PHP_VERSION));
 
 // Load cached config
 if (file_exists(FORUM_CACHE_DIR.'cache_config.php'))
@@ -164,12 +164,13 @@ if (isset($_POST['form_sent']))
 	if (substr($forum_config['base_url'], -1) == '/')
 		$forum_config['base_url'] = substr($forum_config['base_url'], 0, -1);
 
-	$_SESSION['converter'] = array('forum_config' => $forum_config, 'old_db_config' => $old_db_config);
+	$_SESSION['converter'] = array('forum_config' => $forum_config, 'old_db_config' => $old_db_config, 'lang' => $convert_lang);
 }
 else if (isset($_SESSION['converter']))
 {
 	$forum_config = $_SESSION['converter']['forum_config'];
 	$old_db_config = $_SESSION['converter']['old_db_config'];
+	$convert_lang = $_SESSION['converter']['lang'];
 }
 
 
@@ -310,54 +311,25 @@ elseif (isset($_GET['stage']) && $_GET['stage'] == 'results')
 else
 {
 	// Determine available database extensions
-	$dual_mysql = false;
-	$db_extensions = array();
-	$mysql_innodb = false;
-	if (function_exists('mysqli_connect'))
-	{
-		$db_extensions[] = array('mysqli', 'MySQL Improved');
-		$db_extensions[] = array('mysqli_innodb', 'MySQL Improved (InnoDB)');
-		$mysql_innodb = true;
-	}
-	if (function_exists('mysql_connect'))
-	{
-		$db_extensions[] = array('mysql', 'MySQL Standard');
-		$db_extensions[] = array('mysql_innodb', 'MySQL Standard (InnoDB)');
-		$mysql_innodb = true;
-
-		if (count($db_extensions) > 2)
-			$dual_mysql = true;
-	}
-	if (function_exists('sqlite_open'))
-		$db_extensions[] = array('sqlite', 'SQLite');
-	if (function_exists('pg_connect'))
-		$db_extensions[] = array('pgsql', 'PostgreSQL');
-
-	if (empty($db_extensions))
-		error($lang_install['No DB extensions']);
+	$engines = forum_list_engines();
 
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en" dir="ltr">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title><?php echo $lang_install['FluxBB Installation'] ?></title>
+<title><?php echo $lang_convert['FluxBB converter'] ?></title>
 <link rel="stylesheet" type="text/css" href="../style/<?php echo $default_style ?>.css" />
 <script type="text/javascript">
 /* <![CDATA[ */
 function process_form(the_form)
 {
 	var element_names = {
-		"req_forum": "<?php echo $lang_install['Forum software'] ?>",
-		"req_db_type": "<?php echo $lang_install['Database type'] ?>",
-		"req_db_host": "<?php echo $lang_install['Database server hostname'] ?>",
-		"req_db_name": "<?php echo $lang_install['Database name'] ?>",
-		"db_prefix": "<?php echo $lang_install['Table prefix'] ?>",
-		"req_old_db_type": "<?php echo $lang_install['Database type'] ?>",
-		"req_old_db_host": "<?php echo $lang_install['Database server hostname'] ?>",
-		"req_old_db_name": "<?php echo $lang_install['Database name'] ?>",
-		"old_db_prefix": "<?php echo $lang_install['Table prefix'] ?>",
-		"req_base_url": "<?php echo $lang_install['Base URL'] ?>"
+		"req_forum": "<?php echo $lang_convert['Forum software'] ?>",
+		"req_old_db_type": "<?php echo $lang_convert['Database type'] ?>",
+		"req_old_db_host": "<?php echo $lang_convert['Database server hostname'] ?>",
+		"req_old_db_name": "<?php echo $lang_convert['Database name'] ?>",
+		"old_db_prefix": "<?php echo $lang_convert['Table prefix'] ?>",
 	};
 	if (document.all || document.getElementById)
 	{
@@ -368,7 +340,7 @@ function process_form(the_form)
 			{
 				if (!elem.value && elem.type && (/^(?:text(?:area)?|password|file)$/i.test(elem.type)))
 				{
-					alert('"' + element_names[elem.name] + '" <?php echo $lang_install['Required field'] ?>');
+					alert('"' + element_names[elem.name] + '" <?php echo $lang_convert['Required field'] ?>');
 					elem.focus();
 					return false;
 				}
@@ -397,21 +369,21 @@ function process_form(the_form)
 
 <div id="brdmain">
 <?php if (count($languages) > 1): ?><div class="blockform">
-	<h2><span><?php echo $lang_install['Choose install language'] ?></span></h2>
+	<h2><span><?php echo $lang_convert['Choose convert language'] ?></span></h2>
 	<div class="box">
 		<form id="install" method="post" action="index.php">
 			<div class="inform">
 				<fieldset>
-					<legend><?php echo $lang_install['Install language'] ?></legend>
+					<legend><?php echo $lang_convert['Convert language'] ?></legend>
 					<div class="infldset">
-						<p><?php echo $lang_install['Choose install language info'] ?></p>
-						<label><strong><?php echo $lang_install['Install language'] ?></strong>
-						<br /><select name="install_lang">
+						<p><?php echo $lang_convert['Choose convert language info'] ?></p>
+						<label><strong><?php echo $lang_convert['Convert language'] ?></strong>
+						<br /><select name="convert_lang">
 <?php
 
 		foreach ($languages as $temp)
 		{
-			if ($temp == $install_lang)
+			if ($temp == $convert_lang)
 				echo "\t\t\t\t\t".'<option value="'.$temp.'" selected="selected">'.$temp.'</option>'."\n";
 			else
 				echo "\t\t\t\t\t".'<option value="'.$temp.'">'.$temp.'</option>'."\n";
@@ -423,7 +395,7 @@ function process_form(the_form)
 					</div>
 				</fieldset>
 			</div>
-			<p class="buttons"><input type="submit" name="start" value="<?php echo $lang_install['Change language'] ?>" /></p>
+			<p class="buttons"><input type="submit" name="start" value="<?php echo $lang_convert['Change language'] ?>" /></p>
 		</form>
 	</div>
 </div>
@@ -433,20 +405,7 @@ function process_form(the_form)
 	<h2><span><?php echo $lang_convert['Convert'] ?></span></h2>
 	<div class="box">
 		<form id="install" method="post" action="index.php" onsubmit="this.start.disabled=true;if(process_form(this)){return true;}else{this.start.disabled=false;return false;}">
-		<div><input type="hidden" name="module" value="Convert" /><input type="hidden" name="form_sent" value="1" /><input type="hidden" name="install_lang" value="<?php echo pun_htmlspecialchars($install_lang) ?>" /></div>
-			<div class="inform">
-<?php if (!empty($alerts)): ?>				<div class="forminfo error-info">
-					<h3><?php echo $lang_install['Errors'] ?></h3>
-					<ul class="error-list">
-<?php
-
-foreach ($alerts as $cur_alert)
-	echo "\t\t\t\t\t\t".'<li><strong>'.$cur_alert.'</strong></li>'."\n";
-?>
-					</ul>
-				</div>
-<?php endif; ?>			</div>
-
+		<div><input type="hidden" name="module" value="Convert" /><input type="hidden" name="form_sent" value="1" /><input type="hidden" name="convert_lang" value="<?php echo pun_htmlspecialchars($convert_lang) ?>" /></div>
 			<div class="inform">
 				<div class="forminfo">
 					<h3><?php echo $lang_convert['Convert from'] ?></h3>
@@ -456,7 +415,7 @@ foreach ($alerts as $cur_alert)
 				<legend><?php echo $lang_convert['Select software'] ?></legend>
 					<div class="infldset">
 						<p><?php echo $lang_convert['Convert info 2'] ?></p>
-						<label class="required"><strong><?php echo $lang_convert['Forum software'] ?> <span><?php echo $lang_install['Required'] ?></span></strong>
+						<label class="required"><strong><?php echo $lang_convert['Forum software'] ?> <span><?php echo $lang_convert['Required'] ?></span></strong>
 						<br /><select name="req_forum">
 <?php
 
@@ -479,26 +438,26 @@ foreach ($alerts as $cur_alert)
 				<legend><?php echo $lang_convert['Select old database'] ?></legend>
 					<div class="infldset">
 						<p><?php echo $lang_convert['Convert info 3'] ?></p>
-						<label class="required"><strong><?php echo $lang_install['Database type'] ?> <span><?php echo $lang_install['Required'] ?></span></strong>
+						<label class="required"><strong><?php echo $lang_convert['Database type'] ?> <span><?php echo $lang_convert['Required'] ?></span></strong>
 						<br /><select name="req_old_db_type">
 <?php
 
-	foreach ($db_extensions as $temp)
+	foreach ($engines as $temp)
 	{
-		if ($temp[0] == $old_db_config['type'])
-			echo "\t\t\t\t\t\t\t".'<option value="'.$temp[0].'" selected="selected">'.$temp[1].'</option>'."\n";
+		if ($temp == $old_db_config['type'])
+			echo "\t\t\t\t\t\t\t".'<option value="'.$temp.'" selected="selected">'.$temp.'</option>'."\n";
 		else
-			echo "\t\t\t\t\t\t\t".'<option value="'.$temp[0].'">'.$temp[1].'</option>'."\n";
+			echo "\t\t\t\t\t\t\t".'<option value="'.$temp.'">'.$temp.'</option>'."\n";
 	}
 
 ?>
 						</select>
 						<br /></label>
-						<label class="required"><strong><?php echo $lang_install['Database server hostname'] ?> <span><?php echo $lang_install['Required'] ?></span></strong><br /><input type="text" name="req_old_db_host" value="<?php echo pun_htmlspecialchars($old_db_config['host']) ?>" size="50" /><br /></label>
-						<label class="required"><strong><?php echo $lang_install['Database name'] ?> <span><?php echo $lang_install['Required'] ?></span></strong><br /><input type="text" name="req_old_db_name" value="<?php echo pun_htmlspecialchars($old_db_config['name']) ?>" size="30" /><br /></label>
-						<label class="conl"><?php echo $lang_install['Database username'] ?><br /><input type="text" name="old_db_username" value="<?php echo pun_htmlspecialchars($old_db_config['username']) ?>" size="30" /><br /></label>
-						<label class="conl"><?php echo $lang_install['Database password'] ?><br /><input type="password" name="old_db_password" size="30" /><br /></label>
-						<label><?php echo $lang_install['Table prefix'] ?><br /><input id="db_prefix" type="text" name="old_db_prefix" value="<?php echo pun_htmlspecialchars($old_db_config['prefix']) ?>" size="20" maxlength="30" /><br /></label>
+						<label class="required"><strong><?php echo $lang_convert['Database server hostname'] ?> <span><?php echo $lang_convert['Required'] ?></span></strong><br /><input type="text" name="req_old_db_host" value="<?php echo pun_htmlspecialchars($old_db_config['host']) ?>" size="50" /><br /></label>
+						<label class="required"><strong><?php echo $lang_convert['Database name'] ?> <span><?php echo $lang_convert['Required'] ?></span></strong><br /><input type="text" name="req_old_db_name" value="<?php echo pun_htmlspecialchars($old_db_config['name']) ?>" size="30" /><br /></label>
+						<label class="conl"><?php echo $lang_convert['Database username'] ?><br /><input type="text" name="old_db_username" value="<?php echo pun_htmlspecialchars($old_db_config['username']) ?>" size="30" /><br /></label>
+						<label class="conl"><?php echo $lang_convert['Database password'] ?><br /><input type="password" name="old_db_password" size="30" /><br /></label>
+						<label><?php echo $lang_convert['Table prefix'] ?><br /><input id="db_prefix" type="text" name="old_db_prefix" value="<?php echo pun_htmlspecialchars($old_db_config['prefix']) ?>" size="20" maxlength="30" /><br /></label>
 					</div>
 				</fieldset>
 			</div>

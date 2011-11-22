@@ -56,7 +56,7 @@ class Converter
 		$start = get_microtime();
 		$convert = $this->tables[$name];
 
-		conv_message('%s %s', 'Converting', $name);
+		conv_message('Converting', $name);
 		if ($convert && is_callable(array($this->forum, 'convert_'.$name)))
 			call_user_func(array($this->forum, 'convert_'.$name), $start_at);
 

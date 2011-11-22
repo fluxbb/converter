@@ -19,77 +19,77 @@ class Forum
 
 	function initialize()
 	{
-		conv_message('%s: Not implemented', __FUNCTION__);
+		conv_message('Not implemented', __FUNCTION__);
 	}
 
 	function convert_bans()
 	{
-		conv_message('%s: Not implemented', __FUNCTION__);
+		conv_message('Not implemented', __FUNCTION__);
 	}
 
 	function convert_categories()
 	{
-		conv_message('%s: Not implemented', __FUNCTION__);
+		conv_message('Not implemented', __FUNCTION__);
 	}
 
 	function convert_censoring()
 	{
-		conv_message('%s: Not implemented', __FUNCTION__);
+		conv_message('Not implemented', __FUNCTION__);
 	}
 
 	function convert_config()
 	{
-		conv_message('%s: Not implemented', __FUNCTION__);
+		conv_message('Not implemented', __FUNCTION__);
 	}
 
 	function convert_forums()
 	{
-		conv_message('%s: Not implemented', __FUNCTION__);
+		conv_message('Not implemented', __FUNCTION__);
 	}
 
 	function convert_forum_perms()
 	{
-		conv_message('%s: Not implemented', __FUNCTION__);
+		conv_message('Not implemented', __FUNCTION__);
 	}
 
 	function convert_groups()
 	{
-		conv_message('%s: Not implemented', __FUNCTION__);
+		conv_message('Not implemented', __FUNCTION__);
 	}
 
 	function convert_posts()
 	{
-		conv_message('%s: Not implemented', __FUNCTION__);
+		conv_message('Not implemented', __FUNCTION__);
 	}
 
 	function convert_ranks()
 	{
-		conv_message('%s: Not implemented', __FUNCTION__);
+		conv_message('Not implemented', __FUNCTION__);
 	}
 
 	function convert_reports()
 	{
-		conv_message('%s: Not implemented', __FUNCTION__);
+		conv_message('Not implemented', __FUNCTION__);
 	}
 
 	function convert_topic_subscriptions()
 	{
-		conv_message('%s: Not implemented', __FUNCTION__);
+		conv_message('Not implemented', __FUNCTION__);
 	}
 
 	function convert_forum_subscriptions()
 	{
-		conv_message('%s: Not implemented', __FUNCTION__);
+		conv_message('Not implemented', __FUNCTION__);
 	}
 
 	function convert_topics()
 	{
-		conv_message('%s: Not implemented', __FUNCTION__);
+		conv_message('Not implemented', __FUNCTION__);
 	}
 
 	function convert_users()
 	{
-		conv_message('%s: Not implemented', __FUNCTION__);
+		conv_message('Not implemented', __FUNCTION__);
 	}
 
 	// Check whether current table has more rows - if yes, redirect to the next page of the current stage
