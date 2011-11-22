@@ -312,7 +312,7 @@ class SMF_2 extends Forum
 //			$cur_user['password'] = $this->fluxbb->pass_hash($this->fluxbb->random_pass(20));
 			$cur_user['language'] = $this->default_lang;
 			$cur_user['style'] = $this->default_style;
-			$cur_user['id'] = $this->uid2uid($cur_user['id'], true);
+			$cur_user['id'] = $this->uid2uid($cur_user['id']);
 
 			$result_post = $this->db->query_build(array(
 				'SELECT'	=> 'poster_time',
@@ -346,6 +346,8 @@ class SMF_2 extends Forum
 
 	function uid2uid($id, $new_uid = false)
 	{
+		static $last_uid;
+
 		// id=0 is a SMF's guest user
 		if ($id == 0)
 			return 1;
@@ -353,16 +355,16 @@ class SMF_2 extends Forum
 		// id=1 is reserved for the guest user
 		elseif ($id == 1)
 		{
-			$result = $this->db->query_build(array(
-				'SELECT'	=> 'id_member',
-				'FROM'		=> 'members',
-				'ORDER BY'	=> 'id_member DESC',
-				'LIMIT'		=> 1
-			)) or error('Unable to fetch last user id', __FILE__, __LINE__, $this->db->error());
+			if (!isset($last_uid))
+			{
+				$result = $this->db->query_build(array(
+					'SELECT'	=> 'MAX(id_member)',
+					'FROM'		=> 'members',
+				)) or error('Unable to fetch last user id', __FILE__, __LINE__, $this->db->error());
 
-			$id = $this->db->result($result);
-			if ($new_uid)
-				return ++$id;
+				$last_uid = $this->db->result($result) + 1;
+			}
+			return $last_uid;
 		}
 
 		return $id;

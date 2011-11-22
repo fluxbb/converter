@@ -48,9 +48,6 @@ class Converter
 			$name = $keys[0];
 		}
 
-		if (in_array($name, array('users', 'groups')) && $start_at == 0)
-			$start_at = ($name == 'users') ? 1 : 4;
-
 		$this->forum->stage = $name;
 
 		$start = get_microtime();

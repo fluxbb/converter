@@ -112,9 +112,10 @@ function forum_list_forums()
 		if (substr($entry, -4) == '.php')
 		{
 			$entry = substr($entry, 0, -4);
+			$name = $entry;
 			// To have a nice name to display, we replace the first underscore with a space and the rest with dots (version number)
-			$name = preg_replace('/_/', ' ', $entry, 1);
-			$name = str_replace('_', '.', $name);
+			if (preg_match('/_([0-9_]+)$/', $entry, $matches))
+				$name = str_replace('_' , ' ', substr($name, 0, strpos($name, $matches[0]))).' '.str_replace('_', '.', $matches[1]);
 
 			$forums[$entry] = $name;
 		}
