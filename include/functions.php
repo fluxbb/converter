@@ -11,6 +11,9 @@ function conv_message()
 
 	$args = func_get_args();
 
+	if (substr($args[0], 0, 10) == 'Processing')
+		$args[0] = 'Processing '.(count($args) - 1);
+
 	if (isset($lang_convert[$args[0]]))
 		$args[0] = $lang_convert[$args[0]];
 

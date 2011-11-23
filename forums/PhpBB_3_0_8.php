@@ -175,7 +175,7 @@ class PhpBB_3_0_8 extends Forum
 			'LIMIT'		=> PER_PAGE,
 		)) or error('Unable to fetch posts', __FILE__, __LINE__, $this->db->error());
 
-		conv_message('Processing rows', 'posts', $this->db->num_rows($result), $start_at, $start_at + PER_PAGE);
+		conv_message('Processing', 'posts', $this->db->num_rows($result), $start_at, $start_at + PER_PAGE);
 
 		if (!$this->db->num_rows($result))
 			return;
@@ -262,7 +262,7 @@ class PhpBB_3_0_8 extends Forum
 			'LIMIT'		=> PER_PAGE,
 		)) or error('Unable to fetch topics', __FILE__, __LINE__, $this->db->error());
 
-		conv_message('Processing rows', 'topics', $this->db->num_rows($result), $start_at, $start_at + PER_PAGE);
+		conv_message('Processing', 'topics', $this->db->num_rows($result), $start_at, $start_at + PER_PAGE);
 
 		if (!$this->db->num_rows($result))
 			return;
@@ -287,7 +287,7 @@ class PhpBB_3_0_8 extends Forum
 			'LIMIT'		=> PER_PAGE,
 		)) or error('Unable to fetch users', __FILE__, __LINE__, $this->db->error());
 
-		conv_message('Processing rows', 'users', $this->db->num_rows($result), $start_at, $start_at + PER_PAGE);
+		conv_message('Processing', 'users', $this->db->num_rows($result), $start_at, $start_at + PER_PAGE);
 
 		if (!$this->db->num_rows($result))
 			return;
@@ -326,107 +326,28 @@ class PhpBB_3_0_8 extends Forum
 	{
 		$message = html_entity_decode($message);
 
-		$pattern = array(
-			// b, i och u
-			'#\[b:[a-z0-9]{8}\]#i',
-			'#\[/b:[a-z0-9]{8}\]#i',
-			'#\[i:[a-z0-9]{8}\]#i',
-			'#\[/i:[a-z0-9]{8}\]#i',
-			'#\[u:[a-z0-9]{8}\]#i',
-			'#\[/u:[a-z0-9]{8}\]#i',
+		// Strip text after colon in tag name
+		$tags = array('b', 'i', 'u', 'list', '*', 'color', 'img', 'url', 'code', 'quote', 'size');
+		foreach ($tags as $cur_tag)
+			$message = preg_replace('%\[(/?'.preg_quote($cur_tag).')(=.*?)?(:[a-z0-9])?:[a-z0-9]{8}\]%i', '[$1$2]', $message);
 
-			// Lists
-			'#\[list=[a-z0-9]:[a-z0-9]{8}\]#i',
-			'#\[list:[a-z0-9]{8}\]#i',
-			'#\[/list:[a-z0-9]:[a-z0-9]{8}\]#i',
-			'#\[\*:[a-z0-9]{8}\]#i',
-			'#\[/\*:[a-z0-9]{8}\]#i',
-
-			// Colors
-			'#\[color=(.*?):[a-z0-9]{8}\]#i',
-			'#\[/color:[a-z0-9]{8}\]#i',
-
-			// Smileys ans stuff
-			'#:roll:#i',
-			'#:wink:#i',
-			'#<!-- s.*? --><img src=".*?" alt="(.*?)" title=".*?" \/><!-- s.*? -->#i',
-
-			// Images
-			'#\[img:[a-z0-9]{8}\]#i',
-			'#\[/img:[a-z0-9]{8}\]#i',
-
-			// Sizes
-			'#\[size=[0-9]{1}:[a-z0-9]{8}\]#i',
-			'#\[size=[0-9]{2}:[a-z0-9]{8}\]#i',
-			'#\[/size:[a-z0-9]{8}\]#i',
-
-			// Quotes och Code
-			'#\[quote="(.*?)":[a-z0-9]{8}\]#i',
-			'#\[quote=(.*?):[a-z0-9]{8}\]#i',
-			'#\[quote:(.*?)\]#i',
-			'#\[/quote:[a-z0-9]{8}\]#i',
-			'#\[code:[a-z0-9]{8}\]#i',
-			'#\[/code:[a-z0-9]{8}\]#i',
-
-			// Links
-			'#<!-- [mw] --><a class="postlink" href="(.*?)">(.*?)</a><!-- [mw] -->#i',
-			'#\[url=(.*?):[a-zA-Z0-9]{8}\](.*?)\[\/url:[a-zA-Z0-9]{8}\]#si',
-			'#\[url:[a-zA-Z0-9]{8}\](.*?)\[\/url:[a-zA-Z0-9]{8}\]#si',
-
-			// Email
-			'#<!-- e --><a href="mailto:(.*?)">(.*?)</a><!-- e -->#i',
-		);
 		$replace = array(
-			// b, i och u
-			'[b]',
-			'[/b]',
-			'[i]',
-			'[/i]',
-			'[u]',
-			'[/u]',
+			// Smileys
+			'#<!-- s.*? --><img src=".*?" alt="(.*?)" title=".*?" \/><!-- s.*? -->#i'			=>	'$1',
 
-			// Lists
-			'[list]',
-			'[list]',
-			'[/list]',
-			'[*]',
-			'[/*]',
-
-			// Colors
-			'[color=$1]',
-			'[/color]',
-
-			// Smileys and stuff
-			':rolleyes:',
-			';)',
-			'$1',
-
-			// Images
-			'[img]',
-			'[/img]',
-
-			// Sizes
-			'',
-			'',
-			'',
-
-			// Quotes och Code
-			'[quote=$1]',
-			'[quote=$1]',
-			'[quote]',
-			'[/quote]',
-			'[code]',
-			'[/code]',
-
-			// Links
-			'[url=$1]$2[/url]',
-			'[url=$1]$2[/url]',
-			'[url]$1[/url]',
-
-			// Email
-			'[email=$1]$2[/email]',
+			'#<!-- [mw] --><a class="postlink" href="(.*?)">(.*?)</a><!-- [mw] -->#i'			=>	'[url=$1]$2[/url]',
+			'#<!-- e --><a href="mailto:(.*?)">(.*?)</a><!-- e -->#i'							=>	'[email=$1]$2[/email]',
 		);
 
-		return preg_replace($pattern, $replace, $message);
+		$message = preg_replace(array_keys($replace), array_values($replace), $message);
+
+		$smilies = array(
+			':shock:'		=> ':o',
+			'8-)'			=> ':cool:',
+			':evil:'		=> ':/',
+			':roll:'		=> ':rolleyes:',
+		);
+
+		return str_replace(array_keys($smilies), array_values($smilies), $message);
 	}
 }

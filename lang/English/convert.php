@@ -34,8 +34,11 @@ $lang_convert = array(
 'Converting header'				=>	'Converting',
 'Conversion completed'			=>	'Conversion completed',
 
-'Processing'					=>	'Processing %2$d %1$s',
-'Processing rows'				=>	'Processing %2$d %1$s (%3$d - %4$d)',
+// Processing message (with number of arguments)
+'Processing 1'					=>	'Processing %s',
+'Processing 2'					=>	'Processing %2$d %1$s',
+'Processing 4'					=>	'Processing %2$d %1$s (%3$d - %4$d)',
+
 'Not implemented'				=>	'%s: Not implemented',
 'Converting'					=>	'Converting %s',
 

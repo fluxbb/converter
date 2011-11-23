@@ -193,7 +193,7 @@ class PHP_Fusion_7 extends Forum
 			'LIMIT'		=> PER_PAGE,
 		)) or error('Unable to fetch posts', __FILE__, __LINE__, $this->db->error());
 
-		conv_message('Processing rows', 'posts', $this->db->num_rows($result), $start_at, $start_at + PER_PAGE);
+		conv_message('Processing', 'posts', $this->db->num_rows($result), $start_at, $start_at + PER_PAGE);
 
 		if (!$this->db->num_rows($result))
 			return;
@@ -292,7 +292,7 @@ class PHP_Fusion_7 extends Forum
 			'LIMIT'		=> PER_PAGE,
 		)) or error('Unable to fetch topics', __FILE__, __LINE__, $this->db->error());
 
-		conv_message('Processing rows', 'topics', $this->db->num_rows($result), $start_at, $start_at + PER_PAGE);
+		conv_message('Processing', 'topics', $this->db->num_rows($result), $start_at, $start_at + PER_PAGE);
 
 		if (!$this->db->num_rows($result))
 			return;
@@ -324,7 +324,7 @@ class PHP_Fusion_7 extends Forum
 			'LIMIT'		=> PER_PAGE,
 		)) or error('Unable to fetch users', __FILE__, __LINE__, $this->db->error());
 
-		conv_message('Processing rows', 'users', $this->db->num_rows($result), $start_at, $start_at + PER_PAGE);
+		conv_message('Processing', 'users', $this->db->num_rows($result), $start_at, $start_at + PER_PAGE);
 
 		if (!$this->db->num_rows($result))
 			return;
@@ -388,80 +388,24 @@ class PHP_Fusion_7 extends Forum
 	}
 
 
+	function convert_lists($matches)
+	{
+		return '[list]'."\n".'[*]'.str_replace("\n", '[/*]'."\n".'[*]', trim($matches[2], "\n")).'[/*][/list]';
+	}
+
 	// Convert posts BB-code
 	function convert_message($message)
 	{
-		$pattern = array(
-			// Other
-			'#\\[quote author=(.*?) link(.*?)\](.*?)\[/QUOTE\]#is',
-			'#\\[flash=(.*?)\](.*?)\[/flash\]#is',
-			'#\\[ftp=(.*?)\](.*?)\[/ftp\]#is',
-			'#\\[font=(.*?)\](.*?)\[/font\]#is',
-			'#\\[size=(.*?)\](.*?)\[/size\]#is',
-//			'#\\[list\](.*?)\[/list\]#is',
-			'#\\[li\](.*?)\[/li\]#is',
-
-			// Table
-			'#\\[table\](.*?)\[/table\]#is',
-			'#\\[tr\]#is',
-			'#\\[/tr\]#is',
-			'#\\[td\](.*?)\[/td\]#is',
-
-			// Removed tags
-			'#\\[glow=(.*?)\](.*?)\[/glow\]#is',
-			'#\\[s\](.*?)\[/s\]#is',
-			'#\\[shadow=(.*?)\](.*?)\[/shadow\]#is',
-			'#\\[move\](.*?)\[/move\]#is',
-			'#\\[pre\](.*?)\[/pre\]#is',
-
-			'#\\[left\](.*?)\[/left\]#is',
-			'#\\[right\](.*?)\[/right\]#is',
-			'#\\[center\](.*?)\[/center\]#is',
-			'#\\[sup\](.*?)\[/sup\]#is',
-			'#\\[sub\](.*?)\[/sub\]#is',
-
-			'#\\[hr\]#is',
-			'#\\[tt\](.*?)\[/tt\]#is',
-		);
+		// Convert lists
+		$message = preg_replace_callback('%\[ulist(=.*?)?\](.*?)\[/ulist\]%s', 'PHP_Fusion_7::convert_lists', $message);
 
 		$replace = array(
-			// Other
-			'[quote=$1]$3[/quote]',
-			'Flash: $2',
-			'[url=$1]$2[/url]',
-			'$2',
-			'$2',
-//			'[list]$1[/list]',
-			'[*]$1[/*]',
-
-			// Table
-			'$1',
-			'------------------------------------------------------------------'."\n",
-			'------------------------------------------------------------------'."\n",
-			"* $1\n",
-
-			// Removed tags
-			'$2',
-			'$1',
-			'$2',
-			'$1',
-			'$1',
-
-			'$1',
-			'$1',
-			'$1',
-			'$1',
-			'$1',
-
-			'$1'."\n",
-			'$1',
+			'%\[mail(=.*?)\](.*?)\[/mail\]%si'							=>	'[email$1]$2[/email]',
+			'%\[center\](.*?)\[/center\]%si'							=>	'$1',
+			'%\[small\](.*?)\[/small\]%si'								=>	'$1',
+			'%\[quote\]\[url.*?\[b\](.*?) wrote:\[/b\]\[/url\]\s*%si'	=>	'[quote=$1]',
 		);
 
-		$message = str_replace('<br />', "\n", $message);
-		$message = str_replace("&gt;:(", ':x', $message);
-		$message = str_replace('::)', ':rolleyes:', $message);
-		$message = str_replace('&nbsp;', ' ', $message);
-
-		return preg_replace($pattern, $replace, $message);
+		return preg_replace(array_keys($replace), array_values($replace), $message);
 	}
 }
