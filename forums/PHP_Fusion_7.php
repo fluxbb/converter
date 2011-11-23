@@ -386,108 +386,76 @@ class PHP_Fusion_7 extends Forum
 	// Convert posts BB-code
 	function convert_message($message)
 	{
-		$message = html_entity_decode($message);
-
 		$pattern = array(
-			// b, i och u
-			'#\[b:[a-z0-9]{8}\]#i',
-			'#\[/b:[a-z0-9]{8}\]#i',
-			'#\[i:[a-z0-9]{8}\]#i',
-			'#\[/i:[a-z0-9]{8}\]#i',
-			'#\[u:[a-z0-9]{8}\]#i',
-			'#\[/u:[a-z0-9]{8}\]#i',
+			// Other
+			'#\\[quote author=(.*?) link(.*?)\](.*?)\[/QUOTE\]#is',
+			'#\\[flash=(.*?)\](.*?)\[/flash\]#is',
+			'#\\[ftp=(.*?)\](.*?)\[/ftp\]#is',
+			'#\\[font=(.*?)\](.*?)\[/font\]#is',
+			'#\\[size=(.*?)\](.*?)\[/size\]#is',
+//			'#\\[list\](.*?)\[/list\]#is',
+			'#\\[li\](.*?)\[/li\]#is',
 
-			// Lists
-			'#\[list=[a-z0-9]:[a-z0-9]{8}\]#i',
-			'#\[list:[a-z0-9]{8}\]#i',
-			'#\[/list:[a-z0-9]:[a-z0-9]{8}\]#i',
-			'#\[\*:[a-z0-9]{8}\]#i',
-			'#\[/\*:[a-z0-9]{8}\]#i',
+			// Table
+			'#\\[table\](.*?)\[/table\]#is',
+			'#\\[tr\]#is',
+			'#\\[/tr\]#is',
+			'#\\[td\](.*?)\[/td\]#is',
 
-			// Colors
-			'#\[color=(.*?):[a-z0-9]{8}\]#i',
-			'#\[/color:[a-z0-9]{8}\]#i',
+			// Removed tags
+			'#\\[glow=(.*?)\](.*?)\[/glow\]#is',
+			'#\\[s\](.*?)\[/s\]#is',
+			'#\\[shadow=(.*?)\](.*?)\[/shadow\]#is',
+			'#\\[move\](.*?)\[/move\]#is',
+			'#\\[pre\](.*?)\[/pre\]#is',
 
-			// Smileys ans stuff
-			'#:roll:#i',
-			'#:wink:#i',
-			'#<!-- s.*? --><img src=".*?" alt="(.*?)" title=".*?" \/><!-- s.*? -->#i',
+			'#\\[left\](.*?)\[/left\]#is',
+			'#\\[right\](.*?)\[/right\]#is',
+			'#\\[center\](.*?)\[/center\]#is',
+			'#\\[sup\](.*?)\[/sup\]#is',
+			'#\\[sub\](.*?)\[/sub\]#is',
 
-			// Images
-			'#\[img:[a-z0-9]{8}\]#i',
-			'#\[/img:[a-z0-9]{8}\]#i',
-
-			// Sizes
-			'#\[size=[0-9]{1}:[a-z0-9]{8}\]#i',
-			'#\[size=[0-9]{2}:[a-z0-9]{8}\]#i',
-			'#\[/size:[a-z0-9]{8}\]#i',
-
-			// Quotes och Code
-			'#\[quote="(.*?)":[a-z0-9]{8}\]#i',
-			'#\[quote=(.*?):[a-z0-9]{8}\]#i',
-			'#\[quote:(.*?)\]#i',
-			'#\[/quote:[a-z0-9]{8}\]#i',
-			'#\[code:[a-z0-9]{8}\]#i',
-			'#\[/code:[a-z0-9]{8}\]#i',
-
-			// Links
-			'#<!-- [mw] --><a class="postlink" href="(.*?)">(.*?)</a><!-- [mw] -->#i',
-			'#\[url=(.*?):[a-zA-Z0-9]{8}\](.*?)\[\/url:[a-zA-Z0-9]{8}\]#si',
-			'#\[url:[a-zA-Z0-9]{8}\](.*?)\[\/url:[a-zA-Z0-9]{8}\]#si',
-
-			// Email
-			'#<!-- e --><a href="mailto:(.*?)">(.*?)</a><!-- e -->#i',
+			'#\\[hr\]#is',
+			'#\\[tt\](.*?)\[/tt\]#is',
 		);
+
 		$replace = array(
-			// b, i och u
-			'[b]',
-			'[/b]',
-			'[i]',
-			'[/i]',
-			'[u]',
-			'[/u]',
+			// Other
+			'[quote=$1]$3[/quote]',
+			'Flash: $2',
+			'[url=$1]$2[/url]',
+			'$2',
+			'$2',
+//			'[list]$1[/list]',
+			'[*]$1[/*]',
 
-			// Lists
-			'[list]',
-			'[list]',
-			'[/list]',
-			'[*]',
-			'[/*]',
+			// Table
+			'$1',
+			'------------------------------------------------------------------'."\n",
+			'------------------------------------------------------------------'."\n",
+			"* $1\n",
 
-			// Colors
-			'[color=$1]',
-			'[/color]',
-
-			// Smileys and stuff
-			':rolleyes:',
-			';)',
+			// Removed tags
+			'$2',
+			'$1',
+			'$2',
+			'$1',
 			'$1',
 
-			// Images
-			'[img]',
-			'[/img]',
+			'$1',
+			'$1',
+			'$1',
+			'$1',
+			'$1',
 
-			// Sizes
-			'',
-			'',
-			'',
-
-			// Quotes och Code
-			'[quote=$1]',
-			'[quote=$1]',
-			'[quote]',
-			'[/quote]',
-			'[code]',
-			'[/code]',
-
-			// Links
-			'[url=$1]$2[/url]',
-			'[url=$1]$2[/url]',
-			'[url]$1[/url]',
-
-			// Email
-			'[email=$1]$2[/email]',
+			'$1'."\n",
+			'$1',
 		);
+
+		$message = str_replace('<br />', "\n", $message);
+		$message = str_replace("&gt;:(", ':x', $message);
+		$message = str_replace('::)', ':rolleyes:', $message);
+		$message = str_replace('&nbsp;', ' ', $message);
 
 		return preg_replace($pattern, $replace, $message);
 	}

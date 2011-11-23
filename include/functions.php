@@ -21,7 +21,7 @@ function conv_message()
 
 function conv_redirect($stage, $start_at = 0, $time = 0)
 {
-	global $lang_install, $lang_convert, $default_style;
+	global $lang_convert, $default_style;
 
 	$contents = ob_get_clean();
 
@@ -32,7 +32,7 @@ function conv_redirect($stage, $start_at = 0, $time = 0)
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta http-equiv="refresh" content="<?php echo $time ?>; url=index.php?stage=<?php echo htmlspecialchars($stage).($start_at > 0 ? '&start_at='.$start_at : '') ?>">
-<title><?php echo $lang_install['FluxBB Installation'] ?></title>
+<title><?php echo $lang_convert['FluxBB converter'] ?></title>
 <link rel="stylesheet" type="text/css" href="../style/<?php echo $default_style ?>.css" />
 </head>
 <body>
@@ -112,10 +112,12 @@ function forum_list_forums()
 		if (substr($entry, -4) == '.php')
 		{
 			$entry = substr($entry, 0, -4);
-			$name = $entry;
-			// To have a nice name to display, we replace the first underscore with a space and the rest with dots (version number)
-			if (preg_match('/_([0-9_]+)$/', $entry, $matches))
-				$name = str_replace('_' , ' ', substr($name, 0, strpos($name, $matches[0]))).' '.str_replace('_', '.', $matches[1]);
+
+			// To have a nice name to display, we replace the underscores with a space
+			$name = str_replace('_', ' ', $entry);
+			// and spaces in version number with dots
+			if (preg_match('%\s([0-9\s]+)$%', $name, $matches))
+				$name = substr($name, 0, strpos($name, $matches[0])).' '.str_replace(' ', '.', $matches[1]);
 
 			$forums[$entry] = $name;
 		}
@@ -139,6 +141,21 @@ function forum_list_engines()
 	asort($engines);
 
 	return $engines;
+}
+
+function converter_list_langs()
+{
+	$langs = array();
+
+	$d = dir(SCRIPT_ROOT.'lang');
+	while ($entry = $d->read())
+	{
+		if ($entry != '.' && $entry != '..' && is_dir(SCRIPT_ROOT.'lang/'.$entry) && file_exists(SCRIPT_ROOT.'lang/'.$entry.'/convert.php'))
+			$langs[] = $entry;
+	}
+	asort($langs);
+
+	return $langs;
 }
 
 

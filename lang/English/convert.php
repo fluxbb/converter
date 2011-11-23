@@ -24,6 +24,7 @@ $lang_convert = array(
 'Database type'					=>	'Database type',
 'Required'						=>	'(Required)',
 'Required field'				=>	'is a required field in this form.',
+'Database server hostname'		=>	'Database server hostname',
 'Database name'					=>	'Database name',
 'Database username'				=>	'Database username',
 'Database password'				=>	'Database password',

@@ -69,10 +69,6 @@ if (get_magic_quotes_gpc())
 	$_FILES = stripslashes_array($_FILES);
 }
 
-// If a cookie name is not specified in config.php, we use the default (pun_cookie)
-if (empty($cookie_name))
-	$cookie_name = 'pun_cookie';
-
 // If the cache directory is not specified, we use the default setting
 if (!defined('FORUM_CACHE_DIR'))
 	define('FORUM_CACHE_DIR', PUN_ROOT.'cache/');
@@ -89,20 +85,19 @@ require SCRIPT_ROOT.'include/functions.php';
 
 session_start();
 
+$languages = converter_list_langs();
+$engines = forum_list_engines();
+$forums = forum_list_forums();
+
 // If we've been passed a default language, use it
 $convert_lang = isset($_REQUEST['convert_lang']) ? trim($_REQUEST['convert_lang']) : (isset($_SESSION['converter']['lang']) ? $_SESSION['converter']['lang'] : 'English');
-$_SESSION['install_lang'] = $convert_lang;
 
-// If such a language pack doesn't exist, or isn't up-to-date enough to translate this page, default to English
-if (!file_exists(PUN_ROOT.'lang/'.$convert_lang.'/install.php'))
+// If such a language pack doesn't exist, default to English
+if (!in_array($convert_lang, $languages))
 	$convert_lang = 'English';
 
-//require PUN_ROOT.'lang/'.$convert_lang.'/install.php';
-
-if (file_exists(SCRIPT_ROOT.'lang/'.$convert_lang.'/convert.php'))
-	require SCRIPT_ROOT.'lang/'.$convert_lang.'/convert.php';
-else
-	require SCRIPT_ROOT.'lang/English/convert.php';
+// Load converter language file
+require SCRIPT_ROOT.'lang/'.$convert_lang.'/convert.php';
 
 $default_style = 'Air';
 
@@ -128,21 +123,17 @@ if (isset($_GET['alert_dupe_users']))
 }
 
 // Default database configuration
-$db_config = array(
-	'type'			=> $db_type,
-	'host'			=> $db_host,
-	'name'			=> $db_name,
-	'username'		=> $db_username,
-	'password'		=> $db_password,
-	'prefix'		=> $db_prefix,
+$db_config_default = array(
+	'type'			=> 'mysqli',
+	'host'			=> 'localhost',
+	'name'			=> '',
+	'username'		=> '',
+	'password'		=> '',
+	'prefix'		=> '',
 );
 
-$styles = forum_list_styles();
-$languages = forum_list_langs();
-$engines = forum_list_engines();
-$forums = forum_list_forums();
 
-$old_db_config = $db_config;
+$old_db_config = $db_config_default;
 
 // We submited the form, store data in session as we'll redirect to the next page
 if (isset($_POST['form_sent']))
@@ -166,6 +157,8 @@ if (isset($_POST['form_sent']))
 
 	$_SESSION['converter'] = array('forum_config' => $forum_config, 'old_db_config' => $old_db_config, 'lang' => $convert_lang);
 }
+
+// Fetch data from session
 else if (isset($_SESSION['converter']))
 {
 	$forum_config = $_SESSION['converter']['forum_config'];
@@ -179,13 +172,19 @@ if (isset($_POST['form_sent']) || (isset($_GET['stage']) && $_GET['stage'] != 'r
 	$stage = isset($_GET['stage']) ? $_GET['stage'] : null;
 	$start_at = isset($_GET['start_at']) ? $_GET['start_at'] : 0;
 
-	// Check we aren't trying to convert to the same database
-	//if ($old_db_config['name'] == $new_db_config['name'])
-	//	error('Old and new tables must be different!', __FILE__, __LINE__);
+	// Get database configuration from config.php
+	$db_config = array(
+		'type'			=> $db_type,
+		'host'			=> $db_host,
+		'name'			=> $db_name,
+		'username'		=> $db_username,
+		'password'		=> $db_password,
+		'prefix'		=> $db_prefix,
+	);
 
-	// Check the new database doesn't have any tables in it
-	// TODO
-	// Why?
+	// Check we aren't trying to convert to the same database
+	if ($old_db_config == $db_config)
+		error('Old and new tables must be different!', __FILE__, __LINE__);
 
 	// The forum scripts must specify the charset manually!
 	define('FORUM_NO_SET_NAMES', 1);
@@ -194,6 +193,8 @@ if (isset($_POST['form_sent']) || (isset($_GET['stage']) && $_GET['stage'] != 'r
 	$db = connect_database($db_config);
 	$old_db = connect_database($old_db_config);
 
+	// Load configuration cache (or recreate when it does not exist)
+	// We need it for fetching default language for mail templates when alerting dupe users
 	if (!defined('PUN_CONFIG_LOADED'))
 	{
 		if (!defined('FORUM_CACHE_FUNCTIONS_LOADED'))
@@ -216,9 +217,11 @@ if (isset($_POST['form_sent']) || (isset($_GET['stage']) && $_GET['stage'] != 'r
 	require SCRIPT_ROOT.'include/converter.class.php';
 	$converter = new Converter($forum);
 
+	// Validate only first time we run converter (it checks whether database configuration is corrent)
 	if (!isset($stage))
 		$converter->validate();
 
+	// We are ready to run converter. When it do its work, it redirects to the next page
 	$converter->convert($stage, $start_at);
 }
 
@@ -310,8 +313,6 @@ elseif (isset($_GET['stage']) && $_GET['stage'] == 'results')
 }
 else
 {
-	// Determine available database extensions
-	$engines = forum_list_engines();
 
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">

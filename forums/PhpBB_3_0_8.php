@@ -283,7 +283,7 @@ class PhpBB_3_0_8 extends Forum
 		$result = $this->db->query_build(array(
 			'SELECT'	=> 'user_id AS id, group_id AS group_id, username AS username, user_password AS password, user_website AS url, user_icq AS icq, user_msnm AS msn, user_aim AS aim, user_yim AS yahoo, user_posts AS num_posts, user_from AS location, user_allow_viewemail AS email_setting, user_timezone AS timezone, user_regdate AS registered, user_lastvisit AS last_visit, user_sig AS signature, user_email AS email',
 			'FROM'		=> 'users',
-			'WHERE'		=> 'group_id <> 6 AND user_id > '.$start_at,
+			'WHERE'		=> 'group_id <> 6 AND user_id <> 1 AND user_id > '.$start_at,
 			'LIMIT'		=> PER_PAGE,
 		)) or error('Unable to fetch users', __FILE__, __LINE__, $this->db->error());
 

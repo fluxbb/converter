@@ -104,6 +104,9 @@ class Converter
 		}
 
 		$this->generate_cache();
+
+		// We don't need this anymore
+		unset($_SESSION['converter']);
 	}
 
 	function generate_cache()
