@@ -42,7 +42,6 @@ class PHP_Fusion_7 extends Forum
 
 	function convert_categories()
 	{
-		// FIXME: Subforums might cause difficulties
 		$result = $this->db->query_build(array(
 			'SELECT'	=> 'forum_id AS id, forum_name AS cat_name, forum_order AS disp_position',
 			'FROM'		=> 'forums',

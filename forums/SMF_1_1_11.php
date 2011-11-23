@@ -182,6 +182,8 @@ class SMF_1_1_11 extends Forum
 			$start_at = $cur_post['id'];
 			$cur_post['edited'] = NULL;
 			$cur_post['edited_by'] = NULL;
+			$cur_post['poster_id'] = $this->uid2uid($cur_post['poster_id']);
+			$cur_post['message'] = $this->convert_message($cur_post['message']);
 
 			$this->fluxbb->add_row('posts', $cur_post);
 		}
@@ -252,7 +254,7 @@ class SMF_1_1_11 extends Forum
 	function convert_topics($start_at)
 	{
 		$result = $this->db->query_build(array(
-			'SELECT'	=> 't.ID_TOPIC AS id, mf.posterName AS poster, mf.subject, mf.posterTime AS posted, t.ID_FIRST_MSG AS first_post_id, ml.posterTime AS last_post, t.ID_LAST_MSG AS last_post_id, last_poster, t.numViews AS num_views, t.numReplies AS num_replies, t.locked AS closed, t.isSticky AS sticky, t.ID_BOARD AS forum_id',
+			'SELECT'	=> 't.ID_TOPIC AS id, mf.posterName AS poster, mf.subject, mf.posterTime AS posted, t.ID_FIRST_MSG AS first_post_id, ml.posterTime AS last_post, t.ID_LAST_MSG AS last_post_id, ml.posterName AS last_poster, t.numViews AS num_views, t.numReplies AS num_replies, t.locked AS closed, t.isSticky AS sticky, t.ID_BOARD AS forum_id',
 			'JOINS'		=> array(
 				array(
 					'LEFT JOIN'	=> 'messages AS mf',
@@ -284,13 +286,12 @@ class SMF_1_1_11 extends Forum
 		$this->redirect('topics', 'ID_TOPIC', $start_at);
 	}
 
-	// TODO
 	function convert_users($start_at)
 	{
 		$result = $this->db->query_build(array(
-			'SELECT'	=> 'id, group_id, username, email, title, realname, url, jabber, icq, msn, aim, yahoo, location, signature, disp_topics, disp_posts, email_setting, notify_with_post, auto_notify, show_smilies, show_img, show_img_sig, show_avatars, show_sig, timezone, dst, time_format, date_format, language, style, num_posts, last_post, last_search, last_email_sent, registered, registration_ip, last_visit, admin_note, activate_string, activate_key',
-			'FROM'		=> 'users',
-			'WHERE'		=> 'user_id > '.$start_at,
+			'SELECT'	=> 'ID_MEMBER AS id, ID_GROUP AS group_id, memberName AS username, passwd AS password, passwordSalt AS salt, websiteUrl AS url, ICQ AS icq, MSN AS msn, AIM AS aim, YIM AS yahoo, signature AS signature, timeOffset AS timezone, posts AS num_posts, dateRegistered AS registered, lastLogin AS last_visit, location AS location, emailAddress AS email',
+			'FROM'		=> 'members',
+			'WHERE'		=> 'id_member > '.$start_at,
 			'LIMIT'		=> PER_PAGE,
 		)) or error('Unable to fetch users', __FILE__, __LINE__, $this->db->error());
 
@@ -303,14 +304,16 @@ class SMF_1_1_11 extends Forum
 		{
 			$start_at = $cur_user['id'];
 			$cur_user['group_id'] = $this->grp2grp($cur_user['group_id']);
-			$cur_user['password'] = $this->fluxbb->pass_hash($this->fluxbb->random_pass(20));
-			$cur_user['language'] = $this->default_lang;
-			$cur_user['style'] = $this->default_style;
+//			$cur_user['password'] = $this->fluxbb->pass_hash($this->fluxbb->random_pass(20));
+//			$cur_user['language'] = $this->default_lang;
+//			$cur_user['style'] = $this->default_style;
+			$cur_user['id'] = $this->uid2uid($cur_user['id']);
+			$cur_user['signature'] = $this->convert_message($cur_user['signature']);
 
 			$this->fluxbb->add_row('users', $cur_user);
 		}
 
-		$this->redirect('users', 'id', $start_at);
+		$this->redirect('members', 'ID_MEMBER', $start_at);
 	}
 
 	function grp2grp($id)
@@ -324,5 +327,36 @@ class SMF_1_1_11 extends Forum
 			return $id;
 
 		return $mapping[$id];
+	}
+
+	function uid2uid($id, $new_uid = false)
+	{
+		static $last_uid;
+
+		// id=0 is a SMF's guest user
+		if ($id == 0)
+			return 1;
+
+		// id=1 is reserved for the guest user
+		elseif ($id == 1)
+		{
+			if (!isset($last_uid))
+			{
+				$result = $this->db->query_build(array(
+					'SELECT'	=> 'MAX(ID_MEMBER)',
+					'FROM'		=> 'members',
+				)) or error('Unable to fetch last user id', __FILE__, __LINE__, $this->db->error());
+
+				$last_uid = $this->db->result($result) + 1;
+			}
+			return $last_uid;
+		}
+
+		return $id;
+	}
+
+	function convert_message($message)
+	{
+		return $message;
 	}
 }

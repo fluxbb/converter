@@ -68,7 +68,7 @@ class FluxBB
 		// Renaming a user also affects a bunch of other stuff, lets fix that too...
 		$this->db->query('UPDATE '.$this->db->prefix.'posts SET poster=\''.$this->db->escape($username).'\' WHERE poster_id='.$cur_user['id']) or error('Unable to update posts', __FILE__, __LINE__, $this->db->error());
 
-		// TODO: The following must compare using collation utf8_bin otherwise we will accidently update posts/topics/etc belonging to both of the duplicate users, not just the one we renamed!
+		// The following must compare using collation utf8_bin otherwise we will accidently update posts/topics/etc belonging to both of the duplicate users, not just the one we renamed!
 		$this->db->query('UPDATE '.$this->db->prefix.'posts SET edited_by=\''.$this->db->escape($username).'\' WHERE edited_by=\''.$this->db->escape($old_username).'\' COLLATE utf8_bin') or error('Unable to update posts', __FILE__, __LINE__, $this->db->error());
 		$this->db->query('UPDATE '.$this->db->prefix.'topics SET poster=\''.$this->db->escape($username).'\' WHERE poster=\''.$this->db->escape($old_username).'\' COLLATE utf8_bin') or error('Unable to update topics', __FILE__, __LINE__, $this->db->error());
 		$this->db->query('UPDATE '.$this->db->prefix.'topics SET last_poster=\''.$this->db->escape($username).'\' WHERE last_poster=\''.$this->db->escape($old_username).'\' COLLATE utf8_bin') or error('Unable to update topics', __FILE__, __LINE__, $this->db->error());
