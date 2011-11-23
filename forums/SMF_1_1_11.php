@@ -11,7 +11,7 @@ class SMF_1_1_11 extends Forum
 {
 	function initialize()
 	{
-		$this->db->set_names('utf8');
+//		$this->db->set_names('utf8');
 	}
 
 	function validate()
@@ -357,6 +357,8 @@ class SMF_1_1_11 extends Forum
 
 	function convert_message($message)
 	{
+		$message = $this->convert_to_utf8($message);
+		$message = str_replace('<br />', "\n", $message);
 		return $message;
 	}
 }

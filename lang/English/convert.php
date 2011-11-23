@@ -28,6 +28,7 @@ $lang_convert = array(
 'Database name'					=>	'Database name',
 'Database username'				=>	'Database username',
 'Database password'				=>	'Database password',
+'Database charset'				=>	'Database charset',
 'Table prefix'					=>	'Table prefix',
 
 'Start conversion'				=>	'Start conversion',

@@ -6,14 +6,20 @@ class Forum
 	public $fluxbb;
 	public $stage;
 
+	public $db_config;
+	public $charset;
+
 	function __construct($db, $fluxbb)
 	{
 		$this->db = $db;
 		$this->fluxbb = $fluxbb;
 	}
 
-	function init_config()
+	function init_config($db_config)
 	{
+		$this->db_config = $db_config;
+		$this->charset = $db_config['charset'];
+
 		$this->initialize();
 	}
 
@@ -104,6 +110,12 @@ class Forum
 
 		if ($this->db->num_rows($result))
 			conv_redirect($this->stage, $start_at);
+	}
+
+	function convert_to_utf8($str)
+	{
+		convert_to_utf8($str, $this->charset);
+		return $str;
 	}
 
 }

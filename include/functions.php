@@ -192,3 +192,128 @@ function alert_dupe_users()
 		pun_mail($cur_user['email'], $mail_subject, $mail_message);
 	}
 }
+
+
+//
+// Determines whether $str is UTF-8 encoded or not
+//
+function seems_utf8($str)
+{
+	$str_len = strlen($str);
+	for ($i = 0; $i < $str_len; ++$i)
+	{
+		if (ord($str[$i]) < 0x80) continue; # 0bbbbbbb
+		else if ((ord($str[$i]) & 0xE0) == 0xC0) $n=1; # 110bbbbb
+		else if ((ord($str[$i]) & 0xF0) == 0xE0) $n=2; # 1110bbbb
+		else if ((ord($str[$i]) & 0xF8) == 0xF0) $n=3; # 11110bbb
+		else if ((ord($str[$i]) & 0xFC) == 0xF8) $n=4; # 111110bb
+		else if ((ord($str[$i]) & 0xFE) == 0xFC) $n=5; # 1111110b
+		else return false; # Does not match any model
+
+		for ($j = 0; $j < $n; ++$j) # n bytes matching 10bbbbbb follow ?
+		{
+			if ((++$i == strlen($str)) || ((ord($str[$i]) & 0xC0) != 0x80))
+				return false;
+		}
+	}
+
+	return true;
+}
+
+
+//
+// Translates the number from a HTML numeric entity into an UTF-8 character
+//
+function dcr2utf8($src)
+{
+	$dest = '';
+	if ($src < 0)
+		return false;
+	else if ($src <= 0x007f)
+		$dest .= chr($src);
+	else if ($src <= 0x07ff)
+	{
+		$dest .= chr(0xc0 | ($src >> 6));
+		$dest .= chr(0x80 | ($src & 0x003f));
+	}
+	else if ($src == 0xFEFF)
+	{
+		// nop -- zap the BOM
+	}
+	else if ($src >= 0xD800 && $src <= 0xDFFF)
+	{
+		// found a surrogate
+		return false;
+	}
+	else if ($src <= 0xffff)
+	{
+		$dest .= chr(0xe0 | ($src >> 12));
+		$dest .= chr(0x80 | (($src >> 6) & 0x003f));
+		$dest .= chr(0x80 | ($src & 0x003f));
+	}
+	else if ($src <= 0x10ffff)
+	{
+		$dest .= chr(0xf0 | ($src >> 18));
+		$dest .= chr(0x80 | (($src >> 12) & 0x3f));
+		$dest .= chr(0x80 | (($src >> 6) & 0x3f));
+		$dest .= chr(0x80 | ($src & 0x3f));
+	}
+	else
+	{
+		// out of range
+		return false;
+	}
+
+	return $dest;
+}
+
+
+//
+// Attempts to convert $str from $old_charset to UTF-8. Also converts HTML entities (including numeric entities) to UTF-8 characters
+//
+function convert_to_utf8(&$str, $old_charset)
+{
+	if ($str === null || $str == '')
+		return false;
+
+	$save = $str;
+
+	// Replace literal entities (for non-UTF-8 compliant html_entity_encode)
+	if (version_compare(PHP_VERSION, '5.0.0', '<') && $old_charset == 'ISO-8859-1' || $old_charset == 'ISO-8859-15')
+		$str = html_entity_decode($str, ENT_QUOTES, $old_charset);
+
+	if ($old_charset != 'UTF-8' && !seems_utf8($str))
+	{
+		if (function_exists('iconv'))
+			$str = iconv($old_charset == 'ISO-8859-1' ? 'WINDOWS-1252' : 'ISO-8859-1', 'UTF-8', $str);
+		else if (function_exists('mb_convert_encoding'))
+			$str = mb_convert_encoding($str, 'UTF-8', $old_charset == 'ISO-8859-1' ? 'WINDOWS-1252' : 'ISO-8859-1');
+		else if ($old_charset == 'ISO-8859-1')
+			$str = utf8_encode($str);
+	}
+
+	// Replace literal entities (for UTF-8 compliant html_entity_encode)
+	if (version_compare(PHP_VERSION, '5.0.0', '>='))
+		$str = html_entity_decode($str, ENT_QUOTES, 'UTF-8');
+
+	// Replace numeric entities
+	$str = preg_replace_callback('%&#([0-9]+);%', 'utf8_callback_1', $str);
+	$str = preg_replace_callback('%&#x([a-f0-9]+);%i', 'utf8_callback_2', $str);
+
+	// Remove "bad" characters
+	$str = remove_bad_characters($str);
+
+	return ($save != $str);
+}
+
+
+function utf8_callback_1($matches)
+{
+	return dcr2utf8($matches[1]);
+}
+
+
+function utf8_callback_2($matches)
+{
+	return dcr2utf8(hexdec($matches[1]));
+}

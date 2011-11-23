@@ -130,6 +130,7 @@ $db_config_default = array(
 	'username'		=> '',
 	'password'		=> '',
 	'prefix'		=> '',
+	'charset'		=> 'UTF-8',
 );
 
 
@@ -148,7 +149,8 @@ if (isset($_POST['form_sent']))
 		'name'		=> isset($_POST['req_old_db_name']) ? trim($_POST['req_old_db_name']) : error('You have to enter a database name for the old forum.', __FILE__, __LINE__),
 		'username'	=> isset($_POST['old_db_username']) ? trim($_POST['old_db_username']) : error('You have to enter a database username for the old forum.', __FILE__, __LINE__),
 		'password'	=> isset($_POST['old_db_pass']) ? $_POST['old_db_pass'] : '',
-		'prefix'	=> isset($_POST['old_db_prefix']) ? trim($_POST['old_db_prefix']) : ''
+		'prefix'	=> isset($_POST['old_db_prefix']) ? trim($_POST['old_db_prefix']) : '',
+		'charset'	=> isset($_POST['old_db_charset']) ? trim($_POST['old_db_charset']) : 'UTF-8'
 	);
 
 	// Make sure base_url doesn't end with a slash
@@ -211,7 +213,7 @@ if (isset($_POST['form_sent']) || (isset($_GET['stage']) && $_GET['stage'] != 'r
 	// Load the migration script
 	require SCRIPT_ROOT.'include/forum.class.php';
 	$forum = load_forum($forum_config['type'], $old_db, $fluxbb);
-	$forum->init_config();
+	$forum->init_config($old_db_config);
 
 	// Start the conversion process
 	require SCRIPT_ROOT.'include/converter.class.php';
@@ -458,6 +460,7 @@ function process_form(the_form)
 						<label class="required"><strong><?php echo $lang_convert['Database name'] ?> <span><?php echo $lang_convert['Required'] ?></span></strong><br /><input type="text" name="req_old_db_name" value="<?php echo pun_htmlspecialchars($old_db_config['name']) ?>" size="30" /><br /></label>
 						<label class="conl"><?php echo $lang_convert['Database username'] ?><br /><input type="text" name="old_db_username" value="<?php echo pun_htmlspecialchars($old_db_config['username']) ?>" size="30" /><br /></label>
 						<label class="conl"><?php echo $lang_convert['Database password'] ?><br /><input type="password" name="old_db_password" size="30" /><br /></label>
+						<label><?php echo $lang_convert['Database charset'] ?><br /><input type="text" name="old_db_charset" value="<?php echo pun_htmlspecialchars($old_db_config['charset']) ?>" size="20" maxlength="30" /><br /></label>
 						<label><?php echo $lang_convert['Table prefix'] ?><br /><input id="db_prefix" type="text" name="old_db_prefix" value="<?php echo pun_htmlspecialchars($old_db_config['prefix']) ?>" size="20" maxlength="30" /><br /></label>
 					</div>
 				</fieldset>
