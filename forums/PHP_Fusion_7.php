@@ -123,13 +123,18 @@ class PHP_Fusion_7 extends Forum
 		conv_message('Processing', 'forums', $this->db->num_rows($result));
 		while ($cur_forum = $this->db->fetch_assoc($result))
 		{
-			$result_last_post_id = $this->db->query_build(array(
-				'SELECT'	=> 'thread_lastpostid',
-				'FROM'		=> 'threads',
-				'WHERE'		=> 'forum_id = '.$cur_forum['id']
-			)) or error('Unable to fetch forum last post', __FILE__, __LINE__, $this->db->error());
+			if ($cur_forum['num_topics'] == 0)
+				$cur_forum['last_post_id'] = $cur_forum['last_poster'] = $cur_forum['last_post'] = NULL;
+			else
+			{
+				$result_last_post_id = $this->db->query_build(array(
+					'SELECT'	=> 'thread_lastpostid',
+					'FROM'		=> 'threads',
+					'WHERE'		=> 'forum_id = '.$cur_forum['id']
+				)) or error('Unable to fetch forum last post', __FILE__, __LINE__, $this->db->error());
 
-			$cur_forum['last_post_id'] = $this->db->result($result_last_post_id);
+				$cur_forum['last_post_id'] = $this->db->result($result_last_post_id);
+			}
 
 			$this->fluxbb->add_row('forums', $cur_forum);
 		}
