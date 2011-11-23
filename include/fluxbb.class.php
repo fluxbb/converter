@@ -56,7 +56,7 @@ class FluxBB
 				break;
 		}
 
-		$_SESSION['converter']['dupe_users'][$cur_user['id']]['new_username'] = $cur_user['username'] = $username;
+		$_SESSION['converter']['dupe_users'][$cur_user['id']]['username'] = $cur_user['username'] = $username;
 
 		$temp = array();
 		foreach ($cur_user as $idx => $value)
@@ -97,6 +97,8 @@ class FluxBB
 				}
 			}
 		}
+
+		$_SESSION['converter']['dupe_users'][$cur_user['id']]['old_username'] = $old_username;
 	}
 
 	function pass_hash($str)

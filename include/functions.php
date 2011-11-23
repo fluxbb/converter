@@ -182,8 +182,8 @@ function alert_dupe_users()
 
 		$mail_subject = str_replace('<board_title>', $pun_config['o_board_title'], $mail_subject);
 		$mail_message = str_replace('<base_url>', get_base_url().'/', $mail_message);
-		$mail_message = str_replace('<old_username>', $cur_user['username'], $mail_message);
-		$mail_message = str_replace('<new_username>', $cur_user['new_username'], $mail_message);
+		$mail_message = str_replace('<old_username>', $cur_user['old_username'], $mail_message);
+		$mail_message = str_replace('<new_username>', $cur_user['username'], $mail_message);
 		$mail_message = str_replace('<board_mailer>', $pun_config['o_board_title'], $mail_message);
 
 		pun_mail($cur_user['email'], $mail_subject, $mail_message);

@@ -142,7 +142,7 @@ class PunBB_1_3 extends Forum
 			'LIMIT'		=> PER_PAGE,
 		)) or error('Unable to fetch posts', __FILE__, __LINE__, $this->db->error());
 
-		conv_message('Processing', 'posts (%d - %d)', $this->db->num_rows($result), $start_at, $start_at + PER_PAGE);
+		conv_message('Processing rows', 'posts', $this->db->num_rows($result), $start_at, $start_at + PER_PAGE);
 
 		if (!$this->db->num_rows($result))
 			return;
@@ -234,6 +234,7 @@ class PunBB_1_3 extends Forum
 			'FROM'		=> 'users',
 			'WHERE'		=> 'id <> 1 AND id > '.$start_at,
 			'LIMIT'		=> PER_PAGE,
+			'ORDER BY'	=> 'id ASC',
 		)) or error('Unable to fetch users', __FILE__, __LINE__, $this->db->error());
 
 		conv_message('Processing rows', 'users', $this->db->num_rows($result), $start_at, $start_at + PER_PAGE);
