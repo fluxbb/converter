@@ -20,25 +20,25 @@ class PHP_Fusion_7 extends Forum
 			error('Selected database does not contain valid PHP Fusion installation');
 	}
 
-//	function convert_bans()
-//	{
-//		$result = $this->db->query_build(array(
-//			'SELECT'	=> 'b.ban_id AS id, u.username AS username, b.ban_ip AS ip, b.ban_email AS email, b.ban_reason AS message, b.ban_end AS expire',
-//			'JOINS'        => array(
-//				array(
-//					'LEFT JOIN'	=> 'users AS u',
-//					'ON'		=> 'u.user_id=b.ban_userid'
-//				),
-//			),
-//			'FROM'		=> 'banlist AS b',
-//		)) or error('Unable to fetch bans', __FILE__, __LINE__, $this->db->error());
+	function convert_bans()
+	{
+		$result = $this->db->query_build(array(
+			'SELECT'	=> 'b.blacklist_id AS id, u.user_name AS username, b.blacklist_ip AS ip, b.blacklist_email AS email, b.blacklist_reason AS message, NULL AS expire',
+			'JOINS'        => array(
+				array(
+					'LEFT JOIN'	=> 'users AS u',
+					'ON'		=> 'u.user_id=b.blacklist_user_id'
+				),
+			),
+			'FROM'		=> 'blacklist AS b',
+		)) or error('Unable to fetch bans', __FILE__, __LINE__, $this->db->error());
 
-//		conv_message('Processing', 'bans', $this->db->num_rows($result));
-//		while ($cur_ban = $this->db->fetch_assoc($result))
-//		{
-//			$this->fluxbb->add_row('bans', $cur_ban);
-//		}
-//	}
+		conv_message('Processing', 'bans', $this->db->num_rows($result));
+		while ($cur_ban = $this->db->fetch_assoc($result))
+		{
+			$this->fluxbb->add_row('bans', $cur_ban);
+		}
+	}
 
 	function convert_categories()
 	{
@@ -55,55 +55,66 @@ class PHP_Fusion_7 extends Forum
 		}
 	}
 
-//	function convert_censoring()
-//	{
-//		$result = $this->db->query_build(array(
-//			'SELECT'	=> 'word_id AS id, word AS search_for, replacement AS replace_with',
-//			'FROM'		=> 'words',
-//		)) or error('Unable to fetch words', __FILE__, __LINE__, $this->db->error());
+	function convert_censoring()
+	{
+		$result = $this->db->query_build(array(
+			'SELECT'	=> 'settings_value',
+			'FROM'		=> 'settings',
+			'WHERE'		=> 'settings_name = \'bad_words\''
+		)) or error('Unable to fetch words', __FILE__, __LINE__, $this->db->error());
 
-//		conv_message('Processing', 'censors', $this->db->num_rows($result));
-//		while ($cur_censor = $this->db->fetch_assoc($result))
-//		{
-//			$this->fluxbb->add_row('censoring', $cur_censor);
-//		}
-//	}
+		$censor_words = explode("\n", trim($this->db->result($result), "\n"));
 
-	//function convert_config()
-//	{
-//		$old_config = array();
+		conv_message('Processing', 'censors', count($censor_words));
+		foreach ($censor_words as $cur_word)
+		{
+			$this->fluxbb->add_row('censoring', array('search_for' => $cur_word, 'replace_With' => '****'));
+		}
+	}
 
-//		$result = $this->db->query_build(array(
-//			'SELECT'	=> 'config_name, config_value',
-//			'FROM'		=> 'config',
-//		)) or error('Unable to fetch config', __FILE__, __LINE__, $this->db->error());
+	function convert_config()
+	{
+		$old_config = array();
 
-//		conv_message('Processing', 'config');
-//		while ($cur_config = $this->db->fetch_assoc($result))
-//			$old_config[$cur_config['config_name']] = $cur_config['config_value'];
+		$result = $this->db->query_build(array(
+			'SELECT'	=> 'settings_name, settings_value',
+			'FROM'		=> 'settings',
+		)) or error('Unable to fetch config', __FILE__, __LINE__, $this->db->error());
 
-//		$new_config = array(
-//			'o_board_title'			=> $old_config['sitename'],
-//			'o_board_desc'			=> $old_config['site_desc'],
-//			'o_admin_email'			=> $old_config['board_email'],
-//			'o_server_timezone'		=> $old_config['board_timezone'],
-//			'o_disp_topics_default'	=> $old_config['topics_per_page'],
-//			'o_disp_posts_default'	=> $old_config['posts_per_page'],
-//			'o_webmaster_email'		=> $old_config['board_email'],
-//			'o_smtp_host'			=> $old_config['smtp_host'],
-//			'o_smtp_user'			=> $old_config['smtp_username'],
-//			'o_smtp_pass'			=> $old_config['smtp_password']
-//		);
+		conv_message('Processing', 'config');
+		while ($cur_config = $this->db->fetch_assoc($result))
+			$old_config[$cur_config['settings_name']] = $cur_config['settings_value'];
 
-//		foreach ($new_config as $key => $value)
-//		{
-//			$this->fluxbb->db->query_build(array(
-//				'UPDATE'	=> 'config',
-//				'SET' 		=> 'conf_value = \''.$this->db->escape($value).'\'',
-//				'WHERE'		=> 'conf_name = \''.$this->db->escape($key).'\'',
-//			)) or error('Unable to update config', __FILE__, __LINE__, $this->fluxbb->db->error());
-//		}
-//	}
+		$new_config = array(
+			'o_board_title'			=> $old_config['sitename'],
+			'o_board_desc'			=> $old_config['description'],
+			'o_default_timezone'	=> $old_config['timeoffset'],
+			'o_censoring'			=> $old_config['bad_words_enabled'],
+			'o_avatars_width'		=> $old_config['avatar_width'],
+			'o_avatars_height'		=> $old_config['avatar_height'],
+			'o_avatars_size'		=> $old_config['avatar_filesize'],
+			'o_admin_email'			=> $old_config['siteemail'],
+			'o_smtp_host'			=> $old_config['smtp_host'].(isset($old_config['smtp_port']) ? ':'.$old_config['smtp_port'] : ''),
+			'o_smtp_user'			=> $old_config['smtp_username'],
+			'o_smtp_pass'			=> $old_config['smtp_password'],
+			'o_regs_allow'			=> $old_config['enable_registration'],
+			'o_regs_verify'			=> $old_config['email_verification'],
+			'o_announcement'		=> 1,
+			'o_announcement_message'=> $old_config['siteintro'],
+			'o_rules'				=> $old_config['enable_terms'],
+			'o_maintenance'			=> $old_config['maintenance'],
+			'o_maintenance_message'	=> $old_config['maintenance_message'],
+		);
+
+		foreach ($new_config as $key => $value)
+		{
+			$this->fluxbb->db->query_build(array(
+				'UPDATE'	=> 'config',
+				'SET' 		=> 'conf_value = \''.$this->db->escape($value).'\'',
+				'WHERE'		=> 'conf_name = \''.$this->db->escape($key).'\'',
+			)) or error('Unable to update config', __FILE__, __LINE__, $this->fluxbb->db->error());
+		}
+	}
 
 	function convert_forums()
 	{
@@ -156,22 +167,21 @@ class PHP_Fusion_7 extends Forum
 //		}
 //	}
 
-//	function convert_groups()
-//	{
-//		$result = $this->db->query_build(array(
-//			'SELECT'	=> 'group_id AS g_id, group_name AS g_title, group_name AS g_user_title',
-//			'FROM'		=> 'groups',
-//			'WHERE'		=> 'group_id > 7'
-//		)) or error('Unable to fetch groups', __FILE__, __LINE__, $this->db->error());
+	function convert_groups()
+	{
+		$result = $this->db->query_build(array(
+			'SELECT'	=> 'group_id AS g_id, group_name AS g_title, group_description AS g_user_title',
+			'FROM'		=> 'user_groups',
+		)) or error('Unable to fetch groups', __FILE__, __LINE__, $this->db->error());
 
-//		conv_message('Processing', 'groups', $this->db->num_rows($result));
-//		while ($cur_group = $this->db->fetch_assoc($result))
-//		{
+		conv_message('Processing', 'groups', $this->db->num_rows($result));
+		while ($cur_group = $this->db->fetch_assoc($result))
+		{
 //			$cur_group['g_id'] = $this->grp2grp($cur_group['g_id']);
 
-//			$this->fluxbb->add_row('groups', $cur_group);
-//		}
-//	}
+			$this->fluxbb->add_row('groups', $cur_group);
+		}
+	}
 
 	function convert_posts($start_at)
 	{
@@ -244,19 +254,19 @@ class PHP_Fusion_7 extends Forum
 //		}
 //	}
 
-//	function convert_topic_subscriptions()
-//	{
-//		$result = $this->db->query_build(array(
-//			'SELECT'	=> 'user_id, topic_id',
-//			'FROM'		=> 'topics_watch',
-//		)) or error('Unable to fetch topic subscriptions', __FILE__, __LINE__, $this->db->error());
+	function convert_topic_subscriptions()
+	{
+		$result = $this->db->query_build(array(
+			'SELECT'	=> 'notify_user AS user_id, thread_id AS topic_id',
+			'FROM'		=> 'thread_notify',
+		)) or error('Unable to fetch topic subscriptions', __FILE__, __LINE__, $this->db->error());
 
-//		conv_message('Processing', 'topic subscriptions', $this->db->num_rows($result));
-//		while ($cur_sub = $this->db->fetch_assoc($result))
-//		{
-//			$this->fluxbb->add_row('topic_subscriptions', $cur_sub);
-//		}
-//	}
+		conv_message('Processing', 'topic subscriptions', $this->db->num_rows($result));
+		while ($cur_sub = $this->db->fetch_assoc($result))
+		{
+			$this->fluxbb->add_row('topic_subscriptions', $cur_sub);
+		}
+	}
 
 //	function convert_forum_subscriptions()
 //	{
@@ -317,7 +327,7 @@ class PHP_Fusion_7 extends Forum
 	function convert_users($start_at)
 	{
 		$result = $this->db->query_build(array(
-			'SELECT'	=> 'user_id AS id, user_name AS username, user_password AS password, user_email AS email, user_web AS url, user_icq AS icq, user_msn AS msn, user_yahoo AS yahoo, user_sig AS signature, user_offset AS timezone, user_posts AS num_posts, user_joined AS registered, user_lastvisit AS last_visit, user_location AS location, IF(user_hide_email=0, 1, 0) AS email_setting',
+			'SELECT'	=> 'user_id AS id, user_name AS username, user_password AS password, user_email AS email, user_web AS url, user_icq AS icq, user_msn AS msn, user_yahoo AS yahoo, user_sig AS signature, user_offset AS timezone, user_posts AS num_posts, user_joined AS registered, user_lastvisit AS last_visit, user_location AS location, IF(user_hide_email=0, 1, 0) AS email_setting, user_groups AS group_id',
 			'FROM'		=> 'users',
 			'WHERE'		=> 'user_id > '.$start_at,
 			'LIMIT'		=> PER_PAGE,
@@ -340,7 +350,8 @@ class PHP_Fusion_7 extends Forum
 			$cur_user['last_post'] = $this->db->result($result_last_post);
 
 //			$cur_user['group_id'] = $this->grp2grp($cur_user['group_id']);
-			$cur_user['group_id'] = $cur_user['id'] == 1 ? 1 : 4;
+			$groups = explode(',', $cur_user['group_id']);
+			$cur_user['group_id'] = $cur_user['id'] == 1 ? 1 : (count($groups) ? $groups[0] : 4);
 			$cur_user['id'] = $this->uid2uid($cur_user['id']);
 
 //			$cur_user['password'] = $this->fluxbb->pass_hash($this->fluxbb->random_pass(20));
@@ -353,18 +364,18 @@ class PHP_Fusion_7 extends Forum
 		$this->redirect('users', 'user_id', $start_at);
 	}
 
-	function grp2grp($id)
-	{
-		static $mapping;
+//	function grp2grp($id)
+//	{
+//		static $mapping;
 
-		if (!isset($mapping))
-			$mapping = array(1 => 3, 2 => 4, 3 => 4, 4 => 2, 5 => 1);
+//		if (!isset($mapping))
+//			$mapping = array(1 => 3, 2 => 4, 3 => 4, 4 => 2, 5 => 1);
 
-		if (!array_key_exists($id, $mapping))
-			return $id;
+//		if (!array_key_exists($id, $mapping))
+//			return $id;
 
-		return $mapping[$id];
-	}
+//		return $mapping[$id];
+//	}
 
 	function uid2uid($id)
 	{

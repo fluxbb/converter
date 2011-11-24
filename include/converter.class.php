@@ -115,11 +115,13 @@ class Converter
 		require_once PUN_ROOT.'include/cache.php';
 
 		// Generate cache
-		generate_bans_cache();
-		generate_quickjump_cache();
 		generate_config_cache();
+		generate_bans_cache();
 		generate_ranks_cache();
+		generate_quickjump_cache();
+		generate_censoring_cache();
 		generate_users_info_cache();
+		clear_feed_cache();
 	}
 
 	function get_time()

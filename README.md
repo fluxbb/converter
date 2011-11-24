@@ -25,6 +25,6 @@ Installation instructions
  - Go to the converter page ("www.example.com/fluxbb/converter/").
  - Choose which forum software you want to convert from.
  - Enter database connection information
- - Press 'Start conversion'.
+ - Press 'Start converter'.
  - When the converter is done, remove the converter files.
- - Done! You're now ready yo use FluxBB!
+ - Done! You're now ready to use FluxBB!
