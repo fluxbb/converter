@@ -465,7 +465,7 @@ function process_form(the_form)
 					</div>
 				</fieldset>
 			</div>
-			<p class="buttons"><input type="submit" name="start" value="<?php echo $lang_convert['Start conversion'] ?>" /></p>
+			<p class="buttons"><input type="submit" name="start" value="<?php echo $lang_convert['Start converter'] ?>" /></p>
 		</form>
 	</div>
 </div>

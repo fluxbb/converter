@@ -338,7 +338,7 @@ class SMF_1_1_11 extends Forum
 			return 1;
 
 		// id=1 is reserved for the guest user
-		elseif ($id == 1)
+		else if ($id == 1)
 		{
 			if (!isset($last_uid))
 			{
@@ -358,7 +358,14 @@ class SMF_1_1_11 extends Forum
 	function convert_message($message)
 	{
 		$message = $this->convert_to_utf8($message);
-		$message = str_replace('<br />', "\n", $message);
+
+		$replace = array(
+			'<br />'		=>	"\n",
+			'[li]'			=>	'[*]',
+			'[/li]'			=>	'[/*]'
+		);
+
+		$message = str_replace(array_keys($replace), array_values($replace), $message);
 		return $message;
 	}
 }

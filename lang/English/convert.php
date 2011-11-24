@@ -31,7 +31,7 @@ $lang_convert = array(
 'Database charset'				=>	'Database charset',
 'Table prefix'					=>	'Table prefix',
 
-'Start conversion'				=>	'Start conversion',
+'Start converter'				=>	'Start converter',
 'Converting header'				=>	'Converting',
 'Conversion completed'			=>	'Conversion completed',
 
