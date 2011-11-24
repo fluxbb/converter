@@ -270,7 +270,7 @@ class PhpBB_3_0_8 extends Forum
 		while ($cur_topic = $this->db->fetch_assoc($result))
 		{
 			$start_at = $cur_topic['id'];
-			$cur_topic['subject'] = html_entity_decode($cur_topic['subject']);
+			$cur_topic['subject'] = html_entity_decode($cur_topic['subject'], ENT_QUOTES, 'UTF-8');
 
 			$this->fluxbb->add_row('topics', $cur_topic);
 		}

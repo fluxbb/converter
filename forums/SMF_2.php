@@ -376,23 +376,15 @@ class SMF_2 extends Forum
 		$message = html_entity_decode($message, ENT_QUOTES, 'UTF-8');
 
 		$replace = array(
-			'#\\[quote author=(.*?) link(.*?)\](.*?)\[/quote\]#is'	=>	'[quote=$1]$3[/quote]',
-			'#\\[flash=(.*?)\](.*?)\[/flash\]#is'					=>	'Flash: $2',
-			'#\\[ftp=(.*?)\](.*?)\[/ftp\]#is'						=>	'[url=$1]$2[/url]',
-			'#\\[list=?.*?\](.*?)\[/list\]#is'						=>	'[list]$1[/list]',
-			'#\\[li\](.*?)\[/li\]#is'								=>	'[*]$1[/*]',
-
-			'#\\[table\](.*?)\[/table\]#is'							=>	'$1',
-			'#\\[tr\]#is'											=>	'[list]',
-			'#\\[/tr\]#is'											=>	'[/list]',
-			'#\\[td\](.*?)\[/td\]#is'								=>	'[*]$1[/*]',
-
-			'#\\[hr\]#is'											=>	'[b]$1[/b]'."\n",
+			'%\[quote author=(.*?) link.*?\](.*?)\[/quote\]%si'		=>	'[quote=$1]$2[/quote]',
+			'%\[flash=.*?\](.*?)\[/flash\]%si'						=>	'Flash: $1',
+			'%\[ftp=(.*?)\](.*?)\[/ftp\]%si'						=>	'[url=$1]$2[/url]',
+			'%\[list(=.*?)?\](.*?)\[/list\]%si'						=>	'[list]$1[/list]',
 		);
 		$message = preg_replace(array_keys($replace), array_values($replace), $message);
 
 		// Strip tags that are not supported by FluxBB
-		$strip_tags = array('font', 'size', 'glow', 's', 'shadow', 'move', 'pre', 'left', 'right', 'center', 'sup', 'sub', 'tt');
+		$strip_tags = array('font', 'size', 'glow', 's', 'shadow', 'move', 'pre', 'left', 'right', 'center', 'sup', 'sub', 'tt', 'table');
 		foreach ($strip_tags as $cur_tag)
 		{
 			$message = preg_replace('%\['.preg_quote($cur_tag).'(=.*?)?\]%i', '', $message);
@@ -400,11 +392,16 @@ class SMF_2 extends Forum
 		}
 
 		$replace = array(
+			'[li]'		=>	'[*]',
+			'[/li]'		=>	'[/*]',
+			'[tr]'		=>	'[list]',
+			'[/tr]'		=>	'[/list]',
+			'[td]'		=>	'[*]',
+			'[/td]'		=>	'[/*]',
 			'<br />'	=>	"\n",
+			'[hr]'		=>	"\n",
 			'::)'		=>	':rolleyes:',
 		);
-		$message = str_replace(array_keys($replace), array_values($replace), $message);
-
-		return $message;
+		return str_replace(array_keys($replace), array_values($replace), $message);
 	}
 }
