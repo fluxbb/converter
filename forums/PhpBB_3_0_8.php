@@ -324,7 +324,7 @@ class PhpBB_3_0_8 extends Forum
 	// Convert posts BB-code
 	function convert_message($message)
 	{
-		$message = html_entity_decode($message);
+		$message = html_entity_decode($message, ENT_QUOTES, 'UTF-8');
 
 		// Strip text after colon in tag name
 		$tags = array('b', 'i', 'u', 'list', '*', 'color', 'img', 'url', 'code', 'quote', 'size');

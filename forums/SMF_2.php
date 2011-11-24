@@ -310,8 +310,8 @@ class SMF_2 extends Forum
 			$start_at = $cur_user['id'];
 			$cur_user['group_id'] = $this->grp2grp($cur_user['group_id']);
 //			$cur_user['password'] = $this->fluxbb->pass_hash($this->fluxbb->random_pass(20));
-			$cur_user['language'] = $this->default_lang;
-			$cur_user['style'] = $this->default_style;
+//			$cur_user['language'] = $this->default_lang;
+//			$cur_user['style'] = $this->default_style;
 			$cur_user['id'] = $this->uid2uid($cur_user['id']);
 
 			$result_post = $this->db->query_build(array(
@@ -353,7 +353,7 @@ class SMF_2 extends Forum
 			return 1;
 
 		// id=1 is reserved for the guest user
-		elseif ($id == 1)
+		else if ($id == 1)
 		{
 			if (!isset($last_uid))
 			{
@@ -373,77 +373,38 @@ class SMF_2 extends Forum
 	// Convert posts BB-code
 	function convert_message($message)
 	{
-		$pattern = array(
-			// Other
-			'#\\[quote author=(.*?) link(.*?)\](.*?)\[/QUOTE\]#is',
-			'#\\[flash=(.*?)\](.*?)\[/flash\]#is',
-			'#\\[ftp=(.*?)\](.*?)\[/ftp\]#is',
-			'#\\[font=(.*?)\](.*?)\[/font\]#is',
-			'#\\[size=(.*?)\](.*?)\[/size\]#is',
-			'#\\[list=?.*?\](.*?)\[/list\]#is',
-			'#\\[li\](.*?)\[/li\]#is',
-
-			// Table
-			'#\\[table\](.*?)\[/table\]#is',
-			'#\\[tr\]#is',
-			'#\\[/tr\]#is',
-			'#\\[td\](.*?)\[/td\]#is',
-
-			// Removed tags
-			'#\\[glow=(.*?)\](.*?)\[/glow\]#is',
-			'#\\[s\](.*?)\[/s\]#is',
-			'#\\[shadow=(.*?)\](.*?)\[/shadow\]#is',
-			'#\\[move\](.*?)\[/move\]#is',
-			'#\\[pre\](.*?)\[/pre\]#is',
-
-			'#\\[left\](.*?)\[/left\]#is',
-			'#\\[right\](.*?)\[/right\]#is',
-			'#\\[center\](.*?)\[/center\]#is',
-			'#\\[sup\](.*?)\[/sup\]#is',
-			'#\\[sub\](.*?)\[/sub\]#is',
-
-			'#\\[hr\]#is',
-			'#\\[tt\](.*?)\[/tt\]#is',
-		);
+		$message = html_entity_decode($message, ENT_QUOTES, 'UTF-8');
 
 		$replace = array(
-			// Other
-			'[quote=$1]$3[/quote]',
-			'Flash: $2',
-			'[url=$1]$2[/url]',
-			'$2',
-			'$2',
-			'[list]$1[/list]',
-			'[*]$1[/*]',
+			'#\\[quote author=(.*?) link(.*?)\](.*?)\[/quote\]#is'	=>	'[quote=$1]$3[/quote]',
+			'#\\[flash=(.*?)\](.*?)\[/flash\]#is'					=>	'Flash: $2',
+			'#\\[ftp=(.*?)\](.*?)\[/ftp\]#is'						=>	'[url=$1]$2[/url]',
+			'#\\[list=?.*?\](.*?)\[/list\]#is'						=>	'[list]$1[/list]',
+			'#\\[li\](.*?)\[/li\]#is'								=>	'[*]$1[/*]',
 
-			// Table
-			'$1',
-			'------------------------------------------------------------------'."\n",
-			'------------------------------------------------------------------'."\n",
-			"* $1\n",
+			'#\\[table\](.*?)\[/table\]#is'							=>	'$1',
+			'#\\[tr\]#is'											=>	'[list]',
+			'#\\[/tr\]#is'											=>	'[/list]',
+			'#\\[td\](.*?)\[/td\]#is'								=>	'[*]$1[/*]',
 
-			// Removed tags
-			'$2',
-			'$1',
-			'$2',
-			'$1',
-			'$1',
-
-			'$1',
-			'$1',
-			'$1',
-			'$1',
-			'$1',
-
-			'$1'."\n",
-			'$1',
+			'#\\[hr\]#is'											=>	'[b]$1[/b]'."\n",
 		);
+		$message = preg_replace(array_keys($replace), array_values($replace), $message);
 
-		$message = str_replace('<br />', "\n", $message);
-		$message = str_replace("&gt;:(", ':x', $message);
-		$message = str_replace('::)', ':rolleyes:', $message);
-		$message = str_replace('&nbsp;', ' ', $message);
+		// Strip tags that are not supported by FluxBB
+		$strip_tags = array('font', 'size', 'glow', 's', 'shadow', 'move', 'pre', 'left', 'right', 'center', 'sup', 'sub', 'tt');
+		foreach ($strip_tags as $cur_tag)
+		{
+			$message = preg_replace('%\['.preg_quote($cur_tag).'(=.*?)?\]%i', '', $message);
+			$message = preg_replace('%\[/'.preg_quote($cur_tag).'\]%i', '', $message);
+		}
 
-		return preg_replace($pattern, $replace, $message);
+		$replace = array(
+			'<br />'	=>	"\n",
+			'::)'		=>	':rolleyes:',
+		);
+		$message = str_replace(array_keys($replace), array_values($replace), $message);
+
+		return $message;
 	}
 }
