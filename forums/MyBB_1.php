@@ -418,32 +418,25 @@ class MyBB_1 extends Forum
 	// Convert posts BB-code
 	function convert_message($message)
 	{
-		// TODO
-//		$message = html_entity_decode($message, ENT_QUOTES, 'UTF-8');
+		$replace = array(
+			'%\[quote=\'(.*?)\'.*?\]\s*%si'								=>	'[quote=$1]',
+			'%\[\*\](.*?)\n%si'											=>	'[*]$1[/*]'."\n",
+		);
 
-		// Strip text after colon in tag name
-//		$tags = array('b', 'i', 'u', 'list', '*', 'color', 'img', 'url', 'code', 'quote', 'size');
-//		foreach ($tags as $cur_tag)
-//			$message = preg_replace('%\[(/?'.preg_quote($cur_tag).')(=.*?)?(:[a-z0-9])?:[a-z0-9]{8}\]%i', '[$1$2]', $message);
+		$message = preg_replace(array_keys($replace), array_values($replace), $message);
 
-//		$replace = array(
-			// Smileys
-//			'#<!-- s.*? --><img src=".*?" alt="(.*?)" title=".*?" \/><!-- s.*? -->#i'			=>	'$1',
+		// Strip tags that are not supported by FluxBB
+		$strip_tags = array('font', 'size', 'align');
+		foreach ($strip_tags as $cur_tag)
+		{
+			$message = preg_replace('%\['.preg_quote($cur_tag).'(=.*?)?\]%i', '', $message);
+			$message = preg_replace('%\[/'.preg_quote($cur_tag).'\]%i', '', $message);
+		}
 
-//			'#<!-- [mw] --><a class="postlink" href="(.*?)">(.*?)</a><!-- [mw] -->#i'			=>	'[url=$1]$2[/url]',
-//			'#<!-- e --><a href="mailto:(.*?)">(.*?)</a><!-- e -->#i'							=>	'[email=$1]$2[/email]',
-//		);
-
-//		$message = preg_replace(array_keys($replace), array_values($replace), $message);
-
-//		$smilies = array(
-//			':shock:'		=> ':o',
-//			'8-)'			=> ':cool:',
-//			':evil:'		=> ':/',
-//			':roll:'		=> ':rolleyes:',
-//		);
-
-//		return str_replace(array_keys($smilies), array_values($smilies), $message);
-		return $message;
+		$replace = array(
+			'[php]'		=>	'[code]',
+			'[/php]'	=>	'[/code]',
+		);
+		return str_replace(array_keys($replace), array_values($replace), $message);
 	}
 }
