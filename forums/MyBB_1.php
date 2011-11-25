@@ -103,6 +103,8 @@ class MyBB_1 extends Forum
 			'o_smilies'					=> 1,
 			'o_smilies_sig'				=> 1,
 			'o_make_links'				=> 1,
+//			'o_default_lang'			=> 'English', // No need to change this value
+//			'o_default_style'			=> 'Air', // No need to change this value
 			'o_default_user_group'		=> 4,
 			'o_topic_review'			=> 15,
 			'o_disp_topics_default'		=> 30,
@@ -123,10 +125,12 @@ class MyBB_1 extends Forum
 			'o_default_email_setting'	=> 1,
 			'o_mailing_list'			=> $old_config['adminemail'],
 			'o_avatars'					=> 1,
+//			'o_avatars_dir'				=> 'img/avatars', // No need to change this value
 			'o_avatars_width'			=> 60,
 			'o_avatars_height'			=> 60,
 			'o_avatars_size'			=> 10240,
 			'o_search_all_forums'		=> 1,
+//			'o_base_url'				=> '', // No need to change this value
 			'o_admin_email'				=> $old_config['adminemail'],
 			'o_webmaster_email'			=> $old_config['adminemail'],
 			'o_forum_subscriptions'		=> 1,
@@ -414,6 +418,7 @@ class MyBB_1 extends Forum
 	// Convert posts BB-code
 	function convert_message($message)
 	{
+		// TODO
 //		$message = html_entity_decode($message, ENT_QUOTES, 'UTF-8');
 
 		// Strip text after colon in tag name

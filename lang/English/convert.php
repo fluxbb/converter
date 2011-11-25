@@ -29,6 +29,7 @@ $lang_convert = array(
 'Database username'				=>	'Database username',
 'Database password'				=>	'Database password',
 'Database charset'				=>	'Database charset',
+'Database charset info'			=>	'(no need to change default value for most forums)',
 'Table prefix'					=>	'Table prefix',
 
 'Start converter'				=>	'Start converter',
