@@ -396,9 +396,7 @@ class PhpBB_3_0_8 extends Forum
 		$message = html_entity_decode($message, ENT_QUOTES, 'UTF-8');
 
 		// Strip text after colon in tag name
-		$tags = array('b', 'i', 'u', 'list', '*', 'color', 'img', 'url', 'code', 'quote', 'size');
-		foreach ($tags as $cur_tag)
-			$message = preg_replace('%\[(/?'.preg_quote($cur_tag).')(=.*?)?(:[a-z0-9])?:[a-z0-9]{8}\]%i', '[$1$2]', $message);
+		$message = preg_replace('%\[(/?)(b|i|u|list|\*|color|img|url|code|quote|size)(?:\=[^\]]*)??(:[a-z0-9])?:[a-z0-9]{8}\]%i', '[$1$2$3]', $message);
 
 		$replace = array(
 			// Smileys

@@ -177,7 +177,7 @@ class MyBB_1 extends Forum
 	function convert_forums()
 	{
 		$result = $this->db->query_build(array(
-			'SELECT'	=> 'f.fid AS id, f.name AS forum_name, f.description AS forum_desc, f.linkto AS redirect_url, f.threads AS num_topics, f.posts AS num_posts, f.disporder AS disp_position, f.lastposter AS last_poster, f.lastpost AS last_post, f.parentlist AS cat_id, f.lastposttid',
+			'SELECT'	=> 'f.fid AS id, f.name AS forum_name, f.description AS forum_desc, IF(f.linkto=\'\', NULL, f.linkto) AS redirect_url, f.threads AS num_topics, f.posts AS num_posts, f.disporder AS disp_position, f.lastposter AS last_poster, f.lastpost AS last_post, f.parentlist AS cat_id, f.lastposttid',
 			'FROM'		=> 'forums AS f',
 			'WHERE'		=> 'type = \'f\'',
 		)) or error('Unable to fetch forums', __FILE__, __LINE__, $this->db->error());
@@ -426,12 +426,7 @@ class MyBB_1 extends Forum
 		$message = preg_replace(array_keys($replace), array_values($replace), $message);
 
 		// Strip tags that are not supported by FluxBB
-		$strip_tags = array('font', 'size', 'align');
-		foreach ($strip_tags as $cur_tag)
-		{
-			$message = preg_replace('%\['.preg_quote($cur_tag).'(=.*?)?\]%i', '', $message);
-			$message = preg_replace('%\[/'.preg_quote($cur_tag).'\]%i', '', $message);
-		}
+		$message = preg_replace('%\[/?(font|size|align)(?:\=[^\]]*)?\]%i', '', $message);
 
 		$replace = array(
 			'[php]'		=>	'[code]',

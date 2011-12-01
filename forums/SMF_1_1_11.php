@@ -403,7 +403,7 @@ class SMF_1_1_11 extends Forum
 		static $mapping;
 
 		if (!isset($mapping))
-			$mapping = array(0 => 0, 1 => 1, 2 => 3, 3 => 4, 4 => 2);
+			$mapping = array(0 => PUN_UNVERIFIED, 1 => PUN_ADMIN, 2 => PUN_GUEST, 3 => PUN_MEMBER, 4 => PUN_MOD);
 
 		if (!array_key_exists($id, $mapping))
 			return $id;

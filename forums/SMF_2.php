@@ -412,7 +412,7 @@ class SMF_2 extends Forum
 		static $mapping;
 
 		if (!isset($mapping))
-			$mapping = array(0 => 4, 3 => 2, 5 => 4, 6 => 4, 7 => 4, 8 => 4);
+			$mapping = array(0 => PUN_MEMBER, 3 => PUN_MOD, 5 => PUN_MEMBER, 6 => PUN_MEMBER, 7 => PUN_MEMBER, 8 => PUN_MEMBER);
 
 		if (!array_key_exists($id, $mapping))
 			return $id;
@@ -460,12 +460,7 @@ class SMF_2 extends Forum
 		$message = preg_replace(array_keys($replace), array_values($replace), $message);
 
 		// Strip tags that are not supported by FluxBB
-		$strip_tags = array('font', 'size', 'glow', 's', 'shadow', 'move', 'pre', 'left', 'right', 'center', 'sup', 'sub', 'tt', 'table');
-		foreach ($strip_tags as $cur_tag)
-		{
-			$message = preg_replace('%\['.preg_quote($cur_tag).'(=.*?)?\]%i', '', $message);
-			$message = preg_replace('%\[/'.preg_quote($cur_tag).'\]%i', '', $message);
-		}
+		$message = preg_replace('%\[/?(font|size|glow|s|shadow|move|pre|left|right|center|sup|sub|tt|table)(?:\=[^\]]*)?\]%i', '', $message);
 
 		$replace = array(
 			'[li]'		=>	'[*]',
