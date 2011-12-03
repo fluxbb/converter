@@ -392,7 +392,7 @@ class MyBB_1 extends Forum
 		return $mapping[$id];
 	}
 
-	function uid2uid($id, $new_uid = false)
+	function uid2uid($id)
 	{
 		static $last_uid;
 
@@ -415,23 +415,29 @@ class MyBB_1 extends Forum
 	}
 
 
-	// Convert posts BB-code
+	// Convert BBcode
 	function convert_message($message)
 	{
-		$replace = array(
-			'%\[quote=\'(.*?)\'.*?\]\s*%si'								=>	'[quote=$1]',
-			'%\[\*\](.*?)\n%si'											=>	'[*]$1[/*]'."\n",
-		);
+		static $patterns, $replacements;
 
-		$message = preg_replace(array_keys($replace), array_values($replace), $message);
+		if (!isset($patterns))
+		{
+			$patterns = array(
+				'%\[quote=\'(.*?)\'.*?\]\s*%si'								=>	'[quote=$1]',
+				'%\[\*\](.*?)\n%si'											=>	'[*]$1[/*]'."\n",
+				'%\[/?(font|size|align)(?:\=[^\]]*)?\]%i'					=>	'', // Strip tags not supported by FluxBB
+			);
+		}
 
-		// Strip tags that are not supported by FluxBB
-		$message = preg_replace('%\[/?(font|size|align)(?:\=[^\]]*)?\]%i', '', $message);
+		$message = preg_replace(array_keys($patterns), array_values($patterns), $message);
 
-		$replace = array(
-			'[php]'		=>	'[code]',
-			'[/php]'	=>	'[/code]',
-		);
-		return str_replace(array_keys($replace), array_values($replace), $message);
+		if (!isset($replacements))
+		{
+			$replacements = array(
+				'[php]'		=>	'[code]',
+				'[/php]'	=>	'[/code]',
+			);
+		}
+		return str_replace(array_keys($replacements), array_values($replacements), $message);
 	}
 }

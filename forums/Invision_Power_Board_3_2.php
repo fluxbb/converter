@@ -404,7 +404,7 @@ class Invision_Power_Board_3_2 extends Forum
 		return $mapping[$id];
 	}
 
-	function uid2uid($id, $new_uid = false)
+	function uid2uid($id)
 	{
 		static $last_uid;
 

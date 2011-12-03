@@ -411,7 +411,7 @@ class SMF_1_1_11 extends Forum
 		return $mapping[$id];
 	}
 
-	function uid2uid($id, $new_uid = false)
+	function uid2uid($id)
 	{
 		static $last_uid;
 
@@ -439,15 +439,19 @@ class SMF_1_1_11 extends Forum
 
 	function convert_message($message)
 	{
+		static $replacements;
+
 		$message = $this->convert_to_utf8($message);
 
-		$replace = array(
-			'<br />'		=>	"\n",
-			'[li]'			=>	'[*]',
-			'[/li]'			=>	'[/*]'
-		);
+		if (!isset($replacements))
+		{
+			$replacements = array(
+				'<br />'		=>	"\n",
+				'[li]'			=>	'[*]',
+				'[/li]'			=>	'[/*]'
+			);
+		}
 
-		$message = str_replace(array_keys($replace), array_values($replace), $message);
-		return $message;
+		return str_replace(array_keys($replace), array_values($replace), $message);
 	}
 }

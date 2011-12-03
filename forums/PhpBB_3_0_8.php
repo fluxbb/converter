@@ -390,31 +390,38 @@ class PhpBB_3_0_8 extends Forum
 	}
 
 
-	// Convert posts BB-code
+	// Convert BBcode
 	function convert_message($message)
 	{
+		static $patterns, $replacements;
+
 		$message = html_entity_decode($message, ENT_QUOTES, 'UTF-8');
 
-		// Strip text after colon in tag name
-		$message = preg_replace('%\[(/?)(b|i|u|list|\*|color|img|url|code|quote|size)(?:\=[^\]]*)??(:[a-z0-9])?:[a-z0-9]{8}\]%i', '[$1$2$3]', $message);
+		if (!isset($patterns))
+		{
+			$patterns = array(
+				'%\[(/?)(b|i|u|list|\*|color|img|url|code|quote|size)(?:\=[^\]]*)?(:[a-z0-9])?:[a-z0-9]{8}\]%i'	=>	'[$1$2$3]', // Strip text after colon in tag name
 
-		$replace = array(
-			// Smileys
-			'#<!-- s.*? --><img src=".*?" alt="(.*?)" title=".*?" \/><!-- s.*? -->#i'			=>	'$1',
+				// Smileys
+				'#<!-- s.*? --><img src=".*?" alt="(.*?)" title=".*?" \/><!-- s.*? -->#i'			=>	'$1',
 
-			'#<!-- [mw] --><a class="postlink" href="(.*?)">(.*?)</a><!-- [mw] -->#i'			=>	'[url=$1]$2[/url]',
-			'#<!-- e --><a href="mailto:(.*?)">(.*?)</a><!-- e -->#i'							=>	'[email=$1]$2[/email]',
-		);
+				'#<!-- [mw] --><a class="postlink" href="(.*?)">(.*?)</a><!-- [mw] -->#i'			=>	'[url=$1]$2[/url]',
+				'#<!-- e --><a href="mailto:(.*?)">(.*?)</a><!-- e -->#i'							=>	'[email=$1]$2[/email]',
+			);
+		}
 
-		$message = preg_replace(array_keys($replace), array_values($replace), $message);
+		$message = preg_replace(array_keys($patterns), array_values($patterns), $message);
 
-		$smilies = array(
-			':shock:'		=> ':o',
-			'8-)'			=> ':cool:',
-			':evil:'		=> ':/',
-			':roll:'		=> ':rolleyes:',
-		);
+		if (!isset($replacements))
+		{
+			$replacements = array(
+				':shock:'		=> ':o',
+				'8-)'			=> ':cool:',
+				':evil:'		=> ':/',
+				':roll:'		=> ':rolleyes:',
+			);
+		}
 
-		return str_replace(array_keys($smilies), array_values($smilies), $message);
+		return str_replace(array_keys($replacements), array_values($replacements), $message);
 	}
 }

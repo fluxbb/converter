@@ -420,7 +420,7 @@ class SMF_2 extends Forum
 		return $mapping[$id];
 	}
 
-	function uid2uid($id, $new_uid = false)
+	function uid2uid($id)
 	{
 		static $last_uid;
 
@@ -446,33 +446,40 @@ class SMF_2 extends Forum
 		return $id;
 	}
 
-	// Convert posts BB-code
+	// Convert BBcode
 	function convert_message($message)
 	{
+		static $patterns, $replacements;
+
 		$message = html_entity_decode($message, ENT_QUOTES, 'UTF-8');
 
-		$replace = array(
-			'%\[quote author=(.*?) link.*?\](.*?)\[/quote\]%si'		=>	'[quote=$1]$2[/quote]',
-			'%\[flash=.*?\](.*?)\[/flash\]%si'						=>	'Flash: $1',
-			'%\[ftp=(.*?)\](.*?)\[/ftp\]%si'						=>	'[url=$1]$2[/url]',
-			'%\[list(=.*?)?\](.*?)\[/list\]%si'						=>	'[list]$1[/list]',
-		);
-		$message = preg_replace(array_keys($replace), array_values($replace), $message);
+		if (!isset($patterns))
+		{
+			$patterns = array(
+				'%\[quote author=(.*?) link.*?\](.*?)\[/quote\]%si'		=>	'[quote=$1]$2[/quote]',
+				'%\[flash=.*?\](.*?)\[/flash\]%si'						=>	'Flash: $1',
+				'%\[ftp=(.*?)\](.*?)\[/ftp\]%si'						=>	'[url=$1]$2[/url]',
+				'%\[list(=.*?)?\](.*?)\[/list\]%si'						=>	'[list]$1[/list]',
+				'%\[/?(font|size|glow|s|shadow|move|pre|left|right|center|sup|sub|tt|table)(?:\=[^\]]*)?\]%i'	=> '',	// Strip tags not supported by FluxBB
+			);
+		}
 
-		// Strip tags that are not supported by FluxBB
-		$message = preg_replace('%\[/?(font|size|glow|s|shadow|move|pre|left|right|center|sup|sub|tt|table)(?:\=[^\]]*)?\]%i', '', $message);
+		$message = preg_replace(array_keys($patterns), array_values($patterns), $message);
 
-		$replace = array(
-			'[li]'		=>	'[*]',
-			'[/li]'		=>	'[/*]',
-			'[tr]'		=>	'[list]',
-			'[/tr]'		=>	'[/list]',
-			'[td]'		=>	'[*]',
-			'[/td]'		=>	'[/*]',
-			'<br />'	=>	"\n",
-			'[hr]'		=>	"\n",
-			'::)'		=>	':rolleyes:',
-		);
-		return str_replace(array_keys($replace), array_values($replace), $message);
+		if (!isset($replacements))
+		{
+			$replacements = array(
+				'[li]'		=>	'[*]',
+				'[/li]'		=>	'[/*]',
+				'[tr]'		=>	'[list]',
+				'[/tr]'		=>	'[/list]',
+				'[td]'		=>	'[*]',
+				'[/td]'		=>	'[/*]',
+				'<br />'	=>	"\n",
+				'[hr]'		=>	"\n",
+				'::)'		=>	':rolleyes:',
+			);
+		}
+		return str_replace(array_keys($replacements), array_values($replacements), $message);
 	}
 }

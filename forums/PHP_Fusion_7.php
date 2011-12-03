@@ -467,16 +467,20 @@ class PHP_Fusion_7 extends Forum
 	// Convert posts BB-code
 	function convert_message($message)
 	{
+		static $replacements;
+
 		// Convert lists
 		$message = preg_replace_callback('%\[ulist(=.*?)?\](.*?)\[/ulist\]%s', 'PHP_Fusion_7::convert_lists', $message);
 
-		$replace = array(
-			'%\[mail(=.*?)\](.*?)\[/mail\]%si'							=>	'[email$1]$2[/email]',
-			'%\[center\](.*?)\[/center\]%si'							=>	'$1',
-			'%\[small\](.*?)\[/small\]%si'								=>	'$1',
-			'%\[quote\]\[url.*?\[b\](.*?) wrote:\[/b\]\[/url\]\s*%si'	=>	'[quote=$1]',
-		);
-
-		return preg_replace(array_keys($replace), array_values($replace), $message);
+		if (!isset($replacements))
+		{
+			$replacements = array(
+				'%\[mail(=.*?)\](.*?)\[/mail\]%si'							=>	'[email$1]$2[/email]',
+				'%\[center\](.*?)\[/center\]%si'							=>	'$1',
+				'%\[small\](.*?)\[/small\]%si'								=>	'$1',
+				'%\[quote\]\[url.*?\[b\](.*?) wrote:\[/b\]\[/url\]\s*%si'	=>	'[quote=$1]',
+			);
+		}
+		return preg_replace(array_keys($replacements), array_values($replacements), $message);
 	}
 }
