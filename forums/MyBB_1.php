@@ -9,6 +9,9 @@ define('FORUM_PARSER_REVISION', 2);
 
 class MyBB_1 extends Forum
 {
+	// Will the passwords be converted?
+	const CONVERTS_PASSWORD = false;
+
 	function initialize()
 	{
 		$this->db->set_names('utf8');

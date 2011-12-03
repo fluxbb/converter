@@ -9,6 +9,9 @@ define('FORUM_PARSER_REVISION', 2);
 
 class SMF_2 extends Forum
 {
+	// Will the passwords be converted?
+	const CONVERTS_PASSWORD = false;
+
 	function initialize()
 	{
 		$this->db->set_names('utf8');
@@ -67,7 +70,7 @@ class SMF_2 extends Forum
 			'WHERE'		=> 'variable IN (\'censor_vulgar\', \'censor_proper\')'
 		)) or error('Unable to fetch config', __FILE__, __LINE__, $this->db->error());
 
-		conv_message('Processing censoring');
+		conv_message('Processing', 'censoring');
 		while ($cur_config = $this->db->fetch_assoc($result))
 			$old_config[$cur_config['variable']] = $cur_config['value'];
 

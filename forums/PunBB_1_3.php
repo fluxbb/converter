@@ -9,6 +9,9 @@ define('FORUM_PARSER_REVISION', 2);
 
 class PunBB_1_3 extends Forum
 {
+	// Will the passwords be converted?
+	const CONVERTS_PASSWORD = true;
+
 	function initialize()
 	{
 		$this->db->set_names('utf8');

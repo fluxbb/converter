@@ -9,6 +9,9 @@ define('FORUM_PARSER_REVISION', 2);
 
 class Invision_Power_Board_3_2 extends Forum
 {
+	// Will the passwords be converted?
+	const CONVERTS_PASSWORD = false;
+
 	function initialize()
 	{
 		$this->db->set_names('utf8');
@@ -426,20 +429,37 @@ class Invision_Power_Board_3_2 extends Forum
 		return $id;
 	}
 
-	// Convert posts BB-code
+	// Convert BBcode
 	function convert_message($message)
 	{
+		static $patterns, $replacements;
+
 		$message = html_entity_decode($message);
 
-		$replace = array(
-			'<br />'		=> "\n",
-		);
+		if (!isset($patterns))
+		{
+			$patterns = array(
+				'%\[quote name=\'(.*?)\'.*?\]%i'										=>	'[quote=$1]',
+				'%\[\*\](.*?)\n%si'														=>	'[*]$1[/*]'."\n",
+				'%<img src=\'.*?\' class=\'bbc_emoticon\' alt=\'(.*?)\' />%'			=> '$1',
+				'%\[/?(sup|sub|indent|left|center|right|font|size)(?:\=[^\]]*)?\]%i'	=> '',	// Strip tags not supported by FluxBB
+			);
+		}
 
-		$message = str_replace(array_keys($replace), array_values($replace), $message);
+		$message = preg_replace(array_keys($patterns), array_values($patterns), $message);
 
-		$replace = array(
-			'%\[quote name=\'(.*?)\'.*?\]%i'		=>	'[quote=$1]',
-		);
-		return preg_replace(array_keys($replace), array_values($replace), $message);
+		if (!isset($replacements))
+		{
+			$replacements = array(
+				'[CODE]'		=> '[code]',
+				'[/CODE]'		=> '[/code]',
+				'[html]'		=> '[code]',
+				'[/html]'		=> '[/code]',
+				"\n"			=> '',
+				'<br />'		=> "\n",
+			);
+		}
+
+		return str_replace(array_keys($replacements), array_values($replacements), $message);
 	}
 }

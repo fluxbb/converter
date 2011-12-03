@@ -35,7 +35,7 @@ function conv_redirect($stage, $start_at = 0, $time = 0)
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta http-equiv="refresh" content="<?php echo $time ?>; url=index.php?stage=<?php echo htmlspecialchars($stage).($start_at > 0 ? '&start_at='.$start_at : '') ?>">
-<title><?php echo $lang_convert['FluxBB converter'] ?></title>
+<title><?php echo sprintf($lang_convert['FluxBB converter'], CONVERTER_VERSION) ?></title>
 <link rel="stylesheet" type="text/css" href="../style/<?php echo $default_style ?>.css" />
 </head>
 <body>

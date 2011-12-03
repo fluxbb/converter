@@ -11,7 +11,7 @@ $lang_convert = array(
 'Convert language'				=>	'Convert language',
 'Change language'				=>	'Change language',
 
-'FluxBB converter'				=>	'FluxBB converter',
+'FluxBB converter'				=>	'FluxBB converter %s',
 'Convert message'				=>	'Welcome to the FluxBB Forum Converter! You can use this simple script to convert your forum to a FluxBB forum with just one click - and take all the data with you!',
 'Convert'						=>	'Convert',
 'Convert from'					=>	'Convert from',
@@ -35,6 +35,7 @@ $lang_convert = array(
 'Start converter'				=>	'Start converter',
 'Converting header'				=>	'Converting',
 'Conversion completed'			=>	'Conversion completed',
+'Password converter mod'		=>	'This converter does not support converting passwords for specified forum. You have to install Password Converter Mod (file password_converter_mod.txt in converter directory) or you will not be able to login!',
 
 // Processing message (with number of arguments)
 'Processing 1'					=>	'Processing %s',

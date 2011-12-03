@@ -11,6 +11,7 @@ define('PUN_SEARCH_MAX_WORD', 20);
 
 define('PUN_ROOT', dirname(__FILE__).'/../');
 define('SCRIPT_ROOT', './');
+define('CONVERTER_VERSION', '1.0-beta');
 define('PUN_DEBUG', 1);
 define('PUN_SHOW_QUERIES', 1);
 
@@ -169,7 +170,7 @@ else if (isset($_SESSION['converter']))
 }
 
 
-if (isset($_POST['form_sent']) || (isset($_GET['stage']) && $_GET['stage'] != 'results'))
+if (isset($_POST['form_sent']) || isset($_GET['stage']))
 {
 	$stage = isset($_GET['stage']) ? $_GET['stage'] : null;
 	$start_at = isset($_GET['start_at']) ? $_GET['start_at'] : 0;
@@ -219,17 +220,24 @@ if (isset($_POST['form_sent']) || (isset($_GET['stage']) && $_GET['stage'] != 'r
 	require SCRIPT_ROOT.'include/converter.class.php';
 	$converter = new Converter($forum);
 
-	// Validate only first time we run converter (it checks whether database configuration is corrent)
-	if (!isset($stage))
-		$converter->validate();
+	if ($stage != 'results')
+	{
+		// Validate only first time we run converter (it checks whether database configuration is corrent)
+		if (!isset($stage))
+			$converter->validate();
 
-	// We are ready to run converter. When it do its work, it redirects to the next page
-	$converter->convert($stage, $start_at);
-}
+		// We are ready to run converter. When it do its work, it redirects to the next page
+		$converter->convert($stage, $start_at);
+	}
 
-// Show the results page
-elseif (isset($_GET['stage']) && $_GET['stage'] == 'results')
-{
+	// We don't need this anymore
+	unset($_SESSION['converter']);
+
+	// We're done
+	$alerts = array();
+
+	if (!$forum->CONVERTS_PASSWORD)
+		$alerts[] = $lang_convert['Password converter mod'];
 
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
@@ -237,7 +245,7 @@ elseif (isset($_GET['stage']) && $_GET['stage'] == 'results')
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title><?php echo $lang_convert['FluxBB converter'] ?></title>
+<title><?php echo sprintf($lang_convert['FluxBB converter'], CONVERTER_VERSION) ?></title>
 <link rel="stylesheet" type="text/css" href="../style/<?php echo $default_style ?>.css" />
 </head>
 <body>
@@ -249,7 +257,7 @@ elseif (isset($_GET['stage']) && $_GET['stage'] == 'results')
 <div id="brdheader" class="block">
 	<div class="box">
 		<div id="brdtitle" class="inbox">
-			<h1><span><?php echo $lang_convert['FluxBB converter'] ?></span></h1>
+			<h1><span><?php echo sprintf($lang_convert['FluxBB converter'], CONVERTER_VERSION) ?></span></h1>
 			<div id="brddesc"><p><?php echo $lang_convert['Conversion completed'] ?></p></div>
 		</div>
 	</div>
@@ -293,6 +301,16 @@ elseif (isset($_GET['stage']) && $_GET['stage'] == 'results')
 	<div class="box">
 		<div class="fakeform">
 			<div class="inform">
+<?php if (!empty($alerts)): ?>				<div class="forminfo error-info">
+					<ul class="error-list">
+<?php
+
+foreach ($alerts as $cur_alert)
+	echo "\t\t\t\t\t".'<li>'.$cur_alert.'</li>'."\n";
+?>
+					</ul>
+				</div>
+<?php endif; ?>
 				<div class="forminfo">
 					<p><?php printf($lang_convert['Database converted'], '../index.php') ?></p>
 				</div>
@@ -321,7 +339,7 @@ else
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en" dir="ltr">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title><?php echo $lang_convert['FluxBB converter'] ?></title>
+<title><?php echo sprintf($lang_convert['FluxBB converter'], CONVERTER_VERSION) ?></title>
 <link rel="stylesheet" type="text/css" href="../style/<?php echo $default_style ?>.css" />
 <script type="text/javascript">
 /* <![CDATA[ */
@@ -364,7 +382,7 @@ function process_form(the_form)
 <div id="brdheader" class="block">
 	<div class="box">
 		<div id="brdtitle" class="inbox">
-			<h1><span><?php echo $lang_convert['FluxBB converter'] ?></span></h1>
+			<h1><span><?php echo sprintf($lang_convert['FluxBB converter'], CONVERTER_VERSION) ?></span></h1>
 			<div id="brddesc"><p><?php echo $lang_convert['Convert message'] ?></p></div>
 		</div>
 	</div>
