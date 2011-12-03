@@ -1,5 +1,10 @@
 <?php
 
+/**
+* Copyright (C) 2011 FluxBB (http://fluxbb.org)
+* License: LGPL - GNU Lesser General Public License (http://www.gnu.org/licenses/lgpl.html)
+*/
+
 class Forum
 {
 	public $db;
@@ -98,7 +103,14 @@ class Forum
 		conv_message('Not implemented', __FUNCTION__);
 	}
 
-	// Check whether current table has more rows - if yes, redirect to the next page of the current stage
+	/**
+	 * Check whether current table has more rows - if yes, redirect to the next page of the current stage
+	 * 
+	 * @param string $old_table
+	 * @param string $old_field
+	 * @param integer $start_at
+	 * @return void
+	 */
 	function redirect($old_table, $old_field, $start_at)
 	{
 		$result = $this->db->query_build(array(
@@ -112,6 +124,12 @@ class Forum
 			conv_redirect($this->stage, $start_at);
 	}
 
+	/**
+	 * Convert specified data to the UTF-8 charset
+	 * 
+	 * @param string $str
+	 * @return
+	 */
 	function convert_to_utf8($str)
 	{
 		convert_to_utf8($str, $this->charset);

@@ -1,5 +1,10 @@
 <?php
 
+/**
+* Copyright (C) 2011 FluxBB (http://fluxbb.org)
+* License: LGPL - GNU Lesser General Public License (http://www.gnu.org/licenses/lgpl.html)
+*/
+
 //function error($message, $file = __FILE__, $line = __LINE__, $db_error = false)
 //{
 //	exit($message."\n".'<br />'.($db_error ? $db_error['error_msg'] : ''));

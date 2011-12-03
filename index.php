@@ -1,5 +1,10 @@
 <?php
 
+/**
+* Copyright (C) 2011 FluxBB (http://fluxbb.org)
+* License: LGPL - GNU Lesser General Public License (http://www.gnu.org/licenses/lgpl.html)
+*/
+
 // The number of items to process per page view (lower this if the script times out)
 define('PER_PAGE', 1000);
 
@@ -11,7 +16,7 @@ define('PUN_SEARCH_MAX_WORD', 20);
 
 define('PUN_ROOT', dirname(__FILE__).'/../');
 define('SCRIPT_ROOT', './');
-define('CONVERTER_VERSION', '1.0-beta');
+define('CONVERTER_VERSION', '1.0-dev');
 define('PUN_DEBUG', 1);
 define('PUN_SHOW_QUERIES', 1);
 
@@ -172,6 +177,9 @@ else if (isset($_SESSION['converter']))
 
 if (isset($_POST['form_sent']) || isset($_GET['stage']))
 {
+	if (!isset($forum_config))
+		error($lang_convert['Bad request']);
+
 	$stage = isset($_GET['stage']) ? $_GET['stage'] : null;
 	$start_at = isset($_GET['start_at']) ? $_GET['start_at'] : 0;
 
@@ -230,8 +238,8 @@ if (isset($_POST['form_sent']) || isset($_GET['stage']))
 		$converter->convert($stage, $start_at);
 	}
 
-	// We don't need this anymore
-	unset($_SESSION['converter']);
+	if (empty($_SESSION['converter']['dupe_users']))
+		unset($_SESSION['converter']);
 
 	// We're done
 	$alerts = array();

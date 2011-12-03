@@ -1,5 +1,10 @@
 <?php
 
+/**
+* Copyright (C) 2011 FluxBB (http://fluxbb.org)
+* License: LGPL - GNU Lesser General Public License (http://www.gnu.org/licenses/lgpl.html)
+*/
+
 class Converter
 {
 	var $forum;
@@ -31,12 +36,24 @@ class Converter
 		$this->forum = $forum;
 	}
 
+	/**
+	 * Checks whether database has valid specified forum software schema  
+	 * 
+	 * @return void
+	 */
 	function validate()
 	{
 		if (is_callable(array($this->forum, 'validate')))
 			$this->forum->validate();
 	}
 
+	/**
+	 * Runs conversion process
+	 * 
+	 * @param mixed $name Table name
+	 * @param integer $start_at A row number from which we start processing table
+	 * @return void
+	 */
 	function convert($name, $start_at = 0)
 	{
 		$keys = array_keys($this->tables);
@@ -72,6 +89,11 @@ class Converter
 		conv_redirect($next_stage);
 	}
 
+	/**
+	 * Do some initial cleanup of database
+	 * 
+	 * @return void
+	 */
 	function initialize()
 	{
 		$this->forum->fluxbb->db->truncate_table('bans');
@@ -106,6 +128,11 @@ class Converter
 		$this->generate_cache();
 	}
 
+	/**
+	 * Regenerate FluxBB cache after conversion
+	 * 
+	 * @return void
+	 */
 	function generate_cache()
 	{
 		// Load the cache script

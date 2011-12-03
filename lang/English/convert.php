@@ -3,6 +3,7 @@
 // Language definitions used in install.php
 
 $lang_convert = array(
+'Bad request'					=>	'Bad request. The link you followed is incorrect or outdated.',
 'You are running error'			=>	'You are running %1$s version %2$s. FluxBB converter %3$s requires at least %1$s %4$s to run properly. You must upgrade your %1$s installation before you can continue.',
 'Bad request'					=>	'Bad request. The link you followed is incorrect or outdated.',
 

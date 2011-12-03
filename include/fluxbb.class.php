@@ -1,10 +1,22 @@
 <?php
 
+/**
+* Copyright (C) 2011 FluxBB (http://fluxbb.org)
+* License: LGPL - GNU Lesser General Public License (http://www.gnu.org/licenses/lgpl.html)
+*/
+
 class FluxBB
 {
 	var $db;
 	var $db_type;
 
+	/**
+	 * Constructor
+	 * 
+	 * @param mixed $db
+	 * @param string $db_type
+	 * @return void
+	 */
 	function FluxBB($db, $db_type)
 	{
 		$db->set_names('utf8');
@@ -13,6 +25,14 @@ class FluxBB
 		$this->db_type = $db_type;
 	}
 
+	/**
+	 * Adds a row to the FluxBB table with specified data
+	 * 
+	 * @param string $table
+	 * @param array $data
+	 * @param mixed $error_callback	A function that will be called when error occurs
+	 * @return void
+	 */
 	function add_row($table, $data, $error_callback = null)
 	{
 	//	$fields = array_keys($this->schemas[$table]['FIELDS']);
@@ -33,6 +53,12 @@ class FluxBB
 		)) or ($error_callback === null ? error('Unable to insert values', __FILE__, __LINE__, $this->db->error()) : call_user_func($error_callback, $data));
 	}
 
+	/**
+	 * Function called when a duplicate user is found
+	 * 
+	 * @param array $cur_user
+	 * @return void
+	 */
 	function error_users($cur_user)
 	{
 		if (!isset($_SESSION['converter']['dupe_users']))
@@ -41,6 +67,12 @@ class FluxBB
 		$_SESSION['converter']['dupe_users'][$cur_user['id']] = $cur_user;
 	}
 
+	/**
+	 * Rename duplicate users
+	 * 
+	 * @param array $cur_user
+	 * @return void
+	 */
 	function convert_users_dupe($cur_user)
 	{
 		$old_username = $cur_user['username'];
@@ -101,6 +133,12 @@ class FluxBB
 		$_SESSION['converter']['dupe_users'][$cur_user['id']]['old_username'] = $old_username;
 	}
 
+	/**
+	 * Hashes password using available algorithms
+	 * 
+	 * @param string $str
+	 * @return
+	 */
 	function pass_hash($str)
 	{
 		if (function_exists('sha1'))	// Only in PHP 4.3.0+
@@ -111,6 +149,12 @@ class FluxBB
 			return md5($str);
 	}
 
+	/**
+	 * Generate random password when converter is not being able to convert password
+	 * 
+	 * @param mixed $len
+	 * @return
+	 */
 	function random_pass($len)
 	{
 		static $chars;
