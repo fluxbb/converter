@@ -353,8 +353,9 @@ class MyBB_1 extends Forum
 
 	function convert_users($start_at)
 	{
+		// Add salt field to the users table to allow login
 		if ($start_at == 0)
-			$this->fluxbb->db->add_field('users', 'salt', 'varchar(10)', false, '', 'password');
+			$this->fluxbb->db->add_field('users', 'salt', 'VARCHAR(255)', false, '', 'password');
 
 		$result = $this->db->query_build(array(
 			'SELECT'	=> 'uid AS id, username AS username, password AS password, salt AS salt, website AS url, icq AS icq, msn AS msn, aim AS aim, yahoo AS yahoo, postnum AS num_posts, IF(hideemail=1, 1, 0) AS email_setting, timezone, lastvisit AS last_visit, signature, email, regdate AS registered, usergroup AS group_id',

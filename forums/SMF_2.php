@@ -370,7 +370,8 @@ class SMF_2 extends Forum
 	function convert_users($start_at)
 	{
 		// Add salt field to the users table to allow login
-		$this->fluxbb->db->add_field('users', 'salt', 'VARCHAR(255)', true);
+		if ($start_at == 0)
+			$this->fluxbb->db->add_field('users', 'salt', 'VARCHAR(255)', false, '', 'password');
 
 		$result = $this->db->query_build(array(
 			'SELECT'	=> 'id_member AS id, id_group AS group_id, member_name AS username, passwd AS password, password_salt AS salt, website_url AS url, icq AS icq, msn AS msn, aim AS aim, yim AS yahoo, signature AS signature, time_offset AS timezone, posts AS num_posts, date_registered AS registered, last_login AS last_visit, location AS location, email_address AS email',
