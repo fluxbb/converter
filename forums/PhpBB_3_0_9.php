@@ -374,7 +374,6 @@ class PhpBB_3_0_9 extends Forum
 			$start_at = $cur_user['id'];
 			$cur_user['username'] = html_entity_decode($cur_user['username']);
 			$cur_user['group_id'] = $this->grp2grp($cur_user['group_id']);
-//			$cur_user['password'] = $this->fluxbb->pass_hash($this->fluxbb->random_pass(20));
 			$cur_user['email_setting'] = !$cur_user['email_setting'];
 			$cur_user['signature'] = $this->convert_message($cur_user['signature']);
 

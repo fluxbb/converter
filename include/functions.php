@@ -5,17 +5,17 @@
 * License: LGPL - GNU Lesser General Public License (http://www.gnu.org/licenses/lgpl.html)
 */
 
-//function error($message, $file = __FILE__, $line = __LINE__, $db_error = false)
-//{
-//	exit($message."\n".'<br />'.($db_error ? $db_error['error_msg'] : ''));
-//}
 
+/**
+ * Shows an info about current running conversion process
+ */
 function conv_message()
 {
 	global $lang_convert;
 
 	$args = func_get_args();
 
+	// TODO: what when we have 3 arguments?
 	if (substr($args[0], 0, 10) == 'Processing')
 		$args[0] = 'Processing '.(count($args) - 1);
 
@@ -27,6 +27,10 @@ function conv_message()
 	echo vsprintf($message, $args)."\n".'<br />';
 }
 
+
+/**
+ * Redirect to the next stage
+ */
 function conv_redirect($stage, $start_at = 0, $time = 0)
 {
 	global $lang_convert, $default_style;
@@ -75,12 +79,12 @@ function conv_redirect($stage, $start_at = 0, $time = 0)
 
 }
 
-//function get_microtime()
-//{
-//	list($usec, $sec) = explode(' ', microtime());
-//	return ((float)$usec + (float)$sec);
-//}
 
+/**
+ * Connect to the database
+ *
+ * @param mixed $db_config Database configuration
+ */
 function connect_database($db_config)
 {
 	$class = $db_config['type'].'_wrapper';
@@ -96,6 +100,13 @@ function connect_database($db_config)
 	return new $class($db_config['host'], $db_config['username'], $db_config['password'], $db_config['name'], $db_config['prefix'], false);
 }
 
+/**
+ * Load forum converter class
+ *
+ * @param mixed $forum_type
+ * @param mixed $db
+ * @param mixed $fluxbb
+ */
 function load_forum($forum_type, $db, $fluxbb)
 {
 	if (!class_exists($forum_type))
@@ -109,7 +120,9 @@ function load_forum($forum_type, $db, $fluxbb)
 	return new $forum_type($db, $fluxbb);
 }
 
-// Get all forum softwares
+/**
+ * Get list of available forum softwares
+ */
 function forum_list_forums()
 {
 	$forums = array();
@@ -135,7 +148,9 @@ function forum_list_forums()
 	return $forums;
 }
 
-// Get all database engines
+/**
+ * Get list of available database engines
+ */
 function forum_list_engines()
 {
 	$engines = array();
@@ -151,6 +166,9 @@ function forum_list_engines()
 	return $engines;
 }
 
+/**
+ * Get list of available languages
+ */
 function converter_list_langs()
 {
 	$langs = array();
@@ -166,7 +184,9 @@ function converter_list_langs()
 	return $langs;
 }
 
-
+/**
+ * Send an e-mail to the users when we change their usernames
+ */
 function alert_dupe_users()
 {
 	global $pun_config;
@@ -199,9 +219,9 @@ function alert_dupe_users()
 }
 
 
-//
-// Determines whether $str is UTF-8 encoded or not
-//
+/**
+ * Determines whether $str is UTF-8 encoded or not
+ */
 function seems_utf8($str)
 {
 	$str_len = strlen($str);
@@ -226,9 +246,9 @@ function seems_utf8($str)
 }
 
 
-//
-// Translates the number from a HTML numeric entity into an UTF-8 character
-//
+/**
+ * Translates the number from a HTML numeric entity into an UTF-8 character
+ */
 function dcr2utf8($src)
 {
 	$dest = '';
@@ -273,15 +293,13 @@ function dcr2utf8($src)
 }
 
 
-//
-// Attempts to convert $str from $old_charset to UTF-8. Also converts HTML entities (including numeric entities) to UTF-8 characters
-//
-function convert_to_utf8(&$str, $old_charset)
+/**
+ * Attempts to convert $str from $old_charset to UTF-8. Also converts HTML entities (including numeric entities) to UTF-8 characters
+ */
+function convert_to_utf8($str, $old_charset)
 {
 	if ($str === null || $str == '')
 		return false;
-
-	$save = $str;
 
 	// Replace literal entities (for non-UTF-8 compliant html_entity_encode)
 	if (version_compare(PHP_VERSION, '5.0.0', '<') && $old_charset == 'ISO-8859-1' || $old_charset == 'ISO-8859-15')
@@ -308,7 +326,7 @@ function convert_to_utf8(&$str, $old_charset)
 	// Remove "bad" characters
 	$str = remove_bad_characters($str);
 
-	return ($save != $str);
+	return $str;
 }
 
 

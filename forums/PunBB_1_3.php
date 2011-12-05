@@ -286,10 +286,10 @@ class PunBB_1_3 extends Forum
 		}
 	}
 
-//	function convert_forum_subscriptions()
-//	{
-//		conv_message('No forum subscriptions', $this->db->num_rows($result));
-//	}
+	function convert_forum_subscriptions()
+	{
+		conv_message('No forum subscriptions', $this->db->num_rows($result));
+	}
 
 	function convert_topics($start_at)
 	{
@@ -338,9 +338,6 @@ class PunBB_1_3 extends Forum
 		{
 			$start_at = $cur_user['id'];
 			$cur_user['group_id'] = $this->grp2grp($cur_user['group_id']);
-			$cur_user['password'] = $this->fluxbb->pass_hash($this->fluxbb->random_pass(20));
-	//		$cur_user['language'] = $this->default_lang;
-//			$cur_user['style'] = $this->default_style;
 
 			$this->fluxbb->add_row('users', $cur_user, array($this->fluxbb, 'error_users'));
 		}

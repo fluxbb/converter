@@ -7,10 +7,10 @@
 
 class Converter
 {
-	var $forum;
-	var $start;
+	public $forum;
+	public $start;
 
-	var $tables = array(
+	public $tables = array(
 		'bans' 					=> true,
 		'categories'			=> true,
 		'censoring'				=> true,
@@ -37,9 +37,7 @@ class Converter
 	}
 
 	/**
-	 * Checks whether database has valid specified forum software schema  
-	 * 
-	 * @return void
+	 * Checks whether database has valid specified forum software schema
 	 */
 	function validate()
 	{
@@ -49,10 +47,9 @@ class Converter
 
 	/**
 	 * Runs conversion process
-	 * 
+	 *
 	 * @param mixed $name Table name
 	 * @param integer $start_at A row number from which we start processing table
-	 * @return void
 	 */
 	function convert($name, $start_at = 0)
 	{
@@ -91,8 +88,6 @@ class Converter
 
 	/**
 	 * Do some initial cleanup of database
-	 * 
-	 * @return void
 	 */
 	function initialize()
 	{
@@ -130,8 +125,6 @@ class Converter
 
 	/**
 	 * Regenerate FluxBB cache after conversion
-	 * 
-	 * @return void
 	 */
 	function generate_cache()
 	{

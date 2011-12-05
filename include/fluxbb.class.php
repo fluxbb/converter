@@ -5,19 +5,15 @@
 * License: LGPL - GNU Lesser General Public License (http://www.gnu.org/licenses/lgpl.html)
 */
 
+/**
+ * Wrapper for FluxBB (has easy functions for adding rows to database etc.)
+ */
 class FluxBB
 {
-	var $db;
-	var $db_type;
+	public $db;
+	public $db_type;
 
-	/**
-	 * Constructor
-	 * 
-	 * @param mixed $db
-	 * @param string $db_type
-	 * @return void
-	 */
-	function FluxBB($db, $db_type)
+	function __construct($db, $db_type)
 	{
 		$db->set_names('utf8');
 
@@ -27,11 +23,10 @@ class FluxBB
 
 	/**
 	 * Adds a row to the FluxBB table with specified data
-	 * 
+	 *
 	 * @param string $table
-	 * @param array $data
+	 * @param array $data Array containig data to insert into db
 	 * @param mixed $error_callback	A function that will be called when error occurs
-	 * @return void
 	 */
 	function add_row($table, $data, $error_callback = null)
 	{
@@ -55,9 +50,8 @@ class FluxBB
 
 	/**
 	 * Function called when a duplicate user is found
-	 * 
+	 *
 	 * @param array $cur_user
-	 * @return void
 	 */
 	function error_users($cur_user)
 	{
@@ -69,9 +63,8 @@ class FluxBB
 
 	/**
 	 * Rename duplicate users
-	 * 
+	 *
 	 * @param array $cur_user
-	 * @return void
 	 */
 	function convert_users_dupe($cur_user)
 	{
@@ -131,41 +124,5 @@ class FluxBB
 		}
 
 		$_SESSION['converter']['dupe_users'][$cur_user['id']]['old_username'] = $old_username;
-	}
-
-	/**
-	 * Hashes password using available algorithms
-	 * 
-	 * @param string $str
-	 * @return
-	 */
-	function pass_hash($str)
-	{
-		if (function_exists('sha1'))	// Only in PHP 4.3.0+
-			return sha1($str);
-		else if (function_exists('mhash'))	// Only if Mhash library is loaded
-			return bin2hex(mhash(MHASH_SHA1, $str));
-		else
-			return md5($str);
-	}
-
-	/**
-	 * Generate random password when converter is not being able to convert password
-	 * 
-	 * @param mixed $len
-	 * @return
-	 */
-	function random_pass($len)
-	{
-		static $chars;
-
-		if (!isset($chars))
-			$chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-
-		$key = '';
-		for ($i = 0;$i < $len;$i++)
-			$key .= substr($chars, (mt_rand() % strlen($chars)), 1);
-
-		return $key;
 	}
 }

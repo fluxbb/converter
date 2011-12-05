@@ -422,8 +422,6 @@ class PHP_Fusion_7 extends Forum
 			$groups = explode(',', $cur_user['group_id']);
 			$cur_user['group_id'] = $cur_user['id'] == 1 ? 1 : (count($groups) ? $groups[0] : 4);
 			$cur_user['id'] = $this->uid2uid($cur_user['id']);
-
-//			$cur_user['password'] = $this->fluxbb->pass_hash($this->fluxbb->random_pass(20));
 			$cur_user['email_setting'] = !$cur_user['email_setting'];
 			$cur_user['signature'] = $this->convert_message($cur_user['signature']);
 

@@ -105,11 +105,10 @@ class Forum
 
 	/**
 	 * Check whether current table has more rows - if yes, redirect to the next page of the current stage
-	 * 
+	 *
 	 * @param string $old_table
 	 * @param string $old_field
 	 * @param integer $start_at
-	 * @return void
 	 */
 	function redirect($old_table, $old_field, $start_at)
 	{
@@ -126,14 +125,12 @@ class Forum
 
 	/**
 	 * Convert specified data to the UTF-8 charset
-	 * 
+	 *
 	 * @param string $str
-	 * @return
 	 */
 	function convert_to_utf8($str)
 	{
-		convert_to_utf8($str, $this->charset);
-		return $str;
+		return convert_to_utf8($str, $this->charset);
 	}
 
 }

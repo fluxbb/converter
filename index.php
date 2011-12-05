@@ -211,7 +211,7 @@ if (isset($_POST['form_sent']) || isset($_GET['stage']))
 		require FORUM_CACHE_DIR.'cache_config.php';
 	}
 
-	// Load fluxbb wrapper
+	// Create a wrapper for fluxbb (has easy functions for adding users etc.)
 	require SCRIPT_ROOT.'include/fluxbb.class.php';
 	$fluxbb = new FluxBB($db, $db_config['type']);
 

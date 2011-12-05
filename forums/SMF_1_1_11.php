@@ -391,9 +391,6 @@ class SMF_1_1_11 extends Forum
 		{
 			$start_at = $cur_user['id'];
 			$cur_user['group_id'] = $this->grp2grp($cur_user['group_id']);
-//			$cur_user['password'] = $this->fluxbb->pass_hash($this->fluxbb->random_pass(20));
-//			$cur_user['language'] = $this->default_lang;
-//			$cur_user['style'] = $this->default_style;
 			$cur_user['id'] = $this->uid2uid($cur_user['id']);
 			$cur_user['signature'] = $this->convert_message($cur_user['signature']);
 
