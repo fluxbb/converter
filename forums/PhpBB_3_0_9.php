@@ -202,6 +202,9 @@ class PhpBB_3_0_9 extends Forum
 			$cur_forum['cat_id'] = array_keys(unserialize($cur_forum['cat_id']));
 			$cur_forum['cat_id'] = $cur_forum['cat_id'][0];
 
+			if ($cur_forum['num_topics'] == 0)
+				$cur_forum['last_post'] = $cur_forum['last_post_id'] = $cur_forum['last_poster'] = NULL;
+
 			$this->fluxbb->add_row('forums', $cur_forum);
 		}
 	}
