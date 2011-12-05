@@ -190,7 +190,7 @@ class PhpBB_3_0_9 extends Forum
 	function convert_forums()
 	{
 		$result = $this->db->query_build(array(
-			'SELECT'	=> 'forum_id AS id, forum_name AS forum_name, forum_desc AS forum_desc, forum_link AS redirect_url, forum_topics AS num_topics, forum_posts AS num_posts, left_id AS disp_position, forum_last_poster_name AS last_poster, forum_last_post_id AS last_post_id, forum_last_post_time AS last_post, parent_id AS cat_id',
+			'SELECT'	=> 'forum_id AS id, forum_name AS forum_name, forum_desc AS forum_desc, forum_link AS redirect_url, forum_topics AS num_topics, forum_posts AS num_posts, left_id AS disp_position, forum_last_poster_name AS last_poster, forum_last_post_id AS last_post_id, forum_last_post_time AS last_post, forum_parents AS cat_id',
 			'FROM'		=> 'forums',
 			'WHERE'		=> 'forum_type <> 0',
 			'ORDER BY'	=> 'left_id ASC'
@@ -199,6 +199,9 @@ class PhpBB_3_0_9 extends Forum
 		conv_message('Processing', 'forums', $this->db->num_rows($result));
 		while ($cur_forum = $this->db->fetch_assoc($result))
 		{
+			$cur_forum['cat_id'] = array_keys(unserialize($cur_forum['cat_id']));
+			$cur_forum['cat_id'] = $cur_forum['cat_id'][0];
+
 			$this->fluxbb->add_row('forums', $cur_forum);
 		}
 	}
