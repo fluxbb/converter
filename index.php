@@ -159,10 +159,6 @@ if (isset($_POST['form_sent']))
 		'charset'	=> isset($_POST['old_db_charset']) ? trim($_POST['old_db_charset']) : 'UTF-8'
 	);
 
-	// Make sure base_url doesn't end with a slash
-	if (substr($forum_config['base_url'], -1) == '/')
-		$forum_config['base_url'] = substr($forum_config['base_url'], 0, -1);
-
 	$_SESSION['converter'] = array('forum_config' => $forum_config, 'old_db_config' => $old_db_config, 'lang' => $convert_lang);
 }
 
@@ -228,12 +224,12 @@ if (isset($_POST['form_sent']) || isset($_GET['stage']))
 	require SCRIPT_ROOT.'include/converter.class.php';
 	$converter = new Converter($forum);
 
-	if ($stage != 'results')
-	{
-		// Validate only first time we run converter (it checks whether database configuration is corrent)
-		if (!isset($stage))
-			$converter->validate();
+	// Validate only first time we run converter (it checks whether database configuration is corrent)
+	if (!isset($stage))
+		$converter->validate();
 
+	if (!isset($stage) || $stage != 'results')
+	{
 		// We are ready to run converter. When it do its work, it redirects to the next page
 		$converter->convert($stage, $start_at);
 	}
