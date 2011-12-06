@@ -19,6 +19,9 @@ class SMF_1_1_11 extends Forum
 //		$this->db->set_names('utf8');
 	}
 
+	/**
+	 * Check whether specified database has valid current forum software strucutre
+	 */
 	function validate()
 	{
 		if (!$this->db->field_exists('categories', 'ID_CAT'))
@@ -400,6 +403,9 @@ class SMF_1_1_11 extends Forum
 		$this->redirect('members', 'ID_MEMBER', $start_at);
 	}
 
+	/**
+	 * Convert group id to the FluxBB style (use FluxBB constants, see index.php:83)
+	 */
 	function grp2grp($id)
 	{
 		static $mapping;
@@ -413,6 +419,9 @@ class SMF_1_1_11 extends Forum
 		return $mapping[$id];
 	}
 
+	/**
+ 	* Convert user id to FluxBB style
+	 */
 	function uid2uid($id)
 	{
 		static $last_uid;
@@ -439,6 +448,9 @@ class SMF_1_1_11 extends Forum
 		return $id;
 	}
 
+	/**
+	 * Convert BBcode
+	 */
 	function convert_message($message)
 	{
 		static $replacements;

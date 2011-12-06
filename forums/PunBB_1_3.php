@@ -22,6 +22,9 @@ class PunBB_1_3 extends Forum
 		$this->db->set_names('utf8');
 	}
 
+	/**
+	 * Check whether specified database has valid current forum software strucutre
+	 */
 	function validate()
 	{
 		if (!$this->db->field_exists('bans', 'id'))
@@ -345,6 +348,9 @@ class PunBB_1_3 extends Forum
 		$this->redirect('users', 'id', $start_at);
 	}
 
+	/**
+	 * Convert group id to the FluxBB style (use FluxBB constants, see index.php:83)
+	 */
 	function grp2grp($id)
 	{
 		static $mapping;

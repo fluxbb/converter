@@ -22,6 +22,9 @@ class Invision_Power_Board_3_2 extends Forum
 		$this->db->set_names('utf8');
 	}
 
+	/**
+	 * Check whether specified database has valid current forum software strucutre
+	 */
 	function validate()
 	{
 		if (!$this->db->field_exists('banfilters', 'ban_id'))
@@ -66,19 +69,19 @@ class Invision_Power_Board_3_2 extends Forum
 		}
 	}
 
-//	function convert_censoring()
-//	{
-//		$result = $this->db->query_build(array(
-//			'SELECT'	=> 'id, search_for, replace_with',
-//			'FROM'		=> 'censoring',
-//		)) or error('Unable to fetch censoring', __FILE__, __LINE__, $this->db->error());
+	function convert_censoring()
+	{
+		$result = $this->db->query_build(array(
+			'SELECT'	=> 'wid AS id, type AS search_for, swop AS replace_with',
+			'FROM'		=> 'badwords',
+		)) or error('Unable to fetch censoring', __FILE__, __LINE__, $this->db->error());
 
-//		conv_message('Processing', 'censors', $this->db->num_rows($result));
-//		while ($cur_censor = $this->db->fetch_assoc($result))
-//		{
-//			$this->fluxbb->add_row('censoring', $cur_censor);
-//		}
-//	}
+		conv_message('Processing', 'censors', $this->db->num_rows($result));
+		while ($cur_censor = $this->db->fetch_assoc($result))
+		{
+			$this->fluxbb->add_row('censoring', $cur_censor);
+		}
+	}
 
 	function convert_config()
 	{
@@ -86,22 +89,22 @@ class Invision_Power_Board_3_2 extends Forum
 		$old_config = array();
 
 		$result = $this->db->query_build(array(
-			'SELECT'	=> 'conf_name, conf_value',
-			'FROM'		=> 'config',
+			'SELECT'	=> 'conf_key, conf_value',
+			'FROM'		=> 'core_sys_conf_settings',
 		)) or error('Unable to fetch config', __FILE__, __LINE__, $this->db->error());
 
 		conv_message('Processing', 'config');
 		while ($cur_config = $this->db->fetch_assoc($result))
-			$old_config[$cur_config['conf_name']] = $cur_config['conf_value'];
+			$old_config[$cur_config['conf_key']] = $cur_config['conf_value'];
 
 		$new_config = array(
 			'o_cur_version'				=> FORUM_VERSION,
 			'o_database_revision'		=> FORUM_DB_REVISION,
 			'o_searchindex_revision'	=> FORUM_SI_REVISION,
 			'o_parser_revision'			=> FORUM_PARSER_REVISION,
-			'o_board_title'				=> 'My FluxBB Forum',
+			'o_board_title'				=> $old_config['board_name'],
 			'o_board_desc'				=> '<p><span>Unfortunately no one can be told what FluxBB is - you have to see it for yourself.</span></p>',
-			'o_default_timezone'		=> 0,
+			'o_default_timezone'		=> $old_config['time_offset'],
 			'o_time_format'				=> 'H:i:s',
 			'o_date_format'				=> 'Y-m-d',
 			'o_timeout_visit'			=> 30000,
@@ -119,7 +122,7 @@ class Invision_Power_Board_3_2 extends Forum
 			'o_default_user_group'		=> 4,
 			'o_topic_review'			=> 15,
 			'o_disp_topics_default'		=> 30,
-			'o_disp_posts_default'		=> 25,
+			'o_disp_posts_default'		=> $old_config['display_max_posts'],
 			'o_indent_num_spaces'		=> 4,
 			'o_quote_depth'				=> 3,
 			'o_quickpost'				=> 1,
@@ -132,9 +135,9 @@ class Invision_Power_Board_3_2 extends Forum
 			'o_gzip'					=> 0,
 			'o_additional_navlinks'		=> '',
 			'o_report_method'			=> 0,
-			'o_regs_report'				=> 0,
+			'o_regs_report'				=> $old_config['new_reg_notify'],
 			'o_default_email_setting'	=> 1,
-			'o_mailing_list'			=> 'user@example.com',
+			'o_mailing_list'			=> $old_config['email_out'],
 			'o_avatars'					=> 1,
 //			'o_avatars_dir'				=> 'img/avatars', // No need to change this value
 			'o_avatars_width'			=> 60,
@@ -142,23 +145,23 @@ class Invision_Power_Board_3_2 extends Forum
 			'o_avatars_size'			=> 10240,
 			'o_search_all_forums'		=> 1,
 //			'o_base_url'				=> '', // No need to change this value
-			'o_admin_email'				=> 'user@example.com',
-			'o_webmaster_email'			=> 'user@example.com',
+			'o_admin_email'				=> $old_config['email_out'],
+			'o_webmaster_email'			=> $old_config['email_in'],
 			'o_forum_subscriptions'		=> 1,
 			'o_topic_subscriptions'		=> 1,
-			'o_smtp_host'				=> '',
-			'o_smtp_user'				=> '',
-			'o_smtp_pass'				=> '',
+			'o_smtp_host'				=> $old_config['smtp_host'].(isset($old_config['smtp_port']) ? ':'.$old_config['smtp_port'] : ''),
+			'o_smtp_user'				=> $old_config['smtp_user'],
+			'o_smtp_pass'				=> $old_config['smtp_pass'],
 			'o_smtp_ssl'				=> 0,
-			'o_regs_allow'				=> 1,
+			'o_regs_allow'				=> $old_config['no_reg'] == 0,
 			'o_regs_verify'				=> 0,
 			'o_announcement'			=> 0,
 			'o_announcement_message'	=> 'Enter your announcement here.',
-			'o_rules'					=> 0,
-			'o_rules_message'			=> 'Enter your rules here',
-			'o_maintenance'				=> 0,
-			'o_maintenance_message'		=> 'The forums are temporarily down for maintenance. Please try again in a few minutes.',
-			'o_default_dst'				=> 0,
+			'o_rules'					=> $old_config['gl_guidelines'],
+			'o_rules_message'			=> $old_config['reg_rules'],
+			'o_maintenance'				=> $old_config['board_offline'],
+			'o_maintenance_message'		=> $old_config['offline_msg'],
+			'o_default_dst'				=> $old_config['time_dst_auto_correction'],
 			'o_feed_type'				=> 2,
 			'o_feed_ttl'				=> 0,
 			'p_message_bbcode'			=> 1,
@@ -234,22 +237,22 @@ class Invision_Power_Board_3_2 extends Forum
 //		}
 //	}
 
-//	function convert_groups()
-//	{
-//		$result = $this->db->query_build(array(
-//			'SELECT'	=> 'g_id, g_title, g_user_title, g_moderator, g_mod_edit_users, g_mod_rename_users, g_mod_change_passwords, g_mod_ban_users, g_read_board, g_view_users, g_post_replies, g_post_topics, g_edit_posts, g_delete_posts, g_delete_topics, g_set_title, g_search, g_search_users, g_send_email, g_post_flood, g_search_flood, g_email_flood',
-//			'FROM'		=> 'groups',
-//			'WHERE'		=> 'g_id > 4',
-//		)) or error('Unable to fetch groups', __FILE__, __LINE__, $this->db->error());
+	function convert_groups()
+	{
+		$result = $this->db->query_build(array(
+			'SELECT'	=> 'g_id, g_title',
+			'FROM'		=> 'groups',
+			'WHERE'		=> 'g_id > 6',
+		)) or error('Unable to fetch groups', __FILE__, __LINE__, $this->db->error());
 
-//		conv_message('Processing', 'groups', $this->db->num_rows($result));
-//		while ($cur_group = $this->db->fetch_assoc($result))
-//		{
-//			$cur_group['g_id'] = $this->grp2grp($cur_group['g_id']);
+		conv_message('Processing', 'groups', $this->db->num_rows($result));
+		while ($cur_group = $this->db->fetch_assoc($result))
+		{
+			$cur_group['g_id'] = $this->grp2grp($cur_group['g_id']);
 
-//			$this->fluxbb->add_row('groups', $cur_group);
-//		}
-//	}
+			$this->fluxbb->add_row('groups', $cur_group);
+		}
+	}
 
 	function convert_posts($start_at)
 	{
@@ -278,33 +281,33 @@ class Invision_Power_Board_3_2 extends Forum
 		$this->redirect('posts', 'pid', $start_at);
 	}
 
-//	function convert_ranks()
-//	{
-//		$result = $this->db->query_build(array(
-//			'SELECT'	=> 'id, rank, min_posts',
-//			'FROM'		=> 'ranks',
-//		)) or error('Unable to fetch ranks', __FILE__, __LINE__, $this->db->error());
+	function convert_ranks()
+	{
+		$result = $this->db->query_build(array(
+			'SELECT'	=> 'id, title AS rank, posts AS min_posts',
+			'FROM'		=> 'titles',
+		)) or error('Unable to fetch ranks', __FILE__, __LINE__, $this->db->error());
 
-//		conv_message('Processing', 'ranks', $this->db->num_rows($result));
-//		while ($cur_rank = $this->db->fetch_assoc($result))
-//		{
-//			$this->fluxbb->add_row('ranks', $cur_rank);
-//		}
-//	}
+		conv_message('Processing', 'ranks', $this->db->num_rows($result));
+		while ($cur_rank = $this->db->fetch_assoc($result))
+		{
+			$this->fluxbb->add_row('ranks', $cur_rank);
+		}
+	}
 
-//	function convert_reports()
-//	{
-//		$result = $this->db->query_build(array(
-//			'SELECT'	=> 'id, post_id, topic_id, forum_id, reported_by, created, message, zapped, zapped_by',
-//			'FROM'		=> 'reports',
-//		)) or error('Unable to fetch reports', __FILE__, __LINE__, $this->db->error());
+	function convert_reports()
+	{
+		$result = $this->db->query_build(array(
+			'SELECT'	=> 'rid AS id, id AS post_id, report_by AS reported_by, date_reported AS created, report AS message',
+			'FROM'		=> 'rc_reports',
+		)) or error('Unable to fetch reports', __FILE__, __LINE__, $this->db->error());
 
-//		conv_message('Processing', 'reports', $this->db->num_rows($result));
-//		while ($cur_report = $this->db->fetch_assoc($result))
-//		{
-//			$this->fluxbb->add_row('reports', $cur_report);
-//		}
-//	}
+		conv_message('Processing', 'reports', $this->db->num_rows($result));
+		while ($cur_report = $this->db->fetch_assoc($result))
+		{
+			$this->fluxbb->add_row('reports', $cur_report);
+		}
+	}
 
 	//function convert_topic_subscriptions()
 //	{
@@ -365,11 +368,15 @@ class Invision_Power_Board_3_2 extends Forum
 			$this->fluxbb->db->add_field('users', 'salt', 'VARCHAR(255)', false, '', 'password');
 
 		$result = $this->db->query_build(array(
-			'SELECT'	=> 'u.member_id AS id, u.member_group_id AS group_id, u.name AS username, u.members_pass_hash AS password, u.members_pass_salt AS salt, u.title, f.field_3 AS url, f.field_4 AS icq, f.field_2 AS msn, f.field_1 AS aim, f.field_8 AS yahoo, f.field_6 AS location, IF(u.time_offset IS NULL, 0, u.time_offset) AS timezone, u.posts AS num_posts, u.last_post, u.view_img AS show_img, 1 AS show_avatars, u.view_sigs AS show_sig, u.joined AS registered, u.ip_address AS registration_ip, u.last_visit AS last_visit, 1 AS email_setting, u.dst_in_use AS dst',
+			'SELECT'	=> 'u.member_id AS id, u.member_group_id AS group_id, u.name AS username, u.members_pass_hash AS password, u.members_pass_salt AS salt, u.title, f.field_3 AS url, f.field_4 AS icq, f.field_2 AS msn, f.field_1 AS aim, f.field_8 AS yahoo, f.field_6 AS location, IF(u.time_offset IS NULL, 0, u.time_offset) AS timezone, u.posts AS num_posts, u.last_post, u.view_img AS show_img, 1 AS show_avatars, u.view_sigs AS show_sig, u.joined AS registered, u.ip_address AS registration_ip, u.last_visit AS last_visit, 1 AS email_setting, u.dst_in_use AS dst, p.signature',
 			'JOINS'        => array(
 				array(
 					'LEFT JOIN'	=> 'pfields_content AS f',
-					'ON'		=> 'f.member_id=u.member_id'
+					'ON'		=> 'f.member_id = u.member_id'
+				),
+				array(
+					'LEFT JOIN'	=> 'profile_portal AS p',
+					'ON'		=> 'p.pp_member_id = u.member_id'
 				),
 			),
 			'FROM'		=> 'members AS u',
@@ -388,8 +395,7 @@ class Invision_Power_Board_3_2 extends Forum
 			$start_at = $cur_user['id'];
 			$cur_user['group_id'] = $this->grp2grp($cur_user['group_id']);
 			$cur_user['id'] = $this->uid2uid($cur_user['id']);
-			// TODO: where IPB stores user signatures?
-//			$cur_user['signature'] = $this->convert_message($cur_user['signature']);
+			$cur_user['signature'] = $this->convert_message($cur_user['signature']);
 
 			$this->fluxbb->add_row('users', $cur_user, array($this->fluxbb, 'error_users'));
 		}
@@ -397,6 +403,9 @@ class Invision_Power_Board_3_2 extends Forum
 		$this->redirect('members', 'member_id', $start_at);
 	}
 
+	/**
+	 * Convert group id to the FluxBB style (use FluxBB constants, see index.php:83)
+	 */
 	function grp2grp($id)
 	{
 		static $mapping;
@@ -410,6 +419,9 @@ class Invision_Power_Board_3_2 extends Forum
 		return $mapping[$id];
 	}
 
+	/**
+ 	* Convert user id to FluxBB style
+	 */
 	function uid2uid($id)
 	{
 		static $last_uid;
@@ -432,7 +444,9 @@ class Invision_Power_Board_3_2 extends Forum
 		return $id;
 	}
 
-	// Convert BBcode
+	/**
+	 * Convert BBcode
+	 */
 	function convert_message($message)
 	{
 		static $patterns, $replacements;
