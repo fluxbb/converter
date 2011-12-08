@@ -236,6 +236,7 @@ class VBulletin_4_1_5 extends Forum
 			'SELECT'	=> 'postid AS id, username AS poster, userid AS poster_id, dateline AS posted, ipaddress AS poster_ip, pagetext AS message, IF(allowsmilie=1, 0, 1) AS hide_smilies, threadid as topic_id',
 			'FROM'		=> 'post',
 			'WHERE'		=> 'postid > '.$start_at,
+			'ORDER BY'	=> 'postid ASC',
 			'LIMIT'		=> PER_PAGE,
 		)) or error('Unable to fetch posts', __FILE__, __LINE__, $this->db->error());
 
@@ -329,6 +330,7 @@ class VBulletin_4_1_5 extends Forum
 			'SELECT'	=> 'threadid AS id, postusername AS poster, title AS subject, dateline AS posted, views AS num_views, replycount AS num_replies, lastpost AS last_post, lastpostid AS last_post_id, lastposter AS last_poster, sticky AS sticky, IF(open=0, 1, 0) AS closed, forumid AS forum_id',
 			'FROM'		=> 'thread',
 			'WHERE'		=> 'threadid > '.$start_at,
+			'ORDER BY'	=> 'threadid ASC',
 			'LIMIT'		=> PER_PAGE,
 		)) or error('Unable to fetch topics', __FILE__, __LINE__, $this->db->error());
 

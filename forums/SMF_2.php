@@ -262,6 +262,7 @@ class SMF_2 extends Forum
 			'SELECT'	=> 'id_msg AS id, poster_name AS poster, id_member AS poster_id, poster_time AS posted, poster_ip AS poster_ip, body AS message, id_topic AS topic_id',
 			'FROM'		=> 'messages',
 			'WHERE'		=> 'id_msg > '.$start_at,
+			'ORDER BY'	=> 'id_msg ASC',
 			'LIMIT'		=> PER_PAGE,
 		)) or error('Unable to fetch posts', __FILE__, __LINE__, $this->db->error());
 
@@ -357,6 +358,7 @@ class SMF_2 extends Forum
 			),
 			'FROM'		=> 'topics AS t',
 			'WHERE'		=> 't.id_topic > '.$start_at,
+			'ORDER BY'	=> 't.id_topic ASC',
 			'LIMIT'		=> PER_PAGE,
 		)) or error('Unable to fetch topics', __FILE__, __LINE__, $this->db->error());
 
@@ -385,6 +387,7 @@ class SMF_2 extends Forum
 			'SELECT'	=> 'id_member AS id, id_group AS group_id, member_name AS username, passwd AS password, password_salt AS salt, website_url AS url, icq AS icq, msn AS msn, aim AS aim, yim AS yahoo, signature AS signature, time_offset AS timezone, posts AS num_posts, date_registered AS registered, last_login AS last_visit, location AS location, email_address AS email',
 			'FROM'		=> 'members',
 			'WHERE'		=> 'id_member > '.$start_at,
+			'ORDER BY'	=> 'id_member ASC',
 			'LIMIT'		=> PER_PAGE,
 		)) or error('Unable to fetch users', __FILE__, __LINE__, $this->db->error());
 

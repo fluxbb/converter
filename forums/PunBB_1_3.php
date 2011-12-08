@@ -230,6 +230,7 @@ class PunBB_1_3 extends Forum
 			'SELECT'	=> 'id, poster, poster_id, poster_ip, poster_email, message, hide_smilies, posted, edited, edited_by, topic_id',
 			'FROM'		=> 'posts',
 			'WHERE'		=> 'id > '.$start_at,
+			'ORDER BY'	=> 'id ASC',
 			'LIMIT'		=> PER_PAGE,
 		)) or error('Unable to fetch posts', __FILE__, __LINE__, $this->db->error());
 
@@ -300,6 +301,7 @@ class PunBB_1_3 extends Forum
 			'SELECT'	=> 'id, poster, subject, posted, first_post_id, last_post, last_post_id, last_poster, num_views, num_replies, closed, sticky, moved_to, forum_id',
 			'FROM'		=> 'topics',
 			'WHERE'		=> 'id > '.$start_at,
+			'ORDER BY'	=> 'id ASC',
 			'LIMIT'		=> PER_PAGE,
 		)) or error('Unable to fetch topics', __FILE__, __LINE__, $this->db->error());
 

@@ -258,6 +258,7 @@ class PhpBB_3_0_9 extends Forum
 			),
 			'FROM'		=> 'posts AS p',
 			'WHERE'		=> 'p.post_id > '.$start_at,
+			'ORDER BY'	=> 'p.post_id ASC',
 			'LIMIT'		=> PER_PAGE,
 		)) or error('Unable to fetch posts', __FILE__, __LINE__, $this->db->error());
 
@@ -345,6 +346,7 @@ class PhpBB_3_0_9 extends Forum
 			'SELECT'	=> 'topic_id AS id, topic_first_poster_name AS poster, topic_title AS subject, topic_time AS posted, topic_first_post_id AS first_post_id, topic_last_post_time AS last_post, topic_last_post_id AS last_post_id, topic_last_poster_name AS last_poster, topic_views AS num_views, topic_replies AS num_replies, IF(topic_status=1, 1, 0) AS closed, IF(topic_type=1, 1, 0) AS sticky, IF(topic_moved_id=0, NULL, topic_moved_id) AS moved_to, forum_id',
 			'FROM'		=> 'topics',
 			'WHERE'		=> 'topic_id > '.$start_at,
+			'ORDER BY'	=> 'topic_id ASC',
 			'LIMIT'		=> PER_PAGE,
 		)) or error('Unable to fetch topics', __FILE__, __LINE__, $this->db->error());
 
@@ -370,6 +372,7 @@ class PhpBB_3_0_9 extends Forum
 			'SELECT'	=> 'user_id AS id, group_id AS group_id, username AS username, user_password AS password, user_website AS url, user_icq AS icq, user_msnm AS msn, user_aim AS aim, user_yim AS yahoo, user_posts AS num_posts, user_from AS location, user_allow_viewemail AS email_setting, user_timezone AS timezone, user_regdate AS registered, user_lastvisit AS last_visit, user_sig AS signature, user_email AS email',
 			'FROM'		=> 'users',
 			'WHERE'		=> 'group_id <> 6 AND user_id <> 1 AND user_id > '.$start_at,
+			'ORDER BY'	=> 'user_id ASC',
 			'LIMIT'		=> PER_PAGE,
 		)) or error('Unable to fetch users', __FILE__, __LINE__, $this->db->error());
 

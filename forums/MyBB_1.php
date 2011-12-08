@@ -253,6 +253,7 @@ class MyBB_1 extends Forum
 			'SELECT'	=> 'pid AS id, username AS poster, uid AS poster_id, dateline AS posted, ipaddress AS poster_ip, message AS message, tid AS topic_id, smilieoff AS hide_smilies',
 			'FROM'		=> 'posts',
 			'WHERE'		=> 'pid > '.$start_at,
+			'ORDER BY'	=> 'pid ASC',
 			'LIMIT'		=> PER_PAGE,
 		)) or error('Unable to fetch posts', __FILE__, __LINE__, $this->db->error());
 
@@ -341,6 +342,7 @@ class MyBB_1 extends Forum
 			),
 			'FROM'		=> 'threads AS t',
 			'WHERE'		=> 't.tid > '.$start_at,
+			'ORDER BY'	=> 't.tid ASC',
 			'LIMIT'		=> PER_PAGE,
 		)) or error('Unable to fetch topics', __FILE__, __LINE__, $this->db->error());
 
@@ -369,6 +371,7 @@ class MyBB_1 extends Forum
 			'SELECT'	=> 'uid AS id, username AS username, password AS password, salt AS salt, website AS url, icq AS icq, msn AS msn, aim AS aim, yahoo AS yahoo, postnum AS num_posts, IF(hideemail=1, 1, 0) AS email_setting, timezone, lastvisit AS last_visit, signature, email, regdate AS registered, usergroup AS group_id',
 			'FROM'		=> 'users',
 			'WHERE'		=> 'uid > '.$start_at,
+			'ORDER BY'	=> 'uid ASC',
 			'LIMIT'		=> PER_PAGE,
 		)) or error('Unable to fetch users', __FILE__, __LINE__, $this->db->error());
 

@@ -260,6 +260,7 @@ class Invision_Power_Board_3_2 extends Forum
 			'SELECT'	=> 'pid AS id, author_name AS poster, author_id AS poster_id, ip_address AS poster_ip, post AS message, IF(use_emo=1, 0, 1) AS hide_smilies, post_date AS posted, edit_time AS edited, edit_name AS edited_by, topic_id',
 			'FROM'		=> 'posts',
 			'WHERE'		=> 'pid > '.$start_at,
+			'ORDER BY'	=> 'pid ASC',
 			'LIMIT'		=> PER_PAGE,
 		)) or error('Unable to fetch posts', __FILE__, __LINE__, $this->db->error());
 
@@ -334,6 +335,7 @@ class Invision_Power_Board_3_2 extends Forum
 			'SELECT'	=> 'tid AS id, starter_name AS poster, title AS subject, start_date AS posted, views AS num_views, posts AS num_replies, last_post, last_poster_name AS last_poster, pinned AS sticky, moved_to, forum_id',
 			'FROM'		=> 'topics',
 			'WHERE'		=> 'tid > '.$start_at,
+			'ORDER BY'	=> 'tid ASC',
 			'LIMIT'		=> PER_PAGE,
 		)) or error('Unable to fetch topics', __FILE__, __LINE__, $this->db->error());
 
@@ -381,8 +383,8 @@ class Invision_Power_Board_3_2 extends Forum
 			),
 			'FROM'		=> 'members AS u',
 			'WHERE'		=> 'u.member_id > '.$start_at,
-			'LIMIT'		=> PER_PAGE,
 			'ORDER BY'	=> 'u.member_id ASC',
+			'LIMIT'		=> PER_PAGE,
 		)) or error('Unable to fetch users', __FILE__, __LINE__, $this->db->error());
 
 		conv_message('Processing', 'users', $this->db->num_rows($result), $start_at, $start_at + PER_PAGE);

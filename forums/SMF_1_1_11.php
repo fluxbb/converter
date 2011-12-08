@@ -259,6 +259,7 @@ class SMF_1_1_11 extends Forum
 			'SELECT'	=> 'ID_MSG AS id, posterName AS poster, ID_MEMBER AS poster_id, posterIP AS poster_ip, posterEmail AS poster_email, body AS message, IF(smileysEnabled = 1, 0, 1) AS hide_smilies, posterTime AS posted, ID_TOPIC AS topic_id',
 			'FROM'		=> 'messages',
 			'WHERE'		=> 'ID_MSG > '.$start_at,
+			'ORDER BY'	=> 'ID_MSG ASC',
 			'LIMIT'		=> PER_PAGE,
 		)) or error('Unable to fetch messages', __FILE__, __LINE__, $this->db->error());
 
@@ -357,6 +358,7 @@ class SMF_1_1_11 extends Forum
 			),
 			'FROM'		=> 'topics AS t',
 			'WHERE'		=> 't.ID_TOPIC > '.$start_at,
+			'ORDER BY'	=> 't.ID_TOPIC ASC',
 			'LIMIT'		=> PER_PAGE,
 		)) or error('Unable to fetch topics', __FILE__, __LINE__, $this->db->error());
 
@@ -382,6 +384,7 @@ class SMF_1_1_11 extends Forum
 			'SELECT'	=> 'ID_MEMBER AS id, ID_GROUP AS group_id, memberName AS username, passwd AS password, passwordSalt AS salt, websiteUrl AS url, ICQ AS icq, MSN AS msn, AIM AS aim, YIM AS yahoo, signature AS signature, timeOffset AS timezone, posts AS num_posts, dateRegistered AS registered, lastLogin AS last_visit, location AS location, emailAddress AS email',
 			'FROM'		=> 'members',
 			'WHERE'		=> 'id_member > '.$start_at,
+			'ORDER BY'	=> 'id_member ASC',
 			'LIMIT'		=> PER_PAGE,
 		)) or error('Unable to fetch users', __FILE__, __LINE__, $this->db->error());
 

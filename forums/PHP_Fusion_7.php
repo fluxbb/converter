@@ -271,6 +271,7 @@ class PHP_Fusion_7 extends Forum
 			),
 			'FROM'		=> 'posts AS p',
 			'WHERE'		=> 'p.post_id > '.$start_at,
+			'ORDER BY'	=> 'p.post_id ASC',
 			'LIMIT'		=> PER_PAGE,
 		)) or error('Unable to fetch posts', __FILE__, __LINE__, $this->db->error());
 
@@ -370,6 +371,7 @@ class PHP_Fusion_7 extends Forum
 			),
 			'FROM'		=> 'threads AS t',
 			'WHERE'		=> 'thread_id > '.$start_at,
+			'ORDER BY'	=> 'thread_id ASC',
 			'LIMIT'		=> PER_PAGE,
 		)) or error('Unable to fetch topics', __FILE__, __LINE__, $this->db->error());
 
@@ -402,6 +404,7 @@ class PHP_Fusion_7 extends Forum
 			'SELECT'	=> 'user_id AS id, user_name AS username, user_password AS password, user_email AS email, user_web AS url, user_icq AS icq, user_msn AS msn, user_yahoo AS yahoo, user_sig AS signature, user_offset AS timezone, user_posts AS num_posts, user_joined AS registered, user_lastvisit AS last_visit, user_location AS location, IF(user_hide_email=0, 1, 0) AS email_setting, user_groups AS group_id',
 			'FROM'		=> 'users',
 			'WHERE'		=> 'user_id > '.$start_at,
+			'ORDER BY'	=> 'user_id ASC',
 			'LIMIT'		=> PER_PAGE,
 		)) or error('Unable to fetch users', __FILE__, __LINE__, $this->db->error());
 
