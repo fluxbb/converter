@@ -193,7 +193,7 @@ class PhpBB_3_0_9 extends Forum
 	function convert_forums()
 	{
 		$result = $this->db->query_build(array(
-			'SELECT'	=> 'forum_id AS id, forum_name AS forum_name, forum_desc AS forum_desc, forum_link AS redirect_url, forum_topics AS num_topics, forum_posts AS num_posts, left_id AS disp_position, forum_last_poster_name AS last_poster, forum_last_post_id AS last_post_id, forum_last_post_time AS last_post, forum_parents AS cat_id',
+			'SELECT'	=> 'forum_id AS id, forum_name, forum_desc, IF(forum_link=\'\', NULL, forum_link) AS redirect_url, forum_topics AS num_topics, forum_posts AS num_posts, left_id AS disp_position, forum_last_poster_name AS last_poster, forum_last_post_id AS last_post_id, forum_last_post_time AS last_post, forum_parents AS cat_id',
 			'FROM'		=> 'forums',
 			'WHERE'		=> 'forum_type <> 0',
 			'ORDER BY'	=> 'left_id ASC'
@@ -204,6 +204,7 @@ class PhpBB_3_0_9 extends Forum
 		{
 			$cur_forum['cat_id'] = array_keys(unserialize($cur_forum['cat_id']));
 			$cur_forum['cat_id'] = $cur_forum['cat_id'][0];
+			$cur_forum['forum_desc'] = $this->convert_message($cur_forum['forum_desc']);
 
 			if ($cur_forum['num_topics'] == 0)
 				$cur_forum['last_post'] = $cur_forum['last_post_id'] = $cur_forum['last_poster'] = NULL;
@@ -249,7 +250,7 @@ class PhpBB_3_0_9 extends Forum
 	function convert_posts($start_at)
 	{
 		$result = $this->db->query_build(array(
-			'SELECT'	=> 'p.post_id AS id, u.username AS poster, p.poster_id AS poster_id, p.post_time AS posted, p.poster_ip AS poster_ip, p.post_text AS message, p.topic_id AS topic_id',
+			'SELECT'	=> 'p.post_id AS id, IF(p.post_username=\'\', u.username, p.post_username) AS poster, p.poster_id AS poster_id, p.post_time AS posted, p.poster_ip AS poster_ip, p.post_text AS message, p.topic_id AS topic_id',
 			'JOINS'        => array(
 				array(
 					'LEFT JOIN'	=> 'users AS u',
@@ -423,7 +424,7 @@ class PhpBB_3_0_9 extends Forum
 		if (!isset($patterns))
 		{
 			$patterns = array(
-				'%\[(/?)(b|i|u|list|\*|color|img|url|code|quote|size)(?:\=[^\]]*)?(:[a-z0-9])?:[a-z0-9]{8}\]%i'	=>	'[$1$2$3]', // Strip text after colon in tag name
+				'%\[(/?)(b|i|u|list|\*|color|img|url|code|quote|size)(\=[^:\]]*)?:[a-z0-9]{5,8}\]%i'	=>	'[$1$2$3]', // Strip text after colon in tag name
 
 				// Smileys
 				'#<!-- s.*? --><img src=".*?" alt="(.*?)" title=".*?" \/><!-- s.*? -->#i'			=>	'$1',
