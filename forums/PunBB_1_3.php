@@ -330,8 +330,8 @@ class PunBB_1_3 extends Forum
 			'SELECT'	=> 'id, group_id, username, email, title, realname, url, jabber, icq, msn, aim, yahoo, location, signature, disp_topics, disp_posts, email_setting, notify_with_post, auto_notify, show_smilies, show_img, show_img_sig, show_avatars, show_sig, timezone, dst, time_format, date_format, num_posts, last_post, last_search, last_email_sent, registered, registration_ip, last_visit, admin_note, activate_string, activate_key',
 			'FROM'		=> 'users',
 			'WHERE'		=> 'id <> 1 AND id > '.$start_at,
-			'LIMIT'		=> PER_PAGE,
 			'ORDER BY'	=> 'id ASC',
+			'LIMIT'		=> PER_PAGE,
 		)) or error('Unable to fetch users', __FILE__, __LINE__, $this->db->error());
 
 		conv_message('Processing', 'users', $this->db->num_rows($result), $start_at, $start_at + PER_PAGE);

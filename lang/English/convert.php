@@ -47,7 +47,7 @@ $lang_convert = array(
 'Converting'					=>	'Converting %s',
 
 // Username dupes
-'Error info 1'					=>	'There was an error converting some users. This can occur when converting from PunBB v1.3 if multiple users have registered with very similar usernames, for example "bob" and "böb".',
+'Error info 1'					=>	'There was an error when converting some users. This can occur when converting from PunBB v1.3 if multiple users have registered with very similar usernames, for example "bob" and "böb".',
 'Error info 2'					=>	'Below is a list of users who failed to convert. Clicking Alert users button will send an email alerting them of the change.',
 'Username dupes head'			=>	'Username dupes',
 'Username dupes'				=>	'Username dupes',

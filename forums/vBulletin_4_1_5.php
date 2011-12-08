@@ -365,8 +365,8 @@ class VBulletin_4_1_5 extends Forum
 			),
 			'FROM'		=> 'user AS u',
 			'WHERE'		=> 'u.userid > '.$start_at,
-			'LIMIT'		=> PER_PAGE,
 			'ORDER BY'	=> 'u.userid ASC',
+			'LIMIT'		=> PER_PAGE,
 		)) or error('Unable to fetch users', __FILE__, __LINE__, $this->db->error());
 
 		conv_message('Processing', 'users', $this->db->num_rows($result), $start_at, $start_at + PER_PAGE);

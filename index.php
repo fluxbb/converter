@@ -288,7 +288,7 @@ if (isset($_POST['form_sent']) || isset($_GET['stage']))
 						<p>
 <?php
 			foreach ($_SESSION['converter']['dupe_users'] as $id => $cur_user)
-				echo sprintf($lang_convert['was renamed to'], $cur_user['username'], $cur_user['new_username']).'<br />'."\n";
+				echo sprintf($lang_convert['was renamed to'], '<strong>'.pun_htmlspecialchars($cur_user['old_username']).'</strong>', '<strong>'.pun_htmlspecialchars($cur_user['username']).'</strong>').'<br />'."\n";
 
 ?>
 						</p>
