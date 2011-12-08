@@ -5,11 +5,14 @@ FluxBB converter tool
 
 Supported forums
 ----------------
+ - Invision Power Board 3.2
+ - MyBB 1
  - PHP Fusion 7
- - PhpBB 3
+ - PhpBB 3.0
  - PunBB 1.3
- - SMF 1
+ - SMF 1.1
  - SMF 2
+ - vBulletin 4.1
 
 Notes
 -------------------
