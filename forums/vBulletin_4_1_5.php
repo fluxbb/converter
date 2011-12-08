@@ -426,7 +426,6 @@ class VBulletin_4_1_5 extends Forum
 		return $id;
 	}
 
-	// TODO:
 	/**
 	 * Convert BBcode
 	 */
@@ -439,11 +438,13 @@ class VBulletin_4_1_5 extends Forum
 		if (!isset($patterns))
 		{
 			$patterns = array(
-				'%\[quote author=(.*?) link.*?\](.*?)\[/quote\]%si'		=>	'[quote=$1]$2[/quote]',
-				'%\[flash=.*?\](.*?)\[/flash\]%si'						=>	'Flash: $1',
-				'%\[ftp=(.*?)\](.*?)\[/ftp\]%si'						=>	'[url=$1]$2[/url]',
-				'%\[list(=.*?)?\](.*?)\[/list\]%si'						=>	'[list]$1[/list]',
-				'%\[/?(font|size|glow|s|shadow|move|pre|left|right|center|sup|sub|tt|table)(?:\=[^\]]*)?\]%i'	=> '',	// Strip tags not supported by FluxBB
+				'%\[QUOTE=(.*?);\d+\]%si'								=>	'[quote=$1]',
+				'%\[\*\](.*?)\n%si'										=>	'[*]$1[/*]'."\n",
+				'%\[(/?)(HTML|PHP)\]%i'									=>	'[$1code]',
+				'%\[/?(FONT|SIZE|INDENT|LEFT|RIGHT|CENTER|SUP|SUB|TABLE)(?:\=[^\]]*)?\]%i'	=> '',	// Strip tags not supported by FluxBB
+				'%\[([A-Z]+\=)"([^\]]*)"\]%i'							=>	'[$1$2]',	// Strip double quotes from param
+				'%\[(URL|IMG)(=[^\]]*)?\]\s*(.*?)\s*\[/\1\]%si'			=>	'[$1$2]$3[/$1]',	// Strip multiline characters from img and url tags
+				'%\[(/?)([A-Z]+)(=[^\]]*)?\]%sie'						=>	'\'[$1\'.strtolower(\'$2\').\'$3]\'',	// Convert tag name to lower case
 			);
 		}
 
@@ -452,15 +453,16 @@ class VBulletin_4_1_5 extends Forum
 		if (!isset($replacements))
 		{
 			$replacements = array(
-				'[li]'		=>	'[*]',
-				'[/li]'		=>	'[/*]',
+				'[video'	=>	'[url',		// Allow [video=something]
+				'[/video]'	=>	'[/url]',
 				'[tr]'		=>	'[list]',
 				'[/tr]'		=>	'[/list]',
 				'[td]'		=>	'[*]',
 				'[/td]'		=>	'[/*]',
-				'<br />'	=>	"\n",
 				'[hr]'		=>	"\n",
-				'::)'		=>	':rolleyes:',
+				'[/hr]'		=>	'',
+				':confused:'=>	':rolleyes:',
+				':eek:'		=>	':o',
 			);
 		}
 		return str_replace(array_keys($replacements), array_values($replacements), $message);
