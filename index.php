@@ -181,58 +181,34 @@ if (defined('CMDLINE'))
 		exit(1);
 	}
 
-	$errors = array();
-
 	$forum_config = array(
-		'type'		=> isset($options['f']) ? $options['f'] : (isset($options['forum']) ? $options['forum'] : conv_error('You have to enter a forum software.', __FILE__, __LINE__)),
+		'type'		=> isset($options['f']) ? $options['f'] : (isset($options['forum']) ? $options['forum'] : null),
 	);
 
 	$old_db_config = array(
-		'type'		=> isset($options['t']) ? $options['t'] : (isset($options['type']) ? $options['type'] : conv_error('Database type for old forum is invalid.', __FILE__, __LINE__)),
-		'host'		=> isset($options['s']) ? $options['s'] : (isset($options['host']) ? $options['host'] : conv_error('You have to enter a database host for the old forum.', __FILE__, __LINE__)),
-		'name'		=> isset($options['n']) ? $options['n'] : (isset($options['name']) ? $options['name'] : conv_error('You have to enter a database name for the old forum.', __FILE__, __LINE__)),
-		'username'	=> isset($options['u']) ? $options['u'] : (isset($options['user']) ? $options['user'] : conv_error('You have to enter a database username for the old forum.', __FILE__, __LINE__)),
+		'type'		=> isset($options['t']) ? $options['t'] : (isset($options['type']) ? $options['type'] : null),
+		'host'		=> isset($options['s']) ? $options['s'] : (isset($options['host']) ? $options['host'] : null),
+		'name'		=> isset($options['n']) ? $options['n'] : (isset($options['name']) ? $options['name'] : null),
+		'username'	=> isset($options['u']) ? $options['u'] : (isset($options['user']) ? $options['user'] : null),
 		'password'	=> isset($options['p']) ? $options['p'] : (isset($options['pass']) ? $options['pass'] : ''),
 		'prefix'	=> isset($options['r']) ? $options['r'] : (isset($options['prefix']) ? $options['prefix'] : ''),
 		'charset'	=> isset($options['c']) ? $options['c'] : (isset($options['charset']) ? $options['charset'] : 'UTF-8'),
 	);
 
-	$forum_config = array_map('trim', $forum_config);
-	$old_db_config = array_map('trim', $old_db_config);
-
-	if (!isset($forums[$forum_config['type']]))
-	{
-		// Ignore case
-		$keys = array_keys($forums);
-		$values = array();
-		foreach ($keys as $cur_key)
-			if (strpos(strtolower($cur_key), strtolower($forum_config['type'])) === 0)
-				$values[] = $cur_key;
-
-		if (count($values) == 1)
-			$forum_config['type'] = $values[0];
-		else if (($key = array_search(strtolower($forum_config['type']), array_map('strtolower', $keys))) !== false)
-			$forum_config['type'] = $keys[$key];
-		else
-			conv_error('You entered an invalid forum software. Possible values are:'."\n".implode("\n", array_keys($forums)));
-	}
-
-	if (!in_array($old_db_config['type'], $engines))
-		conv_error('Database type for old forum is invalid. Possible values are:'."\n".implode("\n", $engines));
-
 }
+
 // We submited the form, store data in session as we'll redirect to the next page
 else if (isset($_POST['form_sent']))
 {
 	$forum_config = array(
-		'type'		=> isset($_POST['req_forum']) && isset($forums[$_POST['req_forum']]) ? $_POST['req_forum'] : conv_error('You entered an invalid forum software.', __FILE__, __LINE__),
+		'type'		=> isset($_POST['req_forum']) && isset($forums[$_POST['req_forum']]) ? $_POST['req_forum'] : null,
 	);
 
 	$old_db_config = array(
-		'type'		=> isset($_POST['req_old_db_type']) && in_array($_POST['req_old_db_type'], $engines) ? $_POST['req_old_db_type'] : conv_error('Database type for old forum is invalid.', __FILE__, __LINE__),
-		'host'		=> isset($_POST['req_old_db_host']) ? trim($_POST['req_old_db_host']) : conv_error('You have to enter a database host for the old forum.', __FILE__, __LINE__),
-		'name'		=> isset($_POST['req_old_db_name']) ? trim($_POST['req_old_db_name']) : conv_error('You have to enter a database name for the old forum.', __FILE__, __LINE__),
-		'username'	=> isset($_POST['old_db_username']) ? trim($_POST['old_db_username']) : conv_error('You have to enter a database username for the old forum.', __FILE__, __LINE__),
+		'type'		=> isset($_POST['req_old_db_type']) ? $_POST['req_old_db_type'] : null,
+		'host'		=> isset($_POST['req_old_db_host']) ? trim($_POST['req_old_db_host']) : null,
+		'name'		=> isset($_POST['req_old_db_name']) ? trim($_POST['req_old_db_name']) : null,
+		'username'	=> isset($_POST['old_db_username']) ? trim($_POST['old_db_username']) : null,
 		'password'	=> isset($_POST['old_db_pass']) ? $_POST['old_db_pass'] : '',
 		'prefix'	=> isset($_POST['old_db_prefix']) ? trim($_POST['old_db_prefix']) : '',
 		'charset'	=> isset($_POST['old_db_charset']) ? trim($_POST['old_db_charset']) : 'UTF-8'
@@ -249,6 +225,48 @@ else if (isset($_SESSION['converter']))
 	$convert_lang = $_SESSION['converter']['lang'];
 }
 
+// Check whether we have all needed data valid
+if (defined('CMDLINE') || isset($_POST['form_sent']))
+{
+	if (!isset($forum_config['type']))
+		conv_error('You have to enter a forum software.');
+	if (!isset($old_db_config['type']))
+		conv_error('You have to enter database type for old forum.');
+	if (!isset($old_db_config['host']))
+		conv_error('You have to enter a database host for the old forum.');
+	if (!isset($old_db_config['name']))
+		conv_error('You have to enter a database name for the old forum.');
+	if (!isset($old_db_config['username']))
+		conv_error('You have to enter a database username for the old forum.');
+
+	$forum_config = array_map('trim', $forum_config);
+	$old_db_config = array_map('trim', $old_db_config);
+
+	if (!array_key_exists($forum_config['type'], $forums))
+	{
+		if (defined('CMDLINE'))
+		{
+			// Try to correct forum name (ignore case)
+			$keys = array_keys($forums);
+			$values = array();
+			foreach ($keys as $cur_key)
+				if (strpos(strtolower($cur_key), strtolower($forum_config['type'])) === 0)
+					$values[] = $cur_key;
+
+			if (count($values) == 1)
+				$forum_config['type'] = $values[0];
+			else if (($key = array_search(strtolower($forum_config['type']), array_map('strtolower', $keys))) !== false)
+				$forum_config['type'] = $keys[$key];
+			else
+				conv_error('You entered an invalid forum software. Possible values are:'."\n".implode("\n", array_keys($forums)));
+		}
+		else
+			conv_error('You entered an invalid forum software');
+	}
+
+	if (!in_array($old_db_config['type'], $engines))
+		conv_error('Database type for old forum is invalid.'.(defined('CMDLINE') ? ' Possible values are:'."\n".implode("\n", $engines) : ''));
+}
 
 if (isset($_POST['form_sent']) || isset($_GET['stage']) || defined('CMDLINE'))
 {
@@ -270,7 +288,7 @@ if (isset($_POST['form_sent']) || isset($_GET['stage']) || defined('CMDLINE'))
 
 	// Check we aren't trying to convert to the same database
 	if ($old_db_config == $db_config)
-		conv_error('Old and new tables must be different!', __FILE__, __LINE__);
+		conv_error('Old and new tables must be different!');
 
 	// The forum scripts must specify the charset manually!
 	define('FORUM_NO_SET_NAMES', 1);

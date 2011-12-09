@@ -27,11 +27,11 @@ function conv_message()
 	echo vsprintf($message, $args)."\n".(defined('CMDLINE') ? '' : '<br />');
 }
 
-function conv_error($message, $file = __FILE__, $line = __LINE__, $dberror = false)
+function conv_error($message, $file = null, $line = null, $dberror = false)
 {
 	if (defined('CMDLINE'))
 	{
-		echo 'ERROR: '.$message.(defined('PUN_DEBUG') ? ' in '.$file.', '.$line : '')."\n";
+		echo 'ERROR: '.$message.(defined('PUN_DEBUG') && isset($file) ? ' in '.$file.', '.$line : '')."\n";
 		if (defined('PUN_DEBUG') && $dberror !== false)
 			echo 'Database reported: '.$dberror['error_msg']."\n";
 		exit;

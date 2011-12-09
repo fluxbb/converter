@@ -18,13 +18,13 @@ class Converter
 		'forums'				=> true,
 		'forum_perms'			=> true,
 		'groups'				=> true,
-		'online'				=> false,
+//		'online'				=> false,
 		'posts'					=> true,
 		'ranks'					=> true,
 		'reports'				=> true,
-		'search_cache'			=> false,
-		'search_matches'		=> false,
-		'search_words'			=> false,
+//		'search_cache'			=> false,
+//		'search_matches'		=> false,
+//		'search_words'			=> false,
 		'topic_subscriptions'	=> true,
 		'forum_subscriptions'	=> true,
 		'topics'				=> true,
@@ -88,11 +88,12 @@ class Converter
 				conv_redirect('results');
 		}
 
-		conv_message();
-
 		$next_stage = $keys[$current];
 		if (defined('CMDLINE'))
+		{
+			conv_message();
 			$this->convert($next_stage);
+		}
 		else
 			conv_redirect($next_stage);
 	}

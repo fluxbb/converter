@@ -28,7 +28,7 @@ class MyBB_1 extends Forum
 	function validate()
 	{
 		if (!$this->db->field_exists('banned', 'uid'))
-			conv_error('Selected database does not contain valid phpBB installation');
+			conv_error('Selected database does not contain valid MyBB installation');
 	}
 
 	function convert_bans()
