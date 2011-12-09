@@ -24,7 +24,7 @@ if (defined('STDIN'))
 if (!defined('CMDLINE'))
 {
 	// The number of items to process per page view (lower this if the script times out)
-	define('PER_PAGE', 1000);
+	define('PER_PAGE', 500);
 }
 else
 	define('PER_PAGE', pow(2, 32)); // Very hackish :P
@@ -296,6 +296,9 @@ if (isset($_POST['form_sent']) || isset($_GET['stage']) || defined('CMDLINE'))
 	// Connect to both databases
 	$db = connect_database($db_config);
 	$old_db = connect_database($old_db_config);
+
+	$db->start_transaction();
+	$old_db->start_transaction();
 
 	// Load configuration cache (or recreate when it does not exist)
 	// We need it for fetching default language for mail templates when alerting dupe users
