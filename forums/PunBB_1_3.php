@@ -226,7 +226,7 @@ class PunBB_1_3 extends Forum
 
 	function convert_posts($start_at)
 	{
-return;		$result = $this->db->query_build(array(
+		$result = $this->db->query_build(array(
 			'SELECT'	=> 'id, poster, poster_id, poster_ip, poster_email, message, hide_smilies, posted, edited, edited_by, topic_id',
 			'FROM'		=> 'posts',
 			'WHERE'		=> 'id > '.$start_at,
@@ -296,7 +296,7 @@ return;		$result = $this->db->query_build(array(
 	}
 
 	function convert_topics($start_at)
-	{return;
+	{
 		$result = $this->db->query_build(array(
 			'SELECT'	=> 'id, poster, subject, posted, first_post_id, last_post, last_post_id, last_poster, num_views, num_replies, closed, sticky, moved_to, forum_id',
 			'FROM'		=> 'topics',

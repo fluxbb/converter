@@ -27,7 +27,7 @@ if (!defined('CMDLINE'))
 	define('PER_PAGE', 1000);
 }
 else
-	define('PER_PAGE', pow(2, 32));
+	define('PER_PAGE', pow(2, 32)); // Very hackish :P
 
 // Attempt to load the configuration file config.php
 if (file_exists(PUN_ROOT.'config.php'))
