@@ -36,7 +36,7 @@ class Invision_Power_Board_3_2 extends Forum
 		$result = $this->db->query_build(array(
 			'SELECT'	=> 'ban_id AS id, ban_type, ban_content, ban_reason AS message, 0 AS expire',
 			'FROM'		=> 'banfilters',
-		)) or conv_error('Unable to fetch bans', __FILE__, __LINE__, $this->db->conv_error());
+		)) or conv_error('Unable to fetch bans', __FILE__, __LINE__, $this->db->error());
 
 		conv_message('Processing', 'bans', $this->db->num_rows($result));
 		while ($cur_ban = $this->db->fetch_assoc($result))
@@ -60,7 +60,7 @@ class Invision_Power_Board_3_2 extends Forum
 			'SELECT'	=> 'id, name AS cat_name, position AS disp_position',
 			'FROM'		=> 'forums',
 			'WHERE'		=> 'parent_id = -1',
-		)) or conv_error('Unable to fetch categories', __FILE__, __LINE__, $this->db->conv_error());
+		)) or conv_error('Unable to fetch categories', __FILE__, __LINE__, $this->db->error());
 
 		conv_message('Processing', 'categories', $this->db->num_rows($result));
 		while ($cur_cat = $this->db->fetch_assoc($result))
@@ -74,7 +74,7 @@ class Invision_Power_Board_3_2 extends Forum
 		$result = $this->db->query_build(array(
 			'SELECT'	=> 'wid AS id, type AS search_for, swop AS replace_with',
 			'FROM'		=> 'badwords',
-		)) or conv_error('Unable to fetch censoring', __FILE__, __LINE__, $this->db->conv_error());
+		)) or conv_error('Unable to fetch censoring', __FILE__, __LINE__, $this->db->error());
 
 		conv_message('Processing', 'censors', $this->db->num_rows($result));
 		while ($cur_censor = $this->db->fetch_assoc($result))
@@ -91,7 +91,7 @@ class Invision_Power_Board_3_2 extends Forum
 		$result = $this->db->query_build(array(
 			'SELECT'	=> 'conf_key, conf_value',
 			'FROM'		=> 'core_sys_conf_settings',
-		)) or conv_error('Unable to fetch config', __FILE__, __LINE__, $this->db->conv_error());
+		)) or conv_error('Unable to fetch config', __FILE__, __LINE__, $this->db->error());
 
 		conv_message('Processing', 'config');
 		while ($cur_config = $this->db->fetch_assoc($result))
@@ -184,7 +184,7 @@ class Invision_Power_Board_3_2 extends Forum
 				'UPDATE'	=> 'config',
 				'SET' 		=> 'conf_value = \''.$this->db->escape($value).'\'',
 				'WHERE'		=> 'conf_name = \''.$this->db->escape($key).'\'',
-			)) or conv_error('Unable to update config', __FILE__, __LINE__, $this->fluxbb->db->conv_error());
+			)) or conv_error('Unable to update config', __FILE__, __LINE__, $this->fluxbb->db->error());
 		}
 	}
 
@@ -193,7 +193,7 @@ class Invision_Power_Board_3_2 extends Forum
 		$result = $this->db->query_build(array(
 			'SELECT'	=> 'id, name AS forum_name, description AS forum_desc, topics AS num_topics, posts AS num_posts, position AS disp_position, last_poster_name AS last_poster, last_post, parent_id AS cat_id',
 			'FROM'		=> 'forums',
-		)) or conv_error('Unable to fetch forums', __FILE__, __LINE__, $this->db->conv_error());
+		)) or conv_error('Unable to fetch forums', __FILE__, __LINE__, $this->db->error());
 
 		conv_message('Processing', 'forums', $this->db->num_rows($result));
 		while ($cur_forum = $this->db->fetch_assoc($result))
@@ -212,7 +212,7 @@ class Invision_Power_Board_3_2 extends Forum
 					),
 					'FROM'		=> 'posts AS p',
 					'WHERE'		=> 't.forum_id = '.$cur_forum['id']
-				)) or conv_error('Unable to fetch forum last post', __FILE__, __LINE__, $this->db->conv_error());
+				)) or conv_error('Unable to fetch forum last post', __FILE__, __LINE__, $this->db->error());
 
 				$cur_forum['last_post_id'] = $this->db->result($result_last_post_id);
 			}
@@ -226,7 +226,7 @@ class Invision_Power_Board_3_2 extends Forum
 //		$result = $this->db->query_build(array(
 //			'SELECT'	=> 'group_id, forum_id, read_forum, post_replies, post_topics',
 //			'FROM'		=> 'forum_perms',
-//		)) or conv_error('Unable to fetch forum perms', __FILE__, __LINE__, $this->db->conv_error());
+//		)) or conv_error('Unable to fetch forum perms', __FILE__, __LINE__, $this->db->error());
 
 //		conv_message('Processing', 'forum_perms', $this->db->num_rows($result));
 //		while ($cur_perm = $this->db->fetch_assoc($result))
@@ -243,7 +243,7 @@ class Invision_Power_Board_3_2 extends Forum
 			'SELECT'	=> 'g_id, g_title',
 			'FROM'		=> 'groups',
 			'WHERE'		=> 'g_id > 6',
-		)) or conv_error('Unable to fetch groups', __FILE__, __LINE__, $this->db->conv_error());
+		)) or conv_error('Unable to fetch groups', __FILE__, __LINE__, $this->db->error());
 
 		conv_message('Processing', 'groups', $this->db->num_rows($result));
 		while ($cur_group = $this->db->fetch_assoc($result))
@@ -262,7 +262,7 @@ class Invision_Power_Board_3_2 extends Forum
 			'WHERE'		=> 'pid > '.$start_at,
 			'ORDER BY'	=> 'pid ASC',
 			'LIMIT'		=> PER_PAGE,
-		)) or conv_error('Unable to fetch posts', __FILE__, __LINE__, $this->db->conv_error());
+		)) or conv_error('Unable to fetch posts', __FILE__, __LINE__, $this->db->error());
 
 		conv_message('Processing', 'posts', $this->db->num_rows($result), $start_at, $start_at + PER_PAGE);
 
@@ -287,7 +287,7 @@ class Invision_Power_Board_3_2 extends Forum
 		$result = $this->db->query_build(array(
 			'SELECT'	=> 'id, title AS rank, posts AS min_posts',
 			'FROM'		=> 'titles',
-		)) or conv_error('Unable to fetch ranks', __FILE__, __LINE__, $this->db->conv_error());
+		)) or conv_error('Unable to fetch ranks', __FILE__, __LINE__, $this->db->error());
 
 		conv_message('Processing', 'ranks', $this->db->num_rows($result));
 		while ($cur_rank = $this->db->fetch_assoc($result))
@@ -301,7 +301,7 @@ class Invision_Power_Board_3_2 extends Forum
 		$result = $this->db->query_build(array(
 			'SELECT'	=> 'rid AS id, id AS post_id, report_by AS reported_by, date_reported AS created, report AS message',
 			'FROM'		=> 'rc_reports',
-		)) or conv_error('Unable to fetch reports', __FILE__, __LINE__, $this->db->conv_error());
+		)) or conv_error('Unable to fetch reports', __FILE__, __LINE__, $this->db->error());
 
 		conv_message('Processing', 'reports', $this->db->num_rows($result));
 		while ($cur_report = $this->db->fetch_assoc($result))
@@ -315,7 +315,7 @@ class Invision_Power_Board_3_2 extends Forum
 //		$result = $this->db->query_build(array(
 //			'SELECT'	=> 'user_id, topic_id',
 //			'FROM'		=> 'subscriptions',
-//		)) or conv_error('Unable to fetch subscriptions', __FILE__, __LINE__, $this->db->conv_error());
+//		)) or conv_error('Unable to fetch subscriptions', __FILE__, __LINE__, $this->db->error());
 
 //		conv_message('Processing', 'subscriptions', $this->db->num_rows($result));
 //		while ($cur_sub = $this->db->fetch_assoc($result))
@@ -337,7 +337,7 @@ class Invision_Power_Board_3_2 extends Forum
 			'WHERE'		=> 'tid > '.$start_at,
 			'ORDER BY'	=> 'tid ASC',
 			'LIMIT'		=> PER_PAGE,
-		)) or conv_error('Unable to fetch topics', __FILE__, __LINE__, $this->db->conv_error());
+		)) or conv_error('Unable to fetch topics', __FILE__, __LINE__, $this->db->error());
 
 		conv_message('Processing', 'topics', $this->db->num_rows($result), $start_at, $start_at + PER_PAGE);
 
@@ -352,7 +352,7 @@ class Invision_Power_Board_3_2 extends Forum
 				'SELECT'	=> 'MAX(pid)',
 				'FROM'		=> 'posts',
 				'WHERE'		=> 'topic_id = '.$cur_topic['id']
-			)) or conv_error('Unable to fetch topic last post', __FILE__, __LINE__, $this->db->conv_error());
+			)) or conv_error('Unable to fetch topic last post', __FILE__, __LINE__, $this->db->error());
 
 			$cur_topic['last_post_id'] = $this->db->result($result_last_post_id);
 			$cur_topic['subject'] = html_entity_decode($cur_topic['subject'], ENT_QUOTES, 'UTF-8');
@@ -385,7 +385,7 @@ class Invision_Power_Board_3_2 extends Forum
 			'WHERE'		=> 'u.member_id > '.$start_at,
 			'ORDER BY'	=> 'u.member_id ASC',
 			'LIMIT'		=> PER_PAGE,
-		)) or conv_error('Unable to fetch users', __FILE__, __LINE__, $this->db->conv_error());
+		)) or conv_error('Unable to fetch users', __FILE__, __LINE__, $this->db->error());
 
 		conv_message('Processing', 'users', $this->db->num_rows($result), $start_at, $start_at + PER_PAGE);
 
@@ -436,7 +436,7 @@ class Invision_Power_Board_3_2 extends Forum
 				$result = $this->db->query_build(array(
 					'SELECT'	=> 'MAX(member_id)',
 					'FROM'		=> 'members',
-				)) or conv_error('Unable to fetch last user id', __FILE__, __LINE__, $this->db->conv_error());
+				)) or conv_error('Unable to fetch last user id', __FILE__, __LINE__, $this->db->error());
 
 				$last_uid = $this->db->result($result) + 1;
 			}

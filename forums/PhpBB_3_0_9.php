@@ -42,7 +42,7 @@ class PhpBB_3_0_9 extends Forum
 				),
 			),
 			'FROM'		=> 'banlist AS b',
-		)) or conv_error('Unable to fetch bans', __FILE__, __LINE__, $this->db->conv_error());
+		)) or conv_error('Unable to fetch bans', __FILE__, __LINE__, $this->db->error());
 
 		conv_message('Processing', 'bans', $this->db->num_rows($result));
 		while ($cur_ban = $this->db->fetch_assoc($result))
@@ -59,7 +59,7 @@ class PhpBB_3_0_9 extends Forum
 			'FROM'		=> 'forums',
 			'WHERE'		=> 'forum_type = 0',
 			'ORDER BY'	=> 'left_id ASC'
-		)) or conv_error('Unable to fetch categories', __FILE__, __LINE__, $this->db->conv_error());
+		)) or conv_error('Unable to fetch categories', __FILE__, __LINE__, $this->db->error());
 
 		conv_message('Processing', 'categories', $this->db->num_rows($result));
 		$i = 1;
@@ -76,7 +76,7 @@ class PhpBB_3_0_9 extends Forum
 		$result = $this->db->query_build(array(
 			'SELECT'	=> 'word_id AS id, word AS search_for, replacement AS replace_with',
 			'FROM'		=> 'words',
-		)) or conv_error('Unable to fetch words', __FILE__, __LINE__, $this->db->conv_error());
+		)) or conv_error('Unable to fetch words', __FILE__, __LINE__, $this->db->error());
 
 		conv_message('Processing', 'censors', $this->db->num_rows($result));
 		while ($cur_censor = $this->db->fetch_assoc($result))
@@ -92,7 +92,7 @@ class PhpBB_3_0_9 extends Forum
 		$result = $this->db->query_build(array(
 			'SELECT'	=> 'config_name, config_value',
 			'FROM'		=> 'config',
-		)) or conv_error('Unable to fetch config', __FILE__, __LINE__, $this->db->conv_error());
+		)) or conv_error('Unable to fetch config', __FILE__, __LINE__, $this->db->error());
 
 		conv_message('Processing', 'config');
 		while ($cur_config = $this->db->fetch_assoc($result))
@@ -186,7 +186,7 @@ class PhpBB_3_0_9 extends Forum
 				'UPDATE'	=> 'config',
 				'SET' 		=> 'conf_value = \''.$this->db->escape($value).'\'',
 				'WHERE'		=> 'conf_name = \''.$this->db->escape($key).'\'',
-			)) or conv_error('Unable to update config', __FILE__, __LINE__, $this->fluxbb->db->conv_error());
+			)) or conv_error('Unable to update config', __FILE__, __LINE__, $this->fluxbb->db->error());
 		}
 	}
 
@@ -197,7 +197,7 @@ class PhpBB_3_0_9 extends Forum
 			'FROM'		=> 'forums',
 			'WHERE'		=> 'forum_type <> 0',
 			'ORDER BY'	=> 'left_id ASC'
-		)) or conv_error('Unable to fetch forums', __FILE__, __LINE__, $this->db->conv_error());
+		)) or conv_error('Unable to fetch forums', __FILE__, __LINE__, $this->db->error());
 
 		conv_message('Processing', 'forums', $this->db->num_rows($result));
 		while ($cur_forum = $this->db->fetch_assoc($result))
@@ -219,7 +219,7 @@ class PhpBB_3_0_9 extends Forum
 //		$result = $this->db->query_build(array(
 //			'SELECT'	=> 'group_id, forum_id, read_forum, post_replies, post_topics',
 //			'FROM'		=> 'forum_perms',
-//		)) or conv_error('Unable to fetch forum perms', __FILE__, __LINE__, $this->db->conv_error());
+//		)) or conv_error('Unable to fetch forum perms', __FILE__, __LINE__, $this->db->error());
 
 //		conv_message('Processing', 'forum_perms', $this->db->num_rows($result));
 //		while ($cur_perm = $this->db->fetch_assoc($result))
@@ -236,7 +236,7 @@ class PhpBB_3_0_9 extends Forum
 			'SELECT'	=> 'group_id AS g_id, group_name AS g_title, group_name AS g_user_title',
 			'FROM'		=> 'groups',
 			'WHERE'		=> 'group_id > 7'
-		)) or conv_error('Unable to fetch groups', __FILE__, __LINE__, $this->db->conv_error());
+		)) or conv_error('Unable to fetch groups', __FILE__, __LINE__, $this->db->error());
 
 		conv_message('Processing', 'groups', $this->db->num_rows($result));
 		while ($cur_group = $this->db->fetch_assoc($result))
@@ -261,7 +261,7 @@ class PhpBB_3_0_9 extends Forum
 			'WHERE'		=> 'p.post_id > '.$start_at,
 			'ORDER BY'	=> 'p.post_id ASC',
 			'LIMIT'		=> PER_PAGE,
-		)) or conv_error('Unable to fetch posts', __FILE__, __LINE__, $this->db->conv_error());
+		)) or conv_error('Unable to fetch posts', __FILE__, __LINE__, $this->db->error());
 
 		conv_message('Processing', 'posts', $this->db->num_rows($result), $start_at, $start_at + PER_PAGE);
 
@@ -284,7 +284,7 @@ class PhpBB_3_0_9 extends Forum
 		$result = $this->db->query_build(array(
 			'SELECT'	=> 'rank_id AS id, rank_title AS rank, rank_min AS min_posts',
 			'FROM'		=> 'ranks',
-		)) or conv_error('Unable to fetch ranks', __FILE__, __LINE__, $this->db->conv_error());
+		)) or conv_error('Unable to fetch ranks', __FILE__, __LINE__, $this->db->error());
 
 		conv_message('Processing', 'ranks', $this->db->num_rows($result));
 		while ($cur_rank = $this->db->fetch_assoc($result))
@@ -304,7 +304,7 @@ class PhpBB_3_0_9 extends Forum
 				),
 			),
 			'FROM'		=> 'reports AS r',
-		)) or conv_error('Unable to fetch reports', __FILE__, __LINE__, $this->db->conv_error());
+		)) or conv_error('Unable to fetch reports', __FILE__, __LINE__, $this->db->error());
 
 		conv_message('Processing', 'reports', $this->db->num_rows($result));
 		while ($cur_report = $this->db->fetch_assoc($result))
@@ -318,7 +318,7 @@ class PhpBB_3_0_9 extends Forum
 		$result = $this->db->query_build(array(
 			'SELECT'	=> 'user_id, topic_id',
 			'FROM'		=> 'topics_watch',
-		)) or conv_error('Unable to fetch topic subscriptions', __FILE__, __LINE__, $this->db->conv_error());
+		)) or conv_error('Unable to fetch topic subscriptions', __FILE__, __LINE__, $this->db->error());
 
 		conv_message('Processing', 'topic subscriptions', $this->db->num_rows($result));
 		while ($cur_sub = $this->db->fetch_assoc($result))
@@ -332,7 +332,7 @@ class PhpBB_3_0_9 extends Forum
 		$result = $this->db->query_build(array(
 			'SELECT'	=> 'user_id, forum_id',
 			'FROM'		=> 'forums_watch',
-		)) or conv_error('Unable to fetch forum subscriptions', __FILE__, __LINE__, $this->db->conv_error());
+		)) or conv_error('Unable to fetch forum subscriptions', __FILE__, __LINE__, $this->db->error());
 
 		conv_message('Processing', 'forum subscriptions', $this->db->num_rows($result));
 		while ($cur_sub = $this->db->fetch_assoc($result))
@@ -349,7 +349,7 @@ class PhpBB_3_0_9 extends Forum
 			'WHERE'		=> 'topic_id > '.$start_at,
 			'ORDER BY'	=> 'topic_id ASC',
 			'LIMIT'		=> PER_PAGE,
-		)) or conv_error('Unable to fetch topics', __FILE__, __LINE__, $this->db->conv_error());
+		)) or conv_error('Unable to fetch topics', __FILE__, __LINE__, $this->db->error());
 
 		conv_message('Processing', 'topics', $this->db->num_rows($result), $start_at, $start_at + PER_PAGE);
 
@@ -375,7 +375,7 @@ class PhpBB_3_0_9 extends Forum
 			'WHERE'		=> 'group_id <> 6 AND user_id <> 1 AND user_id > '.$start_at,
 			'ORDER BY'	=> 'user_id ASC',
 			'LIMIT'		=> PER_PAGE,
-		)) or conv_error('Unable to fetch users', __FILE__, __LINE__, $this->db->conv_error());
+		)) or conv_error('Unable to fetch users', __FILE__, __LINE__, $this->db->error());
 
 		conv_message('Processing', 'users', $this->db->num_rows($result), $start_at, $start_at + PER_PAGE);
 
