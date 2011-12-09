@@ -24,7 +24,18 @@ function conv_message()
 
 	$message = count($args) > 0 ? array_shift($args) : '';
 
-	echo vsprintf($message, $args)."\n".'<br />';
+	echo vsprintf($message, $args)."\n".(defined('CMDLINE') ? '' : '<br />');
+}
+
+function conv_error($message, $file = __FILE__, $line = __LINE__, $dberror = false)
+{
+	if (defined('CMDLINE'))
+	{
+		echo 'ERROR: '.$message."\n";
+		exit;
+	}
+
+	error($message, $file, $line, $dberror);
 }
 
 
@@ -34,6 +45,12 @@ function conv_message()
 function conv_redirect($stage, $start_at = 0, $time = 0)
 {
 	global $lang_convert, $default_style;
+
+	if (defined('CMDLINE'))
+	{
+		echo $contents."\n";
+		return false;
+	}
 
 	$contents = ob_get_clean();
 

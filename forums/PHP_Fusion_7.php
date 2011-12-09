@@ -28,7 +28,7 @@ class PHP_Fusion_7 extends Forum
 	function validate()
 	{
 		if (!$this->db->field_exists('forums', 'forum_cat'))
-			error('Selected database does not contain valid PHP Fusion installation');
+			conv_error('Selected database does not contain valid PHP Fusion installation');
 	}
 
 	function convert_bans()
@@ -42,7 +42,7 @@ class PHP_Fusion_7 extends Forum
 				),
 			),
 			'FROM'		=> 'blacklist AS b',
-		)) or error('Unable to fetch bans', __FILE__, __LINE__, $this->db->error());
+		)) or conv_error('Unable to fetch bans', __FILE__, __LINE__, $this->db->conv_error());
 
 		conv_message('Processing', 'bans', $this->db->num_rows($result));
 		while ($cur_ban = $this->db->fetch_assoc($result))
@@ -57,7 +57,7 @@ class PHP_Fusion_7 extends Forum
 			'SELECT'	=> 'forum_id AS id, forum_name AS cat_name, forum_order AS disp_position',
 			'FROM'		=> 'forums',
 			'WHERE'		=> 'forum_cat = 0',
-		)) or error('Unable to fetch categories', __FILE__, __LINE__, $this->db->error());
+		)) or conv_error('Unable to fetch categories', __FILE__, __LINE__, $this->db->conv_error());
 
 		conv_message('Processing', 'categories', $this->db->num_rows($result));
 		while ($cur_cat = $this->db->fetch_assoc($result))
@@ -72,7 +72,7 @@ class PHP_Fusion_7 extends Forum
 			'SELECT'	=> 'settings_value',
 			'FROM'		=> 'settings',
 			'WHERE'		=> 'settings_name = \'bad_words\''
-		)) or error('Unable to fetch words', __FILE__, __LINE__, $this->db->error());
+		)) or conv_error('Unable to fetch words', __FILE__, __LINE__, $this->db->conv_error());
 
 		$censor_words = explode("\n", trim($this->db->result($result), "\n"));
 
@@ -90,7 +90,7 @@ class PHP_Fusion_7 extends Forum
 		$result = $this->db->query_build(array(
 			'SELECT'	=> 'settings_name, settings_value',
 			'FROM'		=> 'settings',
-		)) or error('Unable to fetch config', __FILE__, __LINE__, $this->db->error());
+		)) or conv_error('Unable to fetch config', __FILE__, __LINE__, $this->db->conv_error());
 
 		conv_message('Processing', 'config');
 		while ($cur_config = $this->db->fetch_assoc($result))
@@ -184,7 +184,7 @@ class PHP_Fusion_7 extends Forum
 				'UPDATE'	=> 'config',
 				'SET' 		=> 'conf_value = \''.$this->db->escape($value).'\'',
 				'WHERE'		=> 'conf_name = \''.$this->db->escape($key).'\'',
-			)) or error('Unable to update config', __FILE__, __LINE__, $this->fluxbb->db->error());
+			)) or conv_error('Unable to update config', __FILE__, __LINE__, $this->fluxbb->db->conv_error());
 		}
 	}
 
@@ -200,7 +200,7 @@ class PHP_Fusion_7 extends Forum
 			),
 			'FROM'		=> 'forums AS f',
 			'WHERE'		=> 'f.forum_cat <> 0'
-		)) or error('Unable to fetch forums', __FILE__, __LINE__, $this->db->error());
+		)) or conv_error('Unable to fetch forums', __FILE__, __LINE__, $this->db->conv_error());
 
 		conv_message('Processing', 'forums', $this->db->num_rows($result));
 		while ($cur_forum = $this->db->fetch_assoc($result))
@@ -213,7 +213,7 @@ class PHP_Fusion_7 extends Forum
 					'SELECT'	=> 'thread_lastpostid',
 					'FROM'		=> 'threads',
 					'WHERE'		=> 'forum_id = '.$cur_forum['id']
-				)) or error('Unable to fetch forum last post', __FILE__, __LINE__, $this->db->error());
+				)) or conv_error('Unable to fetch forum last post', __FILE__, __LINE__, $this->db->conv_error());
 
 				$cur_forum['last_post_id'] = $this->db->result($result_last_post_id);
 			}
@@ -228,7 +228,7 @@ class PHP_Fusion_7 extends Forum
 //		$result = $this->db->query_build(array(
 //			'SELECT'	=> 'group_id, forum_id, read_forum, post_replies, post_topics',
 //			'FROM'		=> 'forum_perms',
-//		)) or error('Unable to fetch forum perms', __FILE__, __LINE__, $this->db->error());
+//		)) or conv_error('Unable to fetch forum perms', __FILE__, __LINE__, $this->db->conv_error());
 
 //		conv_message('Processing', 'forum_perms', $this->db->num_rows($result));
 //		while ($cur_perm = $this->db->fetch_assoc($result))
@@ -244,7 +244,7 @@ class PHP_Fusion_7 extends Forum
 		$result = $this->db->query_build(array(
 			'SELECT'	=> 'group_id AS g_id, group_name AS g_title, group_description AS g_user_title',
 			'FROM'		=> 'user_groups',
-		)) or error('Unable to fetch groups', __FILE__, __LINE__, $this->db->error());
+		)) or conv_error('Unable to fetch groups', __FILE__, __LINE__, $this->db->conv_error());
 
 		conv_message('Processing', 'groups', $this->db->num_rows($result));
 		while ($cur_group = $this->db->fetch_assoc($result))
@@ -273,7 +273,7 @@ class PHP_Fusion_7 extends Forum
 			'WHERE'		=> 'p.post_id > '.$start_at,
 			'ORDER BY'	=> 'p.post_id ASC',
 			'LIMIT'		=> PER_PAGE,
-		)) or error('Unable to fetch posts', __FILE__, __LINE__, $this->db->error());
+		)) or conv_error('Unable to fetch posts', __FILE__, __LINE__, $this->db->conv_error());
 
 		conv_message('Processing', 'posts', $this->db->num_rows($result), $start_at, $start_at + PER_PAGE);
 
@@ -298,7 +298,7 @@ class PHP_Fusion_7 extends Forum
 //		$result = $this->db->query_build(array(
 //			'SELECT'	=> 'rank_id AS id, rank_title AS rank, rank_min AS min_posts',
 //			'FROM'		=> 'ranks',
-//		)) or error('Unable to fetch ranks', __FILE__, __LINE__, $this->db->error());
+//		)) or conv_error('Unable to fetch ranks', __FILE__, __LINE__, $this->db->conv_error());
 
 //		conv_message('Processing', 'ranks', $this->db->num_rows($result));
 //		while ($cur_rank = $this->db->fetch_assoc($result))
@@ -318,7 +318,7 @@ class PHP_Fusion_7 extends Forum
 //				),
 //			),
 //			'FROM'		=> 'reports AS r',
-//		)) or error('Unable to fetch reports', __FILE__, __LINE__, $this->db->error());
+//		)) or conv_error('Unable to fetch reports', __FILE__, __LINE__, $this->db->conv_error());
 
 //		conv_message('Processing', 'reports', $this->db->num_rows($result));
 //		while ($cur_report = $this->db->fetch_assoc($result))
@@ -332,7 +332,7 @@ class PHP_Fusion_7 extends Forum
 		$result = $this->db->query_build(array(
 			'SELECT'	=> 'notify_user AS user_id, thread_id AS topic_id',
 			'FROM'		=> 'thread_notify',
-		)) or error('Unable to fetch topic subscriptions', __FILE__, __LINE__, $this->db->error());
+		)) or conv_error('Unable to fetch topic subscriptions', __FILE__, __LINE__, $this->db->conv_error());
 
 		conv_message('Processing', 'topic subscriptions', $this->db->num_rows($result));
 		while ($cur_sub = $this->db->fetch_assoc($result))
@@ -346,7 +346,7 @@ class PHP_Fusion_7 extends Forum
 //		$result = $this->db->query_build(array(
 //			'SELECT'	=> 'user_id, forum_id',
 //			'FROM'		=> 'forums_watch',
-//		)) or error('Unable to fetch forum subscriptions', __FILE__, __LINE__, $this->db->error());
+//		)) or conv_error('Unable to fetch forum subscriptions', __FILE__, __LINE__, $this->db->conv_error());
 
 //		conv_message('Processing', 'forum subscriptions', $this->db->num_rows($result));
 //		while ($cur_sub = $this->db->fetch_assoc($result))
@@ -373,7 +373,7 @@ class PHP_Fusion_7 extends Forum
 			'WHERE'		=> 'thread_id > '.$start_at,
 			'ORDER BY'	=> 'thread_id ASC',
 			'LIMIT'		=> PER_PAGE,
-		)) or error('Unable to fetch topics', __FILE__, __LINE__, $this->db->error());
+		)) or conv_error('Unable to fetch topics', __FILE__, __LINE__, $this->db->conv_error());
 
 		conv_message('Processing', 'topics', $this->db->num_rows($result), $start_at, $start_at + PER_PAGE);
 
@@ -388,7 +388,7 @@ class PHP_Fusion_7 extends Forum
 				'SELECT'	=> 'post_id AS first_post_id, post_datestamp AS posted',
 				'FROM'		=> 'posts',
 				'WHERE'		=> 'thread_id = '.$cur_topic['id'],
-			)) or error('Unable to fetch topic posted', __FILE__, __LINE__, $this->db->error());
+			)) or conv_error('Unable to fetch topic posted', __FILE__, __LINE__, $this->db->conv_error());
 
 			$cur_topic = array_merge($cur_topic, $this->db->fetch_assoc($result_posted));
 
@@ -406,7 +406,7 @@ class PHP_Fusion_7 extends Forum
 			'WHERE'		=> 'user_id > '.$start_at,
 			'ORDER BY'	=> 'user_id ASC',
 			'LIMIT'		=> PER_PAGE,
-		)) or error('Unable to fetch users', __FILE__, __LINE__, $this->db->error());
+		)) or conv_error('Unable to fetch users', __FILE__, __LINE__, $this->db->conv_error());
 
 		conv_message('Processing', 'users', $this->db->num_rows($result), $start_at, $start_at + PER_PAGE);
 
@@ -421,7 +421,7 @@ class PHP_Fusion_7 extends Forum
 				'SELECT'	=> 'MAX(post_id)',
 				'FROM'		=> 'posts',
 				'WHERE'		=> 'post_author = '.$cur_user['id'],
-			)) or error('Unable to fetch user last post', __FILE__, __LINE__, $this->db->error());
+			)) or conv_error('Unable to fetch user last post', __FILE__, __LINE__, $this->db->conv_error());
 			$cur_user['last_post'] = $this->db->result($result_last_post);
 
 //			$cur_user['group_id'] = $this->grp2grp($cur_user['group_id']);
@@ -468,7 +468,7 @@ class PHP_Fusion_7 extends Forum
 				$result = $this->db->query_build(array(
 					'SELECT'	=> 'MAX(user_id)',
 					'FROM'		=> 'users',
-				)) or error('Unable to fetch last user', __FILE__, __LINE__, $this->db->error());
+				)) or conv_error('Unable to fetch last user', __FILE__, __LINE__, $this->db->conv_error());
 				$last_uid = $this->db->result($result) + 1;
 			}
 			return $last_uid;

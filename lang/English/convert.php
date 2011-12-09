@@ -35,7 +35,7 @@ $lang_convert = array(
 
 'Start converter'				=>	'Start converter',
 'Converting header'				=>	'Converting',
-'Conversion completed'			=>	'Conversion completed',
+'Conversion completed in'		=>	'Conversion completed in %s',
 'Password converter mod'		=>	'This converter does not support converting passwords for specified forum. You have to install Password Converter Mod (file password_converter_mod.txt in converter directory) or you will not be able to login!',
 
 // Processing message (with number of arguments)
@@ -45,16 +45,20 @@ $lang_convert = array(
 
 'Not implemented'				=>	'%s: Not implemented',
 'Converting'					=>	'Converting %s',
+'Done in'						=>	'Done in %s',
 
 // Username dupes
 'Error info 1'					=>	'There was an error when converting some users. This can occur when converting from PunBB v1.3 if multiple users have registered with very similar usernames, for example "bob" and "böb".',
-'Error info 2'					=>	'Below is a list of users who failed to convert. Clicking Alert users button will send an email alerting them of the change.',
+'Error info 2'					=>	'Below is a list of users who failed to convert.',
+'Click alert button'			=>	'Clicking Alert users button will send an email alerting them of the change.',
+'Convert username dupes question'=>	'Alert users by email about the username change? (yes/no).',
 'Username dupes head'			=>	'Username dupes',
 'Username dupes'				=>	'Username dupes',
 'was renamed to'				=>	'%s was renamed to %s',
 'Alert users'					=>	'Alert users',
 
 'Final instructions'			=>	'Final instructions',
-'Database converted'			=>	'Your forum has been successfully converted! You may now <a href="%s">go to the forum index</a>.',
+'Database converted'			=>	'Your forum has been successfully converted! You may now %s.',
+'go to forum index'				=>	'go to the forum index',
 
 );

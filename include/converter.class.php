@@ -58,6 +58,7 @@ class Converter
 		// Start from beginning
 		if (!isset($name))
 		{
+			$_SESSION['fluxbb_converter']['start_time'] = get_microtime();
 			$this->initialize();
 			$name = $keys[0];
 		}
@@ -71,6 +72,8 @@ class Converter
 		if ($convert && is_callable(array($this->forum, 'convert_'.$name)))
 			call_user_func(array($this->forum, 'convert_'.$name), $start_at);
 
+		conv_message('Done in', round(get_microtime() - $start, 4));
+
 		// Redirect to the next stage
 		$current = array_search($name, $keys);
 
@@ -78,12 +81,20 @@ class Converter
 		if (!isset($keys[++$current]))
 		{
 			$this->finnish();
-//			$_SESSION['fluxbb_converter']['time'] = get_microtime() - $this->start;
-			conv_redirect('results');
+			$_SESSION['fluxbb_converter']['time'] = get_microtime() - $_SESSION['fluxbb_converter']['start_time'];
+			if (defined('CMDLINE'))
+				return true;
+			else
+				conv_redirect('results');
 		}
 
+		conv_message();
+
 		$next_stage = $keys[$current];
-		conv_redirect($next_stage);
+		if (defined('CMDLINE'))
+			$this->convert($next_stage);
+		else
+			conv_redirect($next_stage);
 	}
 
 	/**
@@ -145,4 +156,5 @@ class Converter
 	{
 		return get_microtime() - $this->start;
 	}
+
 }

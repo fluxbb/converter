@@ -21,7 +21,7 @@ Notes
 - The passwords in some forums are NOT converted due to differences in password storing between the forums.
 
 Installation instructions
----------
+-------------------
  - Install FluxBB on the server (example: "www.example.com/fluxbb/").
  - Create a subdirectory in the FluxBB directory (example name: "converter").
  - Put all files from the converter zipfile in that directory.
@@ -31,3 +31,10 @@ Installation instructions
  - Press 'Start converter'.
  - When the converter is done, remove the converter files.
  - Done! You're now ready to use FluxBB!
+
+ Running from command line
+-------------------
+
+	php index.php -f forum_name -t old_db_type -s old_db_host -n old_db_name -u old_db_username -p old_db_password -r old_db_prefix -c old_db_charset
+
+Type: ``php index.php --help`` to see available parameters

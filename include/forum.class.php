@@ -112,12 +112,16 @@ class Forum
 	 */
 	function redirect($old_table, $old_field, $start_at)
 	{
+		// TODO: make sure there no more rows when using cmd line (
+		if (defined('CMDLINE'))
+			return false;
+
 		$result = $this->db->query_build(array(
 			'SELECT'	=> 1,
 			'FROM'		=> $old_table,
 			'WHERE'		=> $old_field.' > '.$start_at,
 			'LIMIT'		=> 1,
-		)) or error('Unable to fetch num rows', __FILE__, __LINE__, $this->db->error());
+		)) or conv_error('Unable to fetch num rows', __FILE__, __LINE__, $this->db->conv_error());
 
 		if ($this->db->num_rows($result))
 			conv_redirect($this->stage, $start_at);

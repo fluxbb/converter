@@ -5,9 +5,6 @@
 * License: LGPL - GNU Lesser General Public License (http://www.gnu.org/licenses/lgpl.html)
 */
 
-// The number of items to process per page view (lower this if the script times out)
-define('PER_PAGE', 1000);
-
 define('MIN_PHP_VERSION', '4.4.0');
 define('MIN_MYSQL_VERSION', '4.1.2');
 define('MIN_PGSQL_VERSION', '7.0.0');
@@ -19,6 +16,18 @@ define('SCRIPT_ROOT', './');
 define('CONVERTER_VERSION', '1.0-dev');
 define('PUN_DEBUG', 1);
 define('PUN_SHOW_QUERIES', 1);
+
+// Is ther a better way to determine that the script is being run from command line?
+if (defined('STDIN'))
+	define('CMDLINE', 1);
+
+if (!defined('CMDLINE'))
+{
+	// The number of items to process per page view (lower this if the script times out)
+	define('PER_PAGE', 1000);
+}
+else
+	define('PER_PAGE', pow(2, 32));
 
 // Attempt to load the configuration file config.php
 if (file_exists(PUN_ROOT.'config.php'))
@@ -43,12 +52,17 @@ forum_unregister_globals();
 // If PUN isn't defined, config.php is missing or corrupt
 if (!defined('PUN'))
 {
+	if (defined('CMDLINE'))
+		conv_error('Not installed');
+
 	header('Location: ../install.php');
 	exit;
 }
 
 // Record the start time (will be used to calculate the generation time for the page)
 $pun_start = get_microtime();
+
+ob_start();
 
 // Make sure PHP reports all errors except E_NOTICE. FluxBB supports E_ALL, but a lot of scripts it may interact with, do not
 error_reporting(E_ALL ^ E_NOTICE);
@@ -122,7 +136,7 @@ if (file_exists(FORUM_CACHE_DIR.'cache_config.php'))
 if (isset($_GET['alert_dupe_users']))
 {
 	if (empty($_SESSION['converter']['dupe_users']))
-		error($lang_convert['Bad request']);
+		conv_error($lang_convert['Bad request']);
 
 	alert_dupe_users();
 	unset($_SESSION['converter']['dupe_users']);
@@ -142,18 +156,82 @@ $db_config_default = array(
 
 $old_db_config = $db_config_default;
 
-// We submited the form, store data in session as we'll redirect to the next page
-if (isset($_POST['form_sent']))
+if (defined('CMDLINE'))
 {
+	echo '=========================================='."\n";
+	echo '       FluxBB converter v'.CONVERTER_VERSION.'       '."\n";
+	echo '=========================================='."\n\n";
+	$params = array('help', 'forum:', 'type:', 'host::', 'name:', 'user:', 'pass:', 'prefix:', 'charset:');
+	$options = getopt('hf:t:s:n:u:p:r:c:', $params);
+
+	if (empty($options) || isset($options['h']) || isset($options['help']))
+	{
+		echo 'Usage: '."\n";
+		echo "\t".'-f --forum'."\t".'Forum name.'."\n";
+		echo "\t\t\t".'Possible values are: '.implode(", ", array_keys($forums))."\n";
+		echo "\t".'-t --type'."\t".'Old database type.'."\n";
+		echo "\t\t\t".'Possible values are: '.implode(", ", $engines)."\n";
+		echo "\t".'-s --host'."\t".'Old database host.'."\n";
+		echo "\t".'-n --name'."\t".'Old database name.'."\n";
+		echo "\t".'-u --user'."\t".'Old database username.'."\n";
+		echo "\t".'-p --pass'."\t".'Old database password.'."\n";
+		echo "\t".'-r --prefix'."\t".'Old database table prefix.'."\n";
+		echo "\t".'-c --charset'."\t".'Old database charset (default UTF-8).'."\n";
+		exit(1);
+	}
+
+	$errors = array();
+
 	$forum_config = array(
-		'type'			=> isset($_POST['req_forum']) && isset($forums[$_POST['req_forum']]) ? $_POST['req_forum'] : error('You entered an invalid forum software.'.$_POST['convert_to'], __FILE__, __LINE__),
+		'type'		=> isset($options['f']) ? $options['f'] : (isset($options['forum']) ? $options['forum'] : conv_error('You have to enter a forum software.', __FILE__, __LINE__)),
 	);
 
 	$old_db_config = array(
-		'type'		=> isset($_POST['req_old_db_type']) && in_array($_POST['req_old_db_type'], $engines) ? $_POST['req_old_db_type'] : error('Database type for old forum is invalid.', __FILE__, __LINE__),
-		'host'		=> isset($_POST['req_old_db_host']) ? trim($_POST['req_old_db_host']) : error('You have to enter a database host for the old forum.', __FILE__, __LINE__),
-		'name'		=> isset($_POST['req_old_db_name']) ? trim($_POST['req_old_db_name']) : error('You have to enter a database name for the old forum.', __FILE__, __LINE__),
-		'username'	=> isset($_POST['old_db_username']) ? trim($_POST['old_db_username']) : error('You have to enter a database username for the old forum.', __FILE__, __LINE__),
+		'type'		=> isset($options['t']) ? $options['t'] : (isset($options['type']) ? $options['type'] : conv_error('Database type for old forum is invalid.', __FILE__, __LINE__)),
+		'host'		=> isset($options['s']) ? $options['s'] : (isset($options['host']) ? $options['host'] : conv_error('You have to enter a database host for the old forum.', __FILE__, __LINE__)),
+		'name'		=> isset($options['n']) ? $options['n'] : (isset($options['name']) ? $options['name'] : conv_error('You have to enter a database name for the old forum.', __FILE__, __LINE__)),
+		'username'	=> isset($options['u']) ? $options['u'] : (isset($options['user']) ? $options['user'] : conv_error('You have to enter a database username for the old forum.', __FILE__, __LINE__)),
+		'password'	=> isset($options['p']) ? $options['p'] : (isset($options['pass']) ? $options['pass'] : ''),
+		'prefix'	=> isset($options['r']) ? $options['r'] : (isset($options['prefix']) ? $options['prefix'] : ''),
+		'charset'	=> isset($options['c']) ? $options['c'] : (isset($options['charset']) ? $options['charset'] : 'UTF-8'),
+	);
+
+	$forum_config = array_map('trim', $forum_config);
+	$old_db_config = array_map('trim', $old_db_config);
+
+	if (!isset($forums[$forum_config['type']]))
+	{
+		// Ignore case
+		$keys = array_keys($forums);
+		$values = array();
+		foreach ($keys as $cur_key)
+			if (strpos(strtolower($cur_key), strtolower($forum_config['type'])) === 0)
+				$values[] = $cur_key;
+
+		if (count($values) == 1)
+			$forum_config['type'] = $values[0];
+		else if (($key = array_search(strtolower($forum_config['type']), array_map('strtolower', $keys))) !== false)
+			$forum_config['type'] = $keys[$key];
+		else
+			conv_error('You entered an invalid forum software. Possible values are:'."\n".implode("\n", array_keys($forums)));
+	}
+
+	if (!in_array($old_db_config['type'], $engines))
+		conv_error('Database type for old forum is invalid. Possible values are:'."\n".implode("\n", $engines));
+
+}
+// We submited the form, store data in session as we'll redirect to the next page
+else if (isset($_POST['form_sent']))
+{
+	$forum_config = array(
+		'type'		=> isset($_POST['req_forum']) && isset($forums[$_POST['req_forum']]) ? $_POST['req_forum'] : conv_error('You entered an invalid forum software.', __FILE__, __LINE__),
+	);
+
+	$old_db_config = array(
+		'type'		=> isset($_POST['req_old_db_type']) && in_array($_POST['req_old_db_type'], $engines) ? $_POST['req_old_db_type'] : conv_error('Database type for old forum is invalid.', __FILE__, __LINE__),
+		'host'		=> isset($_POST['req_old_db_host']) ? trim($_POST['req_old_db_host']) : conv_error('You have to enter a database host for the old forum.', __FILE__, __LINE__),
+		'name'		=> isset($_POST['req_old_db_name']) ? trim($_POST['req_old_db_name']) : conv_error('You have to enter a database name for the old forum.', __FILE__, __LINE__),
+		'username'	=> isset($_POST['old_db_username']) ? trim($_POST['old_db_username']) : conv_error('You have to enter a database username for the old forum.', __FILE__, __LINE__),
 		'password'	=> isset($_POST['old_db_pass']) ? $_POST['old_db_pass'] : '',
 		'prefix'	=> isset($_POST['old_db_prefix']) ? trim($_POST['old_db_prefix']) : '',
 		'charset'	=> isset($_POST['old_db_charset']) ? trim($_POST['old_db_charset']) : 'UTF-8'
@@ -171,10 +249,10 @@ else if (isset($_SESSION['converter']))
 }
 
 
-if (isset($_POST['form_sent']) || isset($_GET['stage']))
+if (isset($_POST['form_sent']) || isset($_GET['stage']) || defined('CMDLINE'))
 {
 	if (!isset($forum_config))
-		error($lang_convert['Bad request']);
+		conv_error($lang_convert['Bad request']);
 
 	$stage = isset($_GET['stage']) ? $_GET['stage'] : null;
 	$start_at = isset($_GET['start_at']) ? $_GET['start_at'] : 0;
@@ -191,7 +269,7 @@ if (isset($_POST['form_sent']) || isset($_GET['stage']))
 
 	// Check we aren't trying to convert to the same database
 	if ($old_db_config == $db_config)
-		error('Old and new tables must be different!', __FILE__, __LINE__);
+		conv_error('Old and new tables must be different!', __FILE__, __LINE__);
 
 	// The forum scripts must specify the charset manually!
 	define('FORUM_NO_SET_NAMES', 1);
@@ -243,6 +321,40 @@ if (isset($_POST['form_sent']) || isset($_GET['stage']))
 	if (!$forum->CONVERTS_PASSWORD)
 		$alerts[] = $lang_convert['Password converter mod'];
 
+	if (defined('CMDLINE'))
+	{
+		if (!empty($_SESSION['converter']['dupe_users']))
+		{
+			conv_message("\n".'---------------------------'."\n");
+			conv_message($lang_convert['Username dupes head']);
+			conv_message($lang_convert['Error info 1']);
+			conv_message($lang_convert['Error info 2']);
+			foreach ($_SESSION['converter']['dupe_users'] as $id => $cur_user)
+				conv_message("\t".$lang_convert['was renamed to'], $cur_user['old_username'], $cur_user['username']);
+
+			conv_message();
+			conv_message($lang_convert['Convert username dupes question']);
+
+			$handle = fopen('php://stdin', 'r');
+			$line = trim(fgets($handle));
+			if ($line == 'yes')
+			{
+				alert_dupe_users();
+				unset($_SESSION['converter']['dupe_users']);
+			}
+		}
+
+		if (!empty($alerts))
+		{
+			conv_message("\n".'---------------------------'."\n");
+			conv_message('NOTE: '.implode("\n\n".'NOTE: ', $alerts));
+		}
+
+		conv_message();
+		conv_message($lang_convert['Conversion completed in'], round($_SESSION['fluxbb_converter']['time'], 4));
+		exit(1);
+	}
+
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 
@@ -262,7 +374,7 @@ if (isset($_POST['form_sent']) || isset($_GET['stage']))
 	<div class="box">
 		<div id="brdtitle" class="inbox">
 			<h1><span><?php echo sprintf($lang_convert['FluxBB converter'], CONVERTER_VERSION) ?></span></h1>
-			<div id="brddesc"><p><?php echo $lang_convert['Conversion completed'] ?></p></div>
+			<div id="brddesc"><p><?php echo sprintf($lang_convert['Conversion completed in'], round($_SESSION['fluxbb_converter']['time'], 4)) ?></p></div>
 		</div>
 	</div>
 </div>
@@ -278,7 +390,7 @@ if (isset($_POST['form_sent']) || isset($_GET['stage']))
 			<div class="inform">
 				<div class="forminfo">
 					<p style="font-size: 1.1em"><?php echo $lang_convert['Error info 1'] ?></p>
-					<p style="font-size: 1.1em"><?php echo $lang_convert['Error info 2'] ?></p>
+					<p style="font-size: 1.1em"><?php echo $lang_convert['Error info 2'].' '.$lang_convert['Error info 3'] ?></p>
 				</div>
 			</div>
 			<div class="inform">
@@ -316,7 +428,7 @@ foreach ($alerts as $cur_alert)
 				</div>
 <?php endif; ?>
 				<div class="forminfo">
-					<p><?php printf($lang_convert['Database converted'], '../index.php') ?></p>
+					<p><?php printf($lang_convert['Database converted'], '<a href="../index.php">'.$lang_convert['go to forum index'].'</a>') ?></p>
 				</div>
 			</div>
 		</div>

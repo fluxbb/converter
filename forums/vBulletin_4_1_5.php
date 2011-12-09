@@ -20,7 +20,7 @@ class VBulletin_4_1_5 extends Forum
 	function validate()
 	{
 		if (!$this->db->field_exists('forum', 'forumid'))
-			error('Selected database does not contain valid vBulletin installation');
+			conv_error('Selected database does not contain valid vBulletin installation');
 	}
 
 	function convert_bans()
@@ -34,7 +34,7 @@ class VBulletin_4_1_5 extends Forum
 				),
 			),
 			'FROM'		=> 'userban AS b',
-		)) or error('Unable to fetch bans', __FILE__, __LINE__, $this->db->error());
+		)) or conv_error('Unable to fetch bans', __FILE__, __LINE__, $this->db->conv_error());
 
 		conv_message('Processing', 'bans', $this->db->num_rows($result));
 		while ($cur_ban = $this->db->fetch_assoc($result))
@@ -49,7 +49,7 @@ class VBulletin_4_1_5 extends Forum
 			'SELECT'	=> 'forumid AS id, title AS cat_name, displayorder AS disp_position',
 			'FROM'		=> 'forum',
 			'WHERE'		=> 'parentid = -1'
-		)) or error('Unable to fetch categories', __FILE__, __LINE__, $this->db->error());
+		)) or conv_error('Unable to fetch categories', __FILE__, __LINE__, $this->db->conv_error());
 
 		conv_message('Processing', 'categories', $this->db->num_rows($result));
 		while ($cur_cat = $this->db->fetch_assoc($result))
@@ -63,7 +63,7 @@ class VBulletin_4_1_5 extends Forum
 //		$result = $this->db->query_build(array(
 //			'SELECT'	=> 'id, search_for, replace_with',
 //			'FROM'		=> 'censoring',
-//		)) or error('Unable to fetch censoring', __FILE__, __LINE__, $this->db->error());
+//		)) or conv_error('Unable to fetch censoring', __FILE__, __LINE__, $this->db->conv_error());
 //
 //		conv_message('Processing', 'censors', $this->db->num_rows($result));
 //		while ($cur_censor = $this->db->fetch_assoc($result))
@@ -79,7 +79,7 @@ class VBulletin_4_1_5 extends Forum
 //		$result = $this->db->query_build(array(
 //			'SELECT'	=> 'conf_name, conf_value',
 //			'FROM'		=> 'config',
-//		)) or error('Unable to fetch config', __FILE__, __LINE__, $this->db->error());
+//		)) or conv_error('Unable to fetch config', __FILE__, __LINE__, $this->db->conv_error());
 //
 //		conv_message('Processing', 'config');
 //		while ($cur_config = $this->db->fetch_assoc($result))
@@ -172,7 +172,7 @@ class VBulletin_4_1_5 extends Forum
 //				'UPDATE'	=> 'config',
 //				'SET' 		=> 'conf_value = \''.$this->db->escape($value).'\'',
 //				'WHERE'		=> 'conf_name = \''.$this->db->escape($key).'\'',
-//			)) or error('Unable to update config', __FILE__, __LINE__, $this->fluxbb->db->error());
+//			)) or conv_error('Unable to update config', __FILE__, __LINE__, $this->fluxbb->db->conv_error());
 //		}
 //	}
 
@@ -182,7 +182,7 @@ class VBulletin_4_1_5 extends Forum
 			'SELECT'	=> 'forumid AS id, title AS forum_name, description AS forum_desc, threadcount AS num_topics, replycount AS num_posts, displayorder AS disp_position, lastposter AS last_poster, lastpostid AS last_post_id, lastpost AS last_post, parentlist AS cat_id',
 			'FROM'		=> 'forum',
 			'WHERE'		=> 'parentid <> -1'
-		)) or error('Unable to fetch forums', __FILE__, __LINE__, $this->db->error());
+		)) or conv_error('Unable to fetch forums', __FILE__, __LINE__, $this->db->conv_error());
 
 		conv_message('Processing', 'forums', $this->db->num_rows($result));
 		while ($cur_forum = $this->db->fetch_assoc($result))
@@ -202,7 +202,7 @@ class VBulletin_4_1_5 extends Forum
 //		$result = $this->db->query_build(array(
 //			'SELECT'	=> 'group_id, forum_id, read_forum, post_replies, post_topics',
 //			'FROM'		=> 'forum_perms',
-//		)) or error('Unable to fetch forum perms', __FILE__, __LINE__, $this->db->error());
+//		)) or conv_error('Unable to fetch forum perms', __FILE__, __LINE__, $this->db->conv_error());
 //
 //		conv_message('Processing', 'forum_perms', $this->db->num_rows($result));
 //		while ($cur_perm = $this->db->fetch_assoc($result))
@@ -219,7 +219,7 @@ class VBulletin_4_1_5 extends Forum
 			'SELECT'	=> 'usergroupid AS g_id, title AS g_title, usertitle AS g_user_title',//, g_moderator, g_mod_edit_users, g_mod_rename_users, g_mod_change_passwords, g_mod_ban_users, g_read_board, g_view_users, g_post_replies, g_post_topics, g_edit_posts, g_delete_posts, g_delete_topics, g_set_title, g_search, g_search_users, g_send_email, g_post_flood, g_search_flood, g_email_flood',
 			'FROM'		=> 'usergroup',
 			'WHERE'		=> 'usergroupid > 8',
-		)) or error('Unable to fetch groups', __FILE__, __LINE__, $this->db->error());
+		)) or conv_error('Unable to fetch groups', __FILE__, __LINE__, $this->db->conv_error());
 
 		conv_message('Processing', 'groups', $this->db->num_rows($result));
 		while ($cur_group = $this->db->fetch_assoc($result))
@@ -238,7 +238,7 @@ class VBulletin_4_1_5 extends Forum
 			'WHERE'		=> 'postid > '.$start_at,
 			'ORDER BY'	=> 'postid ASC',
 			'LIMIT'		=> PER_PAGE,
-		)) or error('Unable to fetch posts', __FILE__, __LINE__, $this->db->error());
+		)) or conv_error('Unable to fetch posts', __FILE__, __LINE__, $this->db->conv_error());
 
 		conv_message('Processing', 'posts', $this->db->num_rows($result), $start_at, $start_at + PER_PAGE);
 
@@ -257,7 +257,7 @@ class VBulletin_4_1_5 extends Forum
 				'WHERE'		=> 'original = 0 AND postid = '.$cur_post['id'],
 				'ORDER BY'	=> 'dateline DESC',
 				'LIMIT'		=> 1
-			)) or error('Unable to fetch last post', __FILE__, __LINE__, $this->db->error());
+			)) or conv_error('Unable to fetch last post', __FILE__, __LINE__, $this->db->conv_error());
 
 			if ($this->db->num_rows($result_edit))
 				$cur_post = array_merge($cur_post, $this->db->fetch_assoc($result_edit));
@@ -273,7 +273,7 @@ class VBulletin_4_1_5 extends Forum
 		$result = $this->db->query_build(array(
 			'SELECT'	=> 'usertitleid AS id, title AS rank, minposts AS min_posts',
 			'FROM'		=> 'usertitle',
-		)) or error('Unable to fetch ranks', __FILE__, __LINE__, $this->db->error());
+		)) or conv_error('Unable to fetch ranks', __FILE__, __LINE__, $this->db->conv_error());
 
 		conv_message('Processing', 'ranks', $this->db->num_rows($result));
 		while ($cur_rank = $this->db->fetch_assoc($result))
@@ -287,7 +287,7 @@ class VBulletin_4_1_5 extends Forum
 //		$result = $this->db->query_build(array(
 //			'SELECT'	=> 'id, post_id, topic_id, forum_id, reported_by, created, message, zapped, zapped_by',
 //			'FROM'		=> 'reports',
-//		)) or error('Unable to fetch reports', __FILE__, __LINE__, $this->db->error());
+//		)) or conv_error('Unable to fetch reports', __FILE__, __LINE__, $this->db->conv_error());
 //
 //		conv_message('Processing', 'reports', $this->db->num_rows($result));
 //		while ($cur_report = $this->db->fetch_assoc($result))
@@ -301,7 +301,7 @@ class VBulletin_4_1_5 extends Forum
 		$result = $this->db->query_build(array(
 			'SELECT'	=> 'userid AS user_id, threadid AS topic_id',
 			'FROM'		=> 'subscribethread',
-		)) or error('Unable to fetch subscriptions', __FILE__, __LINE__, $this->db->error());
+		)) or conv_error('Unable to fetch subscriptions', __FILE__, __LINE__, $this->db->conv_error());
 
 		conv_message('Processing', 'topic subscriptions', $this->db->num_rows($result));
 		while ($cur_sub = $this->db->fetch_assoc($result))
@@ -315,7 +315,7 @@ class VBulletin_4_1_5 extends Forum
 		$result = $this->db->query_build(array(
 			'SELECT'	=> 'userid AS user_id, forumid AS forum_id',
 			'FROM'		=> 'subscribeforum',
-		)) or error('Unable to fetch subscriptions', __FILE__, __LINE__, $this->db->error());
+		)) or conv_error('Unable to fetch subscriptions', __FILE__, __LINE__, $this->db->conv_error());
 
 		conv_message('Processing', 'forum subscriptions', $this->db->num_rows($result));
 		while ($cur_sub = $this->db->fetch_assoc($result))
@@ -332,7 +332,7 @@ class VBulletin_4_1_5 extends Forum
 			'WHERE'		=> 'threadid > '.$start_at,
 			'ORDER BY'	=> 'threadid ASC',
 			'LIMIT'		=> PER_PAGE,
-		)) or error('Unable to fetch topics', __FILE__, __LINE__, $this->db->error());
+		)) or conv_error('Unable to fetch topics', __FILE__, __LINE__, $this->db->conv_error());
 
 		conv_message('Processing', 'topics', $this->db->num_rows($result), $start_at, $start_at + PER_PAGE);
 
@@ -367,7 +367,7 @@ class VBulletin_4_1_5 extends Forum
 			'WHERE'		=> 'u.userid > '.$start_at,
 			'ORDER BY'	=> 'u.userid ASC',
 			'LIMIT'		=> PER_PAGE,
-		)) or error('Unable to fetch users', __FILE__, __LINE__, $this->db->error());
+		)) or conv_error('Unable to fetch users', __FILE__, __LINE__, $this->db->conv_error());
 
 		conv_message('Processing', 'users', $this->db->num_rows($result), $start_at, $start_at + PER_PAGE);
 
@@ -418,7 +418,7 @@ class VBulletin_4_1_5 extends Forum
 				$result = $this->db->query_build(array(
 					'SELECT'	=> 'MAX(userid)',
 					'FROM'		=> 'user',
-				)) or error('Unable to fetch last user id', __FILE__, __LINE__, $this->db->error());
+				)) or conv_error('Unable to fetch last user id', __FILE__, __LINE__, $this->db->conv_error());
 
 				$last_uid = $this->db->result($result) + 1;
 			}
