@@ -31,7 +31,9 @@ function conv_error($message, $file = __FILE__, $line = __LINE__, $dberror = fal
 {
 	if (defined('CMDLINE'))
 	{
-		echo 'ERROR: '.$message."\n";
+		echo 'ERROR: '.$message.(defined('PUN_DEBUG') ? ' in '.$file.', '.$line : '')."\n";
+		if (defined('PUN_DEBUG') && $dberror !== false)
+			echo 'Database reported: '.$dberror['error_msg']."\n";
 		exit;
 	}
 

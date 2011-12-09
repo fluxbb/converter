@@ -62,7 +62,8 @@ if (!defined('PUN'))
 // Record the start time (will be used to calculate the generation time for the page)
 $pun_start = get_microtime();
 
-ob_start();
+if (!defined('CMDLINE'))
+	ob_start();
 
 // Make sure PHP reports all errors except E_NOTICE. FluxBB supports E_ALL, but a lot of scripts it may interact with, do not
 error_reporting(E_ALL ^ E_NOTICE);
