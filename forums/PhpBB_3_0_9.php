@@ -206,7 +206,7 @@ class PhpBB_3_0_9 extends Forum
 			unset($cur_forum['forum_parents']);
 			if ($parents !== false)
 			{
-				$parents = array_values($parents);
+				$parents = array_keys($parents);
 				$cur_forum['cat_id'] = $parents[0];
 			}
 
