@@ -31,8 +31,11 @@ function conv_error($message, $file = null, $line = null, $dberror = false)
 {
 	global $db;
 
-	$db->end_transaction();
-	$db->close();
+	if (isset($db))
+	{
+		$db->end_transaction();
+		$db->close();
+	}
 
 	if (defined('CMDLINE'))
 	{
@@ -53,8 +56,11 @@ function conv_redirect($stage, $start_at = 0, $time = 0)
 {
 	global $lang_convert, $default_style, $db;
 
-	$db->end_transaction();
-	$db->close();
+	if (isset($db))
+	{
+		$db->end_transaction();
+		$db->close();
+	}
 
 	if (defined('CMDLINE'))
 	{

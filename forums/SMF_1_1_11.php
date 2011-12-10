@@ -24,7 +24,7 @@ class SMF_1_1_11 extends Forum
 	 */
 	function validate()
 	{
-		if (!$this->db->field_exists('categories', 'ID_CAT'))
+		if (!$this->db->field_exists('categories', 'catOrder'))
 			conv_error('Selected database does not contain valid SMF installation');
 	}
 
@@ -460,15 +460,33 @@ class SMF_1_1_11 extends Forum
 
 		$message = $this->convert_to_utf8($message);
 
-		if (!isset($replacements))
+		if (!isset($patterns))
 		{
-			$replacements = array(
-				'<br />'		=>	"\n",
-				'[li]'			=>	'[*]',
-				'[/li]'			=>	'[/*]'
+			$patterns = array(
+				'%\[quote author=(.*?) link.*?\](.*?)\[/quote\]%si'		=>	'[quote=$1]$2[/quote]',
+				'%\[flash=.*?\](.*?)\[/flash\]%si'						=>	'Flash: [url]$1[/url]',
+				'%\[ftp=(.*?)\](.*?)\[/ftp\]%si'						=>	'[url=$1]$2[/url]',
+				'%\[list(=.*?)?\](.*?)\[/list\]%si'						=>	'[list]$1[/list]',
+				'%\[/?(font|size|glow|s|shadow|move|pre|left|right|center|sup|sub|tt|table)(?:\=[^\]]*)?\]%i'	=> '',	// Strip tags not supported by FluxBB
 			);
 		}
 
-		return str_replace(array_keys($replace), array_values($replace), $message);
+		$message = preg_replace(array_keys($patterns), array_values($patterns), $message);
+
+		if (!isset($replacements))
+		{
+			$replacements = array(
+				'[li]'		=>	'[*]',
+				'[/li]'		=>	'[/*]',
+				'[tr]'		=>	'[list]',
+				'[/tr]'		=>	'[/list]',
+				'[td]'		=>	'[*]',
+				'[/td]'		=>	'[/*]',
+				'<br />'	=>	"\n",
+				'[hr]'		=>	"\n",
+				'::)'		=>	':rolleyes:',
+			);
+		}
+		return str_replace(array_keys($replacements), array_values($replacements), $message);
 	}
 }

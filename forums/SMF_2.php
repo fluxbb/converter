@@ -477,7 +477,7 @@ class SMF_2 extends Forum
 		{
 			$patterns = array(
 				'%\[quote author=(.*?) link.*?\](.*?)\[/quote\]%si'		=>	'[quote=$1]$2[/quote]',
-				'%\[flash=.*?\](.*?)\[/flash\]%si'						=>	'Flash: $1',
+				'%\[flash=.*?\](.*?)\[/flash\]%si'						=>	'Flash: [url]$1[/url]',
 				'%\[ftp=(.*?)\](.*?)\[/ftp\]%si'						=>	'[url=$1]$2[/url]',
 				'%\[list(=.*?)?\](.*?)\[/list\]%si'						=>	'[list]$1[/list]',
 				'%\[/?(font|size|glow|s|shadow|move|pre|left|right|center|sup|sub|tt|table)(?:\=[^\]]*)?\]%i'	=> '',	// Strip tags not supported by FluxBB

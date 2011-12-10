@@ -343,6 +343,9 @@ if (isset($_POST['form_sent']) || isset($_GET['stage']) || defined('CMDLINE'))
 	if (!$forum->CONVERTS_PASSWORD)
 		$alerts[] = $lang_convert['Password converter mod'];
 
+	$db->end_transaction();
+	$db->close();
+
 	if (defined('CMDLINE'))
 	{
 		if (!empty($_SESSION['converter']['dupe_users']))
