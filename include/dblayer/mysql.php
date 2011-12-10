@@ -41,10 +41,10 @@ class mysql_wrapper
 		if ($this->link_id)
 		{
 			if (!@mysql_select_db($db_name, $this->link_id))
-				error('Unable to select database. MySQL reported: '.mysql_error(), __FILE__, __LINE__);
+				conv_error('Unable to select database. MySQL reported: '.mysql_error(), __FILE__, __LINE__);
 		}
 		else
-			error('Unable to connect to MySQL server. MySQL reported: '.mysql_error(), __FILE__, __LINE__);
+			conv_error('Unable to connect to MySQL server. MySQL reported: '.mysql_error(), __FILE__, __LINE__);
 
 		// Setup the client-server character set (UTF-8)
 		if (!defined('FORUM_NO_SET_NAMES'))

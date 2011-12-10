@@ -44,14 +44,14 @@ class sqlite_wrapper
 			@touch($db_name);
 			@chmod($db_name, 0666);
 			if (!file_exists($db_name))
-				error('Unable to create new database \''.$db_name.'\'. Permission denied', __FILE__, __LINE__);
+				conv_error('Unable to create new database \''.$db_name.'\'. Permission denied', __FILE__, __LINE__);
 		}
 
 		if (!is_readable($db_name))
-			error('Unable to open database \''.$db_name.'\' for reading. Permission denied', __FILE__, __LINE__);
+			conv_error('Unable to open database \''.$db_name.'\' for reading. Permission denied', __FILE__, __LINE__);
 
 		if (!forum_is_writable($db_name))
-			error('Unable to open database \''.$db_name.'\' for writing. Permission denied', __FILE__, __LINE__);
+			conv_error('Unable to open database \''.$db_name.'\' for writing. Permission denied', __FILE__, __LINE__);
 
 		if ($p_connect)
 			$this->link_id = @sqlite_popen($db_name, 0666, $sqlite_error);
@@ -59,7 +59,7 @@ class sqlite_wrapper
 			$this->link_id = @sqlite_open($db_name, 0666, $sqlite_error);
 
 		if (!$this->link_id)
-			error('Unable to open database \''.$db_name.'\'. SQLite reported: '.$sqlite_error, __FILE__, __LINE__);
+			conv_error('Unable to open database \''.$db_name.'\'. SQLite reported: '.$sqlite_error, __FILE__, __LINE__);
 		else
 			return $this->link_id;
 	}
@@ -437,7 +437,7 @@ class sqlite_wrapper
 		if (!$this->table_exists($table_name, $no_prefix))
 			return true;
 
-		return $this->query('DROP TABLE '.($no_prefix ? '' : $this->prefix).$table_name) ? true : false;
+		return $this->query('DROP TABLE '.($no_prefix ? '' : $this->prefix).$this->escape($table_name)) ? true : false;
 	}
 
 
@@ -464,7 +464,7 @@ class sqlite_wrapper
 		$result &= $this->query('INSERT INTO '.($no_prefix ? '' : $this->prefix).$this->escape($new_name).' SELECT * FROM '.($no_prefix ? '' : $this->prefix).$this->escape($old_name)) ? true : false;
 
 		// Drop old table
-		$result &= $this->drop_table(($no_prefix ? '' : $this->prefix).$this->escape($table_name));
+		$result &= $this->drop_table($table_name, $no_prefix);
 
 		return $result;
 	}
@@ -473,7 +473,7 @@ class sqlite_wrapper
 	function get_table_info($table_name, $no_prefix = false)
 	{
 		// Grab table info
-		$result = $this->query('SELECT sql FROM sqlite_master WHERE tbl_name = \''.($no_prefix ? '' : $this->prefix).$this->escape($table_name).'\' ORDER BY type DESC') or error('Unable to fetch table information', __FILE__, __LINE__, $this->error());
+		$result = $this->query('SELECT sql FROM sqlite_master WHERE tbl_name = \''.($no_prefix ? '' : $this->prefix).$this->escape($table_name).'\' ORDER BY type DESC') or conv_error('Unable to fetch table information', __FILE__, __LINE__, $this->error());
 		$num_rows = $this->num_rows($result);
 
 		if ($num_rows == 0)
@@ -552,7 +552,7 @@ class sqlite_wrapper
 		$new_table = trim($new_table, ',')."\n".');';
 
 		// Drop old table
-		$result &= $this->drop_table(($no_prefix ? '' : $this->prefix).$this->escape($table_name));
+		$result &= $this->drop_table($table_name, $no_prefix);
 
 		// Create new table
 		$result &= $this->query($new_table) ? true : false;
@@ -568,7 +568,7 @@ class sqlite_wrapper
 		$result &= $this->query('INSERT INTO '.($no_prefix ? '' : $this->prefix).$this->escape($table_name).' ('.implode(', ', $old_columns).') SELECT * FROM '.($no_prefix ? '' : $this->prefix).$this->escape($table_name).'_t'.$now) ? true : false;
 
 		// Drop temp table
-		$result &= $this->drop_table(($no_prefix ? '' : $this->prefix).$this->escape($table_name).'_t'.$now);
+		$result &= $this->drop_table($table_name.'_t'.$now, $no_prefix);
 
 		return $result;
 	}
@@ -612,7 +612,7 @@ class sqlite_wrapper
 		$new_table = trim($new_table, ',')."\n".');';
 
 		// Drop old table
-		$result &= $this->drop_table(($no_prefix ? '' : $this->prefix).$this->escape($table_name));
+		$result &= $this->drop_table($table_name, $no_prefix);
 
 		// Create new table
 		$result &= $this->query($new_table) ? true : false;
@@ -629,7 +629,7 @@ class sqlite_wrapper
 		$result &= $this->query('INSERT INTO '.($no_prefix ? '' : $this->prefix).$this->escape($table_name).' SELECT '.implode(', ', $new_columns).' FROM '.($no_prefix ? '' : $this->prefix).$this->escape($table_name).'_t'.$now) ? true : false;
 
 		// Drop temp table
-		$result &= $this->drop_table(($no_prefix ? '' : $this->prefix).$this->escape($table_name).'_t'.$now);
+		$result &= $this->drop_table($table_name.'_t'.$now, $no_prefix);
 
 		return $result;
 	}

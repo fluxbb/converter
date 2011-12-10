@@ -66,7 +66,7 @@ class pgsql_wrapper
 			$this->link_id = @pg_connect(implode(' ', $connect_str));
 
 		if (!$this->link_id)
-			error('Unable to connect to PostgreSQL server', __FILE__, __LINE__);
+			conv_error('Unable to connect to PostgreSQL server', __FILE__, __LINE__);
 
 		// Setup the client-server character set (UTF-8)
 		if (!defined('FORUM_NO_SET_NAMES'))
