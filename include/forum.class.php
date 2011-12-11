@@ -112,7 +112,7 @@ class Forum
 	 */
 	function redirect($old_table, $old_field, $start_at)
 	{
-		// TODO: make sure there no more rows when using cmd line (
+		// TODO: make sure there no more rows when using cmd line
 		if (defined('CMDLINE'))
 			return false;
 
