@@ -11,14 +11,36 @@
 class FluxBB
 {
 	public $db;
-	public $db_type;
+	public $db_config;
+	public $pun_config;
 
-	function __construct($db, $db_type)
+	function __construct($pun_config)
 	{
-		$db->set_names('utf8');
+		$this->pun_config = $pun_config;
+	}
 
-		$this->db = $db;
-		$this->db_type = $db_type;
+	/**
+	 * Connect to the FluxBB database
+	 *
+	 * @param array $db_config
+	 */
+	function connect_database($db_config)
+	{
+		$this->db_config = $db_config;
+
+		$this->db = connect_database($db_config);
+		$this->db->set_names('utf8');
+
+		return $this->db;
+	}
+
+	/**
+	 * Close database connection
+	 */
+	function close_database()
+	{
+		$this->db->end_transaction();
+		$this->db->close();
 	}
 
 	/**

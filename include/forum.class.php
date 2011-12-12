@@ -8,24 +8,39 @@
 class Forum
 {
 	public $db;
-	public $fluxbb;
+	private $fluxbb;
 	public $stage;
 
-	public $db_config;
-	public $charset;
+	protected $db_config;
+	private $forum_config;
 
-	function __construct($db, $fluxbb)
+	function __construct($forum_config, $fluxbb)
 	{
-		$this->db = $db;
+		$this->forum_config = $forum_config;
 		$this->fluxbb = $fluxbb;
 	}
 
-	function init_config($db_config)
+	/**
+	 * Connect to the old forum database
+	 *
+	 * @param array $db_config
+	 */
+	function connect_database($db_config)
 	{
 		$this->db_config = $db_config;
-		$this->charset = $db_config['charset'];
+
+		$this->db = connect_database($db_config);
 
 		$this->initialize();
+	}
+
+	/**
+	 * Close database connection
+	 */
+	function close_database()
+	{
+		$this->db->end_transaction();
+		$this->db->close();
 	}
 
 	function initialize()

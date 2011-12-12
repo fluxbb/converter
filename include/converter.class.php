@@ -7,7 +7,8 @@
 
 class Converter
 {
-	public $forum;
+	protected $forum;
+	protected $fluxbb;
 	public $start;
 
 	public $tables = array(
@@ -31,9 +32,10 @@ class Converter
 		'users'					=> true,
 	);
 
-	function __construct($forum)
+	function __construct($forum, $fluxbb)
 	{
 		$this->forum = $forum;
+		$this->fluxbb = $fluxbb;
 	}
 
 	/**
@@ -103,24 +105,24 @@ class Converter
 	 */
 	function initialize()
 	{
-		$this->forum->fluxbb->db->truncate_table('bans');
-		$this->forum->fluxbb->db->truncate_table('categories');
-		$this->forum->fluxbb->db->truncate_table('censoring');
-		$this->forum->fluxbb->db->truncate_table('forums');
-		$this->forum->fluxbb->db->truncate_table('forum_perms');
-		$this->forum->fluxbb->db->truncate_table('online');
-		$this->forum->fluxbb->db->truncate_table('posts');
-		$this->forum->fluxbb->db->truncate_table('ranks');
-		$this->forum->fluxbb->db->truncate_table('reports');
-		$this->forum->fluxbb->db->truncate_table('search_cache');
-		$this->forum->fluxbb->db->truncate_table('search_matches');
-		$this->forum->fluxbb->db->truncate_table('search_words');
-		$this->forum->fluxbb->db->truncate_table('topic_subscriptions');
-		$this->forum->fluxbb->db->truncate_table('forum_subscriptions');
-		$this->forum->fluxbb->db->truncate_table('topics');
-//		$this->forum->fluxbb->db->truncate_table('users');
-		$this->forum->fluxbb->db->query('DELETE FROM '.$this->forum->fluxbb->db->prefix.'users WHERE id > 1');
-		$this->forum->fluxbb->db->query('DELETE FROM '.$this->forum->fluxbb->db->prefix.'groups WHERE g_id > 4');
+		$this->fluxbb->db->truncate_table('bans');
+		$this->fluxbb->db->truncate_table('categories');
+		$this->fluxbb->db->truncate_table('censoring');
+		$this->fluxbb->db->truncate_table('forums');
+		$this->fluxbb->db->truncate_table('forum_perms');
+		$this->fluxbb->db->truncate_table('online');
+		$this->fluxbb->db->truncate_table('posts');
+		$this->fluxbb->db->truncate_table('ranks');
+		$this->fluxbb->db->truncate_table('reports');
+		$this->fluxbb->db->truncate_table('search_cache');
+		$this->fluxbb->db->truncate_table('search_matches');
+		$this->fluxbb->db->truncate_table('search_words');
+		$this->fluxbb->db->truncate_table('topic_subscriptions');
+		$this->fluxbb->db->truncate_table('forum_subscriptions');
+		$this->fluxbb->db->truncate_table('topics');
+//		$this->fluxbb->db->truncate_table('users');
+		$this->fluxbb->db->query('DELETE FROM '.$this->fluxbb->db->prefix.'users WHERE id > 1');
+		$this->fluxbb->db->query('DELETE FROM '.$this->fluxbb->db->prefix.'groups WHERE g_id > 4');
 	}
 
 	function finnish()
@@ -129,7 +131,7 @@ class Converter
 		if (!empty($_SESSION['converter']['dupe_users']))
 		{
 			foreach ($_SESSION['converter']['dupe_users'] as $cur_user)
-				$this->forum->fluxbb->convert_users_dupe($cur_user);
+				$this->fluxbb->convert_users_dupe($cur_user);
 		}
 
 		$this->generate_cache();

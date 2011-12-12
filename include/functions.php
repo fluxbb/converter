@@ -29,13 +29,10 @@ function conv_message()
 
 function conv_error($message, $file = null, $line = null, $dberror = false)
 {
-	global $db;
+	global $fluxbb;
 
-	if (isset($db))
-	{
-		$db->end_transaction();
-		$db->close();
-	}
+	if (isset($fluxbb))
+		$fluxbb->close_database();
 
 	if (defined('CMDLINE'))
 	{
@@ -54,13 +51,10 @@ function conv_error($message, $file = null, $line = null, $dberror = false)
  */
 function conv_redirect($stage, $start_at = 0, $time = 0)
 {
-	global $lang_convert, $default_style, $db;
+	global $lang_convert, $default_style, $fluxbb;
 
-	if (isset($db))
-	{
-		$db->end_transaction();
-		$db->close();
-	}
+	if (isset($fluxbb))
+		$fluxbb->close_database();
 
 	if (defined('CMDLINE'))
 	{
@@ -130,7 +124,9 @@ function connect_database($db_config)
 		require SCRIPT_ROOT.'include/dblayer/'.$db_config['type'].'.php';
 	}
 
-	return new $class($db_config['host'], $db_config['username'], $db_config['password'], $db_config['name'], $db_config['prefix'], false);
+	$db = new $class($db_config['host'], $db_config['username'], $db_config['password'], $db_config['name'], $db_config['prefix'], false);
+	$db->start_transaction();
+	return $db;
 }
 
 /**
@@ -140,17 +136,17 @@ function connect_database($db_config)
  * @param mixed $db
  * @param mixed $fluxbb
  */
-function load_forum($forum_type, $db, $fluxbb)
+function load_forum($forum_config, $fluxbb)
 {
 	if (!class_exists($forum_type))
 	{
-		if (!file_exists(SCRIPT_ROOT.'forums/'.$forum_type.'.php'))
-			error('Unsupported forum type: '.$forum_type, __FILE__, __LINE__);
+		if (!file_exists(SCRIPT_ROOT.'forums/'.$forum_config['type'].'.php'))
+			error('Unsupported forum type: '.$forum_config['type'], __FILE__, __LINE__);
 
-		require SCRIPT_ROOT.'forums/'.$forum_type.'.php';
+		require SCRIPT_ROOT.'forums/'.$forum_config['type'].'.php';
 	}
 
-	return new $forum_type($db, $fluxbb);
+	return new $forum_config['type']($forum_config, $fluxbb);
 }
 
 /**

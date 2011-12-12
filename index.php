@@ -293,13 +293,6 @@ if (isset($_POST['form_sent']) || isset($_GET['stage']) || defined('CMDLINE'))
 	// The forum scripts must specify the charset manually!
 	define('FORUM_NO_SET_NAMES', 1);
 
-	// Connect to both databases
-	$db = connect_database($db_config);
-	$old_db = connect_database($old_db_config);
-
-	$db->start_transaction();
-	$old_db->start_transaction();
-
 	// Load configuration cache (or recreate when it does not exist)
 	// We need it for fetching default language for mail templates when alerting dupe users
 	if (!defined('PUN_CONFIG_LOADED'))
@@ -313,24 +306,25 @@ if (isset($_POST['form_sent']) || isset($_GET['stage']) || defined('CMDLINE'))
 
 	// Create a wrapper for fluxbb (has easy functions for adding users etc.)
 	require SCRIPT_ROOT.'include/fluxbb.class.php';
-	$fluxbb = new FluxBB($db, $db_config['type']);
+	$fluxbb = new FluxBB($pun_config);
+	$db = $fluxbb->connect_database($db_config);
 
 	// Load the migration script
 	require SCRIPT_ROOT.'include/forum.class.php';
-	$forum = load_forum($forum_config['type'], $old_db, $fluxbb);
-	$forum->init_config($old_db_config);
+	$forum = load_forum($forum_config, $fluxbb);
+	$forum->connect_database($old_db_config);
 
-	// Start the conversion process
+	// Load converter script
 	require SCRIPT_ROOT.'include/converter.class.php';
-	$converter = new Converter($forum);
+	$converter = new Converter($fluxbb, $forum);
 
-	// Validate only first time we run converter (it checks whether database configuration is corrent)
+	// Validate only first time we run converter (check whether database configuration is valid)
 	if (!isset($stage))
 		$converter->validate();
 
 	if (!isset($stage) || $stage != 'results')
 	{
-		// We are ready to run converter. When it do its work, it redirects to the next page
+		// Start the converter. When it do its work, it redirects to the next page
 		$converter->convert($stage, $start_at);
 	}
 
