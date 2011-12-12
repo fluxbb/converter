@@ -1,9 +1,10 @@
 <?php
 
 /**
-* Copyright (C) 2011 FluxBB (http://fluxbb.org)
-* License: LGPL - GNU Lesser General Public License (http://www.gnu.org/licenses/lgpl.html)
-*/
+ * @copyright (C) 2011 FluxBB (http://fluxbb.org)
+ * @license LGPL - GNU Lesser General Public License (http://www.gnu.org/licenses/lgpl.html)
+ * @package FluxBB
+ */
 
 class Forum
 {
@@ -43,81 +44,9 @@ class Forum
 		$this->db->close();
 	}
 
-	function initialize()
-	{
-		conv_message('Not implemented', __FUNCTION__);
-	}
-
-	function convert_bans()
-	{
-		conv_message('Not implemented', __FUNCTION__);
-	}
-
-	function convert_categories()
-	{
-		conv_message('Not implemented', __FUNCTION__);
-	}
-
-	function convert_censoring()
-	{
-		conv_message('Not implemented', __FUNCTION__);
-	}
-
-	function convert_config()
-	{
-		conv_message('Not implemented', __FUNCTION__);
-	}
-
-	function convert_forums()
-	{
-		conv_message('Not implemented', __FUNCTION__);
-	}
-
-	function convert_forum_perms()
-	{
-		conv_message('Not implemented', __FUNCTION__);
-	}
-
-	function convert_groups()
-	{
-		conv_message('Not implemented', __FUNCTION__);
-	}
-
-	function convert_posts()
-	{
-		conv_message('Not implemented', __FUNCTION__);
-	}
-
-	function convert_ranks()
-	{
-		conv_message('Not implemented', __FUNCTION__);
-	}
-
-	function convert_reports()
-	{
-		conv_message('Not implemented', __FUNCTION__);
-	}
-
-	function convert_topic_subscriptions()
-	{
-		conv_message('Not implemented', __FUNCTION__);
-	}
-
-	function convert_forum_subscriptions()
-	{
-		conv_message('Not implemented', __FUNCTION__);
-	}
-
-	function convert_topics()
-	{
-		conv_message('Not implemented', __FUNCTION__);
-	}
-
-	function convert_users()
-	{
-		conv_message('Not implemented', __FUNCTION__);
-	}
-
+	/**
+	 * Check whether converter is able to convert password for the current forum
+	 */
 	function converts_password()
 	{
 		$class = get_class($this);

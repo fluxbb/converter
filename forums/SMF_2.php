@@ -1,9 +1,10 @@
 <?php
 
 /**
-* Copyright (C) 2011 FluxBB (http://fluxbb.org)
-* License: LGPL - GNU Lesser General Public License (http://www.gnu.org/licenses/lgpl.html)
-*/
+ * @copyright (C) 2011 FluxBB (http://fluxbb.org)
+ * @license LGPL - GNU Lesser General Public License (http://www.gnu.org/licenses/lgpl.html)
+ * @package FluxBB
+ */
 
 // Define the version and database revision that this code was written for
 define('FORUM_VERSION', '1.4.7');
@@ -94,13 +95,12 @@ class SMF_2 extends Forum
 			'FROM'		=> 'settings',
 			'WHERE'		=> 'variable IN (\'censor_vulgar\', \'censor_proper\')'
 		)) or conv_error('Unable to fetch config', __FILE__, __LINE__, $this->db->error());
+		while ($cur_config = $this->db->fetch_assoc($result))
+			$old_config[$cur_config['variable']] = $cur_config['value'];
 
 		$censor_words = array_combine(explode("\n", $old_config['censor_vulgar']), explode("\n", $old_config['censor_proper']));
 
 		conv_message('Processing num', 'censoring', count($censor_words));
-
-		while ($cur_config = $this->db->fetch_assoc($result))
-			$old_config[$cur_config['variable']] = $cur_config['value'];
 
 		foreach ($censor_words as $vulgar => $valid)
 		{

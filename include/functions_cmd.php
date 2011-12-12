@@ -3,8 +3,9 @@
 /**
  * Command line based converter functions
  *
- * Copyright (C) 2011 FluxBB (http://fluxbb.org)
- * License: LGPL - GNU Lesser General Public License (http://www.gnu.org/licenses/lgpl.html)
+ * @copyright (C) 2011 FluxBB (http://fluxbb.org)
+ * @license LGPL - GNU Lesser General Public License (http://www.gnu.org/licenses/lgpl.html)
+ * @package FluxBB
  */
 
 /**
@@ -16,11 +17,10 @@ function conv_message()
 
 	$args = func_get_args();
 
-	// TODO: what when we have 3 arguments?
-	if (substr($args[0], 0, 10) == 'Processing')
-		$args[0] = 'Processing '.(count($args) - 1);
+	if (count($args) && $args[0] == 'Processing range')
+		$args[0] = 'Processing num';
 
-	if (isset($lang_convert[$args[0]]))
+	if (count($args) && isset($lang_convert[$args[0]]))
 		$args[0] = $lang_convert[$args[0]];
 
 	$message = count($args) > 0 ? array_shift($args) : '';
@@ -50,10 +50,5 @@ function conv_error($message, $file = null, $line = null, $dberror = false)
  */
 function conv_redirect($step, $start_at = 0, $time = 0)
 {
-	global $lang_convert, $default_style, $fluxbb;
-
-	if (isset($fluxbb))
-		$fluxbb->close_database();
-
-	echo $contents."\n";
+	return false;
 }

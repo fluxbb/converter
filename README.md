@@ -9,7 +9,7 @@ Supported forums
  - MyBB 1
  - PHP Fusion 7
  - PhpBB 3.0
- - PunBB 1.3
+ - PunBB 1.3 and 1.4
  - SMF 1.1
  - SMF 2
  - vBulletin 4.1
@@ -37,4 +37,4 @@ Installation instructions
 
 	php converter.php -f forum_name -t old_db_type -s old_db_host -n old_db_name -u old_db_username -p old_db_password -r old_db_prefix -c old_db_charset
 
-Type: ``php index.php --help`` to see available parameters
+Type: ``php converter.php --help`` to see available parameters

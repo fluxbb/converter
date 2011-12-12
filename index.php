@@ -3,8 +3,9 @@
 /**
  * Web based converter script
  *
- * Copyright (C) 2011 FluxBB (http://fluxbb.org)
- * License: LGPL - GNU Lesser General Public License (http://www.gnu.org/licenses/lgpl.html)
+ * @copyright (C) 2011 FluxBB (http://fluxbb.org)
+ * @license LGPL - GNU Lesser General Public License (http://www.gnu.org/licenses/lgpl.html)
+ * @package FluxBB
  */
 
 // Start output buffering
@@ -110,20 +111,6 @@ if (isset($_POST['form_sent']) || isset($_GET['step']))
 	// Check we aren't trying to convert to the same database
 	if ($old_db_config == $db_config)
 		conv_error('Old and new tables must be different!');
-
-	// The forum scripts must specify the charset manually!
-	define('FORUM_NO_SET_NAMES', 1);
-
-	// Load configuration cache (or recreate when it does not exist)
-	// We need it for fetching default language for mail templates when alerting dupe users
-	if (!defined('PUN_CONFIG_LOADED'))
-	{
-		if (!defined('FORUM_CACHE_FUNCTIONS_LOADED'))
-			require PUN_ROOT.'include/cache.php';
-
-		generate_config_cache();
-		require FORUM_CACHE_DIR.'cache_config.php';
-	}
 
 	// Create a wrapper for fluxbb (has easy functions for adding users etc.)
 	require SCRIPT_ROOT.'include/fluxbb.class.php';

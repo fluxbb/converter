@@ -1,9 +1,10 @@
 <?php
 
 /**
-* Copyright (C) 2011 FluxBB (http://fluxbb.org)
-* License: LGPL - GNU Lesser General Public License (http://www.gnu.org/licenses/lgpl.html)
-*/
+ * @copyright (C) 2011 FluxBB (http://fluxbb.org)
+ * @license LGPL - GNU Lesser General Public License (http://www.gnu.org/licenses/lgpl.html)
+ * @package FluxBB
+ */
 
 define('MIN_PHP_VERSION', '4.4.0');
 define('MIN_MYSQL_VERSION', '4.1.2');
@@ -96,9 +97,22 @@ require SCRIPT_ROOT.'lang/'.$convert_lang.'/convert.php';
 if (!function_exists('version_compare') || version_compare(PHP_VERSION, MIN_PHP_VERSION, '<'))
 	exit(sprintf($lang_convert['You are running error'], 'PHP', PHP_VERSION, FORUM_VERSION, MIN_PHP_VERSION));
 
+// The forum scripts must specify the charset manually!
+define('FORUM_NO_SET_NAMES', 1);
+
 // Load cached config
 if (file_exists(FORUM_CACHE_DIR.'cache_config.php'))
 	include FORUM_CACHE_DIR.'cache_config.php';
+
+// We need config cache for fetching default language for mail templates when alerting dupe users
+if (!defined('PUN_CONFIG_LOADED'))
+{
+	if (!defined('FORUM_CACHE_FUNCTIONS_LOADED'))
+		require PUN_ROOT.'include/cache.php';
+
+	generate_config_cache();
+	require FORUM_CACHE_DIR.'cache_config.php';
+}
 
 $engines = forum_list_engines();
 $forums = forum_list_forums();

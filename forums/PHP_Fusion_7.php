@@ -1,9 +1,10 @@
 <?php
 
 /**
-* Copyright (C) 2011 FluxBB (http://fluxbb.org)
-* License: LGPL - GNU Lesser General Public License (http://www.gnu.org/licenses/lgpl.html)
-*/
+ * @copyright (C) 2011 FluxBB (http://fluxbb.org)
+ * @license LGPL - GNU Lesser General Public License (http://www.gnu.org/licenses/lgpl.html)
+ * @package FluxBB
+ */
 
 // Define the version and database revision that this code was written for
 define('FORUM_VERSION', '1.4.7');
