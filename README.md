@@ -35,6 +35,6 @@ Installation instructions
  Running from command line
 -------------------
 
-	php index.php -f forum_name -t old_db_type -s old_db_host -n old_db_name -u old_db_username -p old_db_password -r old_db_prefix -c old_db_charset
+	php converter.php -f forum_name -t old_db_type -s old_db_host -n old_db_name -u old_db_username -p old_db_password -r old_db_prefix -c old_db_charset
 
 Type: ``php index.php --help`` to see available parameters

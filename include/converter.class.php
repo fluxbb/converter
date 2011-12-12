@@ -32,7 +32,7 @@ class Converter
 	 * @param mixed $name Table name
 	 * @param integer $start_at A row number from which we start processing table
 	 */
-	function convert($name, $start_at = 0)
+	function convert($name = null, $start_at = 0, $redirect = false)
 	{
 		// Start from beginning
 		if (!isset($name))
@@ -60,20 +60,20 @@ class Converter
 		{
 			$this->finnish();
 			$_SESSION['fluxbb_converter']['time'] = get_microtime() - $_SESSION['fluxbb_converter']['start_time'];
-			if (defined('CMDLINE'))
-				return true;
-			else
+			if ($redirect)
 				conv_redirect('results');
+			else
+				return true;
 		}
 
 		$next_stage = $this->forum->steps[$current];
-		if (defined('CMDLINE'))
+		if ($redirect)
+			conv_redirect($next_stage);
+		else
 		{
 			conv_message();
 			$this->convert($next_stage);
 		}
-		else
-			conv_redirect($next_stage);
 	}
 
 	/**

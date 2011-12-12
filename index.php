@@ -1,138 +1,36 @@
 <?php
 
 /**
-* Copyright (C) 2011 FluxBB (http://fluxbb.org)
-* License: LGPL - GNU Lesser General Public License (http://www.gnu.org/licenses/lgpl.html)
-*/
+ * Web based converter script
+ *
+ * Copyright (C) 2011 FluxBB (http://fluxbb.org)
+ * License: LGPL - GNU Lesser General Public License (http://www.gnu.org/licenses/lgpl.html)
+ */
 
-define('MIN_PHP_VERSION', '4.4.0');
-define('MIN_MYSQL_VERSION', '4.1.2');
-define('MIN_PGSQL_VERSION', '7.0.0');
-define('PUN_SEARCH_MIN_WORD', 3);
-define('PUN_SEARCH_MAX_WORD', 20);
+// Start output buffering
+ob_start();
 
-define('PUN_ROOT', dirname(__FILE__).'/../');
-define('SCRIPT_ROOT', './');
-define('CONVERTER_VERSION', '1.0-dev');
+// Start session
+session_start();
+
+define('SCRIPT_ROOT', dirname(__FILE__).'/');
+require SCRIPT_ROOT.'include/functions_web.php';
+require SCRIPT_ROOT.'include/common.php';
+
 define('PUN_DEBUG', 1);
 define('PUN_SHOW_QUERIES', 1);
 
-// Is ther a better way to determine that the script is being run from command line?
-if (defined('STDIN'))
-	define('CMDLINE', 1);
-
-if (!defined('CMDLINE'))
-{
-	// The number of items to process per page view (lower this if the script times out)
-	define('PER_PAGE', 500);
-}
-else
-	define('PER_PAGE', pow(2, 32)); // Very hackish :P
-
-// Attempt to load the configuration file config.php
-if (file_exists(PUN_ROOT.'config.php'))
-	require PUN_ROOT.'config.php';
-
-// If we have the 1.3-legacy constant defined, define the proper 1.4 constant so we don't get an incorrect "need to install" message
-if (defined('FORUM'))
-	define('PUN', FORUM);
-
-// Load the functions script
-require PUN_ROOT.'include/functions.php';
-
-// Load UTF-8 functions
-require PUN_ROOT.'include/utf8/utf8.php';
-
-// Strip out "bad" UTF-8 characters
-forum_remove_bad_characters();
-
-// Reverse the effect of register_globals
-forum_unregister_globals();
+// The number of items to process per page view (lower this if the script times out)
+define('PER_PAGE', 500);
 
 // If PUN isn't defined, config.php is missing or corrupt
 if (!defined('PUN'))
 {
-	if (defined('CMDLINE'))
-		conv_error('Not installed');
-
 	header('Location: ../install.php');
 	exit;
 }
 
-// Record the start time (will be used to calculate the generation time for the page)
-$pun_start = get_microtime();
-
-if (!defined('CMDLINE'))
-	ob_start();
-
-// Make sure PHP reports all errors except E_NOTICE. FluxBB supports E_ALL, but a lot of scripts it may interact with, do not
-error_reporting(E_ALL ^ E_NOTICE);
-
-// Force POSIX locale (to prevent functions such as strtolower() from messing up UTF-8 strings)
-setlocale(LC_CTYPE, 'C');
-
-// Turn off magic_quotes_runtime
-if (get_magic_quotes_runtime())
-	set_magic_quotes_runtime(0);
-
-// Strip slashes from GET/POST/COOKIE/REQUEST/FILES (if magic_quotes_gpc is enabled)
-if (get_magic_quotes_gpc())
-{
-	function stripslashes_array($array)
-	{
-		return is_array($array) ? array_map('stripslashes_array', $array) : stripslashes($array);
-	}
-
-	$_GET = stripslashes_array($_GET);
-	$_POST = stripslashes_array($_POST);
-	$_COOKIE = stripslashes_array($_COOKIE);
-	$_REQUEST = stripslashes_array($_REQUEST);
-	$_FILES = stripslashes_array($_FILES);
-}
-
-// If the cache directory is not specified, we use the default setting
-if (!defined('FORUM_CACHE_DIR'))
-	define('FORUM_CACHE_DIR', PUN_ROOT.'cache/');
-
-// Define a few commonly used constants
-define('PUN_UNVERIFIED', 0);
-define('PUN_ADMIN', 1);
-define('PUN_MOD', 2);
-define('PUN_GUEST', 3);
-define('PUN_MEMBER', 4);
-
-// Include the common functions
-require SCRIPT_ROOT.'include/functions.php';
-
-session_start();
-
-$languages = converter_list_langs();
-$engines = forum_list_engines();
-$forums = forum_list_forums();
-
-// If we've been passed a default language, use it
-$convert_lang = isset($_REQUEST['convert_lang']) ? trim($_REQUEST['convert_lang']) : (isset($_SESSION['converter']['lang']) ? $_SESSION['converter']['lang'] : 'English');
-
-// If such a language pack doesn't exist, default to English
-if (!in_array($convert_lang, $languages))
-	$convert_lang = 'English';
-
-// Load converter language file
-require SCRIPT_ROOT.'lang/'.$convert_lang.'/convert.php';
-
 $default_style = 'Air';
-
-// If the cache directory is not specified, we use the default setting
-if (!defined('FORUM_CACHE_DIR'))
-	define('FORUM_CACHE_DIR', PUN_ROOT.'cache/');
-
-// Make sure we are running at least MIN_PHP_VERSION
-if (!function_exists('version_compare') || version_compare(PHP_VERSION, MIN_PHP_VERSION, '<'))
-	exit(sprintf($lang_convert['You are running error'], 'PHP', PHP_VERSION, FORUM_VERSION, MIN_PHP_VERSION));
-
-// Load cached config
-if (file_exists(FORUM_CACHE_DIR.'cache_config.php'))
-	include FORUM_CACHE_DIR.'cache_config.php';
 
 if (isset($_GET['alert_dupe_users']))
 {
@@ -143,62 +41,8 @@ if (isset($_GET['alert_dupe_users']))
 	unset($_SESSION['converter']['dupe_users']);
 }
 
-// Default database configuration
-$db_config_default = array(
-	'type'			=> 'mysqli',
-	'host'			=> 'localhost',
-	'name'			=> '',
-	'username'		=> '',
-	'password'		=> '',
-	'prefix'		=> '',
-	'charset'		=> 'UTF-8',
-);
-
-
-$old_db_config = $db_config_default;
-
-if (defined('CMDLINE'))
-{
-	echo '=========================================='."\n";
-	echo '       FluxBB converter v'.CONVERTER_VERSION.'       '."\n";
-	echo '=========================================='."\n\n";
-	$params = array('help', 'forum:', 'type:', 'host::', 'name:', 'user:', 'pass:', 'prefix:', 'charset:');
-	$options = getopt('hf:t:s:n:u:p:r:c:', $params);
-
-	if (empty($options) || isset($options['h']) || isset($options['help']))
-	{
-		echo 'Usage: '."\n";
-		echo "\t".'-f --forum'."\t".'Forum name.'."\n";
-		echo "\t\t\t".'Possible values are: '.implode(", ", array_keys($forums))."\n";
-		echo "\t".'-t --type'."\t".'Old database type.'."\n";
-		echo "\t\t\t".'Possible values are: '.implode(", ", $engines)."\n";
-		echo "\t".'-s --host'."\t".'Old database host.'."\n";
-		echo "\t".'-n --name'."\t".'Old database name.'."\n";
-		echo "\t".'-u --user'."\t".'Old database username.'."\n";
-		echo "\t".'-p --pass'."\t".'Old database password.'."\n";
-		echo "\t".'-r --prefix'."\t".'Old database table prefix.'."\n";
-		echo "\t".'-c --charset'."\t".'Old database charset (default UTF-8).'."\n";
-		exit(1);
-	}
-
-	$forum_config = array(
-		'type'		=> isset($options['f']) ? $options['f'] : (isset($options['forum']) ? $options['forum'] : null),
-	);
-
-	$old_db_config = array(
-		'type'		=> isset($options['t']) ? $options['t'] : (isset($options['type']) ? $options['type'] : null),
-		'host'		=> isset($options['s']) ? $options['s'] : (isset($options['host']) ? $options['host'] : null),
-		'name'		=> isset($options['n']) ? $options['n'] : (isset($options['name']) ? $options['name'] : null),
-		'username'	=> isset($options['u']) ? $options['u'] : (isset($options['user']) ? $options['user'] : null),
-		'password'	=> isset($options['p']) ? $options['p'] : (isset($options['pass']) ? $options['pass'] : ''),
-		'prefix'	=> isset($options['r']) ? $options['r'] : (isset($options['prefix']) ? $options['prefix'] : ''),
-		'charset'	=> isset($options['c']) ? $options['c'] : (isset($options['charset']) ? $options['charset'] : 'UTF-8'),
-	);
-
-}
-
 // We submited the form, store data in session as we'll redirect to the next page
-else if (isset($_POST['form_sent']))
+if (isset($_POST['form_sent']))
 {
 	$forum_config = array(
 		'type'		=> isset($_POST['req_forum']) && isset($forums[$_POST['req_forum']]) ? $_POST['req_forum'] : null,
@@ -214,20 +58,7 @@ else if (isset($_POST['form_sent']))
 		'charset'	=> isset($_POST['old_db_charset']) ? trim($_POST['old_db_charset']) : 'UTF-8'
 	);
 
-	$_SESSION['converter'] = array('forum_config' => $forum_config, 'old_db_config' => $old_db_config, 'lang' => $convert_lang);
-}
-
-// Fetch data from session
-else if (isset($_SESSION['converter']))
-{
-	$forum_config = $_SESSION['converter']['forum_config'];
-	$old_db_config = $_SESSION['converter']['old_db_config'];
-	$convert_lang = $_SESSION['converter']['lang'];
-}
-
-// Check whether we have all needed data valid
-if (defined('CMDLINE') || isset($_POST['form_sent']))
-{
+	// Check whether we have all needed data valid
 	if (!isset($forum_config['type']))
 		conv_error('You have to enter a forum software.');
 	if (!isset($old_db_config['type']))
@@ -239,36 +70,24 @@ if (defined('CMDLINE') || isset($_POST['form_sent']))
 	if (!isset($old_db_config['username']))
 		conv_error('You have to enter a database username for the old forum.');
 
-	$forum_config = array_map('trim', $forum_config);
-	$old_db_config = array_map('trim', $old_db_config);
-
 	if (!array_key_exists($forum_config['type'], $forums))
-	{
-		if (defined('CMDLINE'))
-		{
-			// Try to correct forum name (ignore case)
-			$keys = array_keys($forums);
-			$values = array();
-			foreach ($keys as $cur_key)
-				if (strpos(strtolower($cur_key), strtolower($forum_config['type'])) === 0)
-					$values[] = $cur_key;
-
-			if (count($values) == 1)
-				$forum_config['type'] = $values[0];
-			else if (($key = array_search(strtolower($forum_config['type']), array_map('strtolower', $keys))) !== false)
-				$forum_config['type'] = $keys[$key];
-			else
-				conv_error('You entered an invalid forum software. Possible values are:'."\n".implode("\n", array_keys($forums)));
-		}
-		else
-			conv_error('You entered an invalid forum software');
-	}
+		conv_error('You entered an invalid forum software');
 
 	if (!in_array($old_db_config['type'], $engines))
-		conv_error('Database type for old forum is invalid.'.(defined('CMDLINE') ? ' Possible values are:'."\n".implode("\n", $engines) : ''));
+		conv_error('Database type for old forum is invalid.');
+
+	$_SESSION['converter'] = array('forum_config' => $forum_config, 'old_db_config' => $old_db_config, 'lang' => $convert_lang);
 }
 
-if (isset($_POST['form_sent']) || isset($_GET['step']) || defined('CMDLINE'))
+// Fetch data from session
+else if (isset($_SESSION['converter']))
+{
+	$forum_config = $_SESSION['converter']['forum_config'];
+	$old_db_config = $_SESSION['converter']['old_db_config'];
+	$convert_lang = $_SESSION['converter']['lang'];
+}
+
+if (isset($_POST['form_sent']) || isset($_GET['step']))
 {
 	if (!isset($forum_config))
 		conv_error($lang_convert['Bad request']);
@@ -325,7 +144,7 @@ if (isset($_POST['form_sent']) || isset($_GET['step']) || defined('CMDLINE'))
 	if (!isset($step) || $step != 'results')
 	{
 		// Start the converter. When it do its work, it redirects to the next page
-		$converter->convert($step, $start_at);
+		$converter->convert($step, $start_at, true);
 	}
 
 	if (empty($_SESSION['converter']['dupe_users']))
@@ -337,42 +156,8 @@ if (isset($_POST['form_sent']) || isset($_GET['step']) || defined('CMDLINE'))
 	if (!$forum->CONVERTS_PASSWORD)
 		$alerts[] = $lang_convert['Password converter mod'];
 
-	$db->end_transaction();
-	$db->close();
+	$fluxbb->close_database();
 
-	if (defined('CMDLINE'))
-	{
-		if (!empty($_SESSION['converter']['dupe_users']))
-		{
-			conv_message("\n".'---------------------------'."\n");
-			conv_message($lang_convert['Username dupes head']);
-			conv_message($lang_convert['Error info 1']);
-			conv_message($lang_convert['Error info 2']);
-			foreach ($_SESSION['converter']['dupe_users'] as $id => $cur_user)
-				conv_message("\t".$lang_convert['was renamed to'], $cur_user['old_username'], $cur_user['username']);
-
-			conv_message();
-			conv_message($lang_convert['Convert username dupes question']);
-
-			$handle = fopen('php://stdin', 'r');
-			$line = trim(fgets($handle));
-			if ($line == 'yes')
-			{
-				alert_dupe_users();
-				unset($_SESSION['converter']['dupe_users']);
-			}
-		}
-
-		if (!empty($alerts))
-		{
-			conv_message("\n".'---------------------------'."\n");
-			conv_message('NOTE: '.implode("\n\n".'NOTE: ', $alerts));
-		}
-
-		conv_message();
-		conv_message($lang_convert['Conversion completed in'], round($_SESSION['fluxbb_converter']['time'], 4));
-		exit(1);
-	}
 
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
