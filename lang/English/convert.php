@@ -39,9 +39,9 @@ $lang_convert = array(
 'Password converter mod'		=>	'This converter does not support converting passwords for specified forum. You have to install Password Converter Mod (file password_converter_mod.txt in converter directory) or you will not be able to login!',
 
 // Processing message (with number of arguments)
-'Processing 1'					=>	'Processing %s',
-'Processing 2'					=>	'Processing %2$d %1$s',
-'Processing 4'					=>	'Processing %2$d %1$s (%3$d - %4$d)',
+'Processing'					=>	'Processing %s',
+'Processing num'				=>	'Processing %2$d %1$s',
+'Processing range'				=>	'Processing %2$d %1$s (%3$d - %4$d)',
 
 'Not implemented'				=>	'%s: Not implemented',
 'Converting'					=>	'Converting %s',

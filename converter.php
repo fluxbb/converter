@@ -142,7 +142,7 @@ $converter->convert();
 // We're done
 $alerts = array();
 
-if (!$forum->CONVERTS_PASSWORD)
+if (!$forum->converts_password())
 	$alerts[] = $lang_convert['Password converter mod'];
 
 $fluxbb->close_database();

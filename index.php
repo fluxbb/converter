@@ -86,6 +86,8 @@ else if (isset($_SESSION['converter']))
 	$old_db_config = $_SESSION['converter']['old_db_config'];
 	$convert_lang = $_SESSION['converter']['lang'];
 }
+else
+	$old_db_config = $db_config_default;
 
 if (isset($_POST['form_sent']) || isset($_GET['step']))
 {
@@ -153,7 +155,7 @@ if (isset($_POST['form_sent']) || isset($_GET['step']))
 	// We're done
 	$alerts = array();
 
-	if (!$forum->CONVERTS_PASSWORD)
+	if (!$forum->converts_password())
 		$alerts[] = $lang_convert['Password converter mod'];
 
 	$fluxbb->close_database();
@@ -362,7 +364,7 @@ function process_form(the_form)
 
 	foreach ($forums as $value => $name)
 	{
-		if ($value == $forum_config['type'])
+		if (isset($forum_config['type']) && $value == $forum_config['type'])
 			echo "\t\t\t\t\t\t\t".'<option value="'.$value.'" selected="selected">'.$name.'</option>'."\n";
 		else
 			echo "\t\t\t\t\t\t\t".'<option value="'.$value.'">'.$name.'</option>'."\n";

@@ -37,7 +37,7 @@ function connect_database($db_config)
  */
 function load_forum($forum_config, $fluxbb)
 {
-	if (!class_exists($forum_type))
+	if (!class_exists($forum_config['type']))
 	{
 		if (!file_exists(SCRIPT_ROOT.'forums/'.$forum_config['type'].'.php'))
 			error('Unsupported forum type: '.$forum_config['type'], __FILE__, __LINE__);

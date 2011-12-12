@@ -41,7 +41,7 @@ forum_unregister_globals();
 $pun_start = get_microtime();
 
 // Make sure PHP reports all errors except E_NOTICE. FluxBB supports E_ALL, but a lot of scripts it may interact with, do not
-error_reporting(E_ALL ^ E_NOTICE);
+error_reporting(E_ALL/* ^ E_NOTICE*/);
 
 // Force POSIX locale (to prevent functions such as strtolower() from messing up UTF-8 strings)
 setlocale(LC_CTYPE, 'C');
@@ -113,5 +113,3 @@ $db_config_default = array(
 	'prefix'		=> '',
 	'charset'		=> 'UTF-8',
 );
-
-$old_db_config = $db_config_default;

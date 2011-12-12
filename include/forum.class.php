@@ -118,6 +118,12 @@ class Forum
 		conv_message('Not implemented', __FUNCTION__);
 	}
 
+	function converts_password()
+	{
+		$class = get_class($this);
+		return defined($class.'::CONVERTS_PASSWORD') && constant($class.'::CONVERTS_PASSWORD');
+	}
+
 	/**
 	 * Check whether current table has more rows - if yes, redirect to the next page of the current stage
 	 *
@@ -149,7 +155,7 @@ class Forum
 	 */
 	function convert_to_utf8($str)
 	{
-		return convert_to_utf8($str, $this->charset);
+		return convert_to_utf8($str, $this->db_config['charset']);
 	}
 
 }
