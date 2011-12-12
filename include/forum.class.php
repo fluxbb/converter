@@ -8,7 +8,7 @@
 class Forum
 {
 	public $db;
-	private $fluxbb;
+	public $fluxbb;
 	public $stage;
 
 	protected $db_config;
@@ -133,10 +133,10 @@ class Forum
 
 		$result = $this->db->query_build(array(
 			'SELECT'	=> 1,
-			'FROM'		=> $old_table,
-			'WHERE'		=> $old_field.' > '.$start_at,
+			'FROM'		=> $this->db->escape($old_table),
+			'WHERE'		=> $this->db->escape($old_field).' > '.intval($start_at),
 			'LIMIT'		=> 1,
-		)) or conv_error('Unable to fetch num rows', __FILE__, __LINE__, $this->db->conv_error());
+		)) or conv_error('Unable to fetch num rows', __FILE__, __LINE__, $this->db->error());
 
 		if ($this->db->num_rows($result))
 			conv_redirect($this->stage, $start_at);

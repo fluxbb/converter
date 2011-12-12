@@ -11,28 +11,7 @@ class Converter
 	protected $fluxbb;
 	public $start;
 
-	public $tables = array(
-		'bans' 					=> true,
-		'categories'			=> true,
-		'censoring'				=> true,
-		'config'				=> true,
-		'forums'				=> true,
-		'forum_perms'			=> true,
-		'groups'				=> true,
-//		'online'				=> false,
-		'posts'					=> true,
-		'ranks'					=> true,
-		'reports'				=> true,
-//		'search_cache'			=> false,
-//		'search_matches'		=> false,
-//		'search_words'			=> false,
-		'topic_subscriptions'	=> true,
-		'forum_subscriptions'	=> true,
-		'topics'				=> true,
-		'users'					=> true,
-	);
-
-	function __construct($forum, $fluxbb)
+	function __construct($fluxbb, $forum)
 	{
 		$this->forum = $forum;
 		$this->fluxbb = $fluxbb;
@@ -55,32 +34,29 @@ class Converter
 	 */
 	function convert($name, $start_at = 0)
 	{
-		$keys = array_keys($this->tables);
-
 		// Start from beginning
 		if (!isset($name))
 		{
 			$_SESSION['fluxbb_converter']['start_time'] = get_microtime();
 			$this->initialize();
-			$name = $keys[0];
+			$name = $this->forum->steps[0];
 		}
 
 		$this->forum->stage = $name;
 
 		$start = get_microtime();
-		$convert = $this->tables[$name];
 
 		conv_message('Converting', $name);
-		if ($convert && is_callable(array($this->forum, 'convert_'.$name)))
+		if (is_callable(array($this->forum, 'convert_'.$name)))
 			call_user_func(array($this->forum, 'convert_'.$name), $start_at);
 
 		conv_message('Done in', round(get_microtime() - $start, 4));
 
 		// Redirect to the next stage
-		$current = array_search($name, $keys);
+		$current = array_search($name, $this->forum->steps);
 
 		// No more work to do?
-		if (!isset($keys[++$current]))
+		if (!isset($this->forum->steps[++$current]))
 		{
 			$this->finnish();
 			$_SESSION['fluxbb_converter']['time'] = get_microtime() - $_SESSION['fluxbb_converter']['start_time'];
@@ -90,7 +66,7 @@ class Converter
 				conv_redirect('results');
 		}
 
-		$next_stage = $keys[$current];
+		$next_stage = $this->forum->steps[$current];
 		if (defined('CMDLINE'))
 		{
 			conv_message();

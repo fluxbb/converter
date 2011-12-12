@@ -9,6 +9,26 @@ define('FORUM_PARSER_REVISION', 2);
 
 class VBulletin_4_1_5 extends Forum
 {
+	// Will the passwords be converted?
+	const CONVERTS_PASSWORD = false;
+
+	public $steps = array(
+		'bans',
+		'categories',
+		'censoring',
+		'config',
+		'forums',
+//		'forum_perms',
+		'groups',
+		'posts',
+		'ranks',
+		'reports',
+		'topic_subscriptions',
+		'forum_subscriptions',
+		'topics',
+		'users',
+	);
+
 	function initialize()
 	{
 		$this->db->set_names('utf8');

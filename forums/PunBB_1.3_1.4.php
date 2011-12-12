@@ -12,10 +12,27 @@ define('FORUM_DB_REVISION', 15);
 define('FORUM_SI_REVISION', 2);
 define('FORUM_PARSER_REVISION', 2);
 
-class PunBB_1_3 extends Forum
+class PunBB_1_3_1_4 extends Forum
 {
 	// Will the passwords be converted?
 	const CONVERTS_PASSWORD = true;
+
+	public $steps = array(
+		'bans',
+		'categories',
+		'censoring',
+		'config',
+		'forums',
+//		'forum_perms',
+		'groups',
+		'posts',
+		'ranks',
+		'reports',
+		'topic_subscriptions',
+		'forum_subscriptions',
+		'topics',
+		'users',
+	);
 
 	function initialize()
 	{
@@ -292,7 +309,7 @@ class PunBB_1_3 extends Forum
 
 	function convert_forum_subscriptions()
 	{
-		conv_message('No forum subscriptions', $this->db->num_rows($result));
+		conv_message('No forum subscriptions');
 	}
 
 	function convert_topics($start_at)

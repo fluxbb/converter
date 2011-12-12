@@ -49,7 +49,7 @@ function conv_error($message, $file = null, $line = null, $dberror = false)
 /**
  * Redirect to the next stage
  */
-function conv_redirect($stage, $start_at = 0, $time = 0)
+function conv_redirect($step, $start_at = 0, $time = 0)
 {
 	global $lang_convert, $default_style, $fluxbb;
 
@@ -70,7 +70,7 @@ function conv_redirect($stage, $start_at = 0, $time = 0)
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<meta http-equiv="refresh" content="<?php echo $time ?>; url=index.php?stage=<?php echo htmlspecialchars($stage).($start_at > 0 ? '&start_at='.$start_at : '') ?>">
+<meta http-equiv="refresh" content="<?php echo $time ?>; url=index.php?step=<?php echo htmlspecialchars($step).($start_at > 0 ? '&start_at='.$start_at : '') ?>">
 <title><?php echo sprintf($lang_convert['FluxBB converter'], CONVERTER_VERSION) ?></title>
 <link rel="stylesheet" type="text/css" href="../style/<?php echo $default_style ?>.css" />
 </head>
@@ -146,7 +146,8 @@ function load_forum($forum_config, $fluxbb)
 		require SCRIPT_ROOT.'forums/'.$forum_config['type'].'.php';
 	}
 
-	return new $forum_config['type']($forum_config, $fluxbb);
+	$class = str_replace('.', '_', $forum_config['type']);
+	return new $class($forum_config, $fluxbb);
 }
 
 /**

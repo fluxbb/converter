@@ -17,6 +17,23 @@ class Invision_Power_Board_3_2 extends Forum
 	// Will the passwords be converted?
 	const CONVERTS_PASSWORD = false;
 
+	public $steps = array(
+		'bans',
+		'categories',
+		'censoring',
+		'config',
+		'forums',
+//		'forum_perms',
+		'groups',
+		'posts',
+		'ranks',
+		'reports',
+		'topic_subscriptions',
+		'forum_subscriptions',
+		'topics',
+		'users',
+	);
+
 	function initialize()
 	{
 		$this->db->set_names('utf8');

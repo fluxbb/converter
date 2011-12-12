@@ -268,12 +268,12 @@ if (defined('CMDLINE') || isset($_POST['form_sent']))
 		conv_error('Database type for old forum is invalid.'.(defined('CMDLINE') ? ' Possible values are:'."\n".implode("\n", $engines) : ''));
 }
 
-if (isset($_POST['form_sent']) || isset($_GET['stage']) || defined('CMDLINE'))
+if (isset($_POST['form_sent']) || isset($_GET['step']) || defined('CMDLINE'))
 {
 	if (!isset($forum_config))
 		conv_error($lang_convert['Bad request']);
 
-	$stage = isset($_GET['stage']) ? $_GET['stage'] : null;
+	$step = isset($_GET['step']) ? $_GET['step'] : null;
 	$start_at = isset($_GET['start_at']) ? $_GET['start_at'] : 0;
 
 	// Get database configuration from config.php
@@ -319,13 +319,13 @@ if (isset($_POST['form_sent']) || isset($_GET['stage']) || defined('CMDLINE'))
 	$converter = new Converter($fluxbb, $forum);
 
 	// Validate only first time we run converter (check whether database configuration is valid)
-	if (!isset($stage))
+	if (!isset($step))
 		$converter->validate();
 
-	if (!isset($stage) || $stage != 'results')
+	if (!isset($step) || $step != 'results')
 	{
 		// Start the converter. When it do its work, it redirects to the next page
-		$converter->convert($stage, $start_at);
+		$converter->convert($step, $start_at);
 	}
 
 	if (empty($_SESSION['converter']['dupe_users']))
