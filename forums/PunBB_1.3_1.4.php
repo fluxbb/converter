@@ -100,7 +100,7 @@ class PunBB_1_3_1_4 extends Forum
 			'FROM'		=> 'config',
 		)) or conv_error('Unable to fetch config', __FILE__, __LINE__, $this->db->error());
 
-		conv_message('Processing num', 'config');
+		conv_message('Processing', 'config');
 		while ($cur_config = $this->db->fetch_assoc($result))
 			$old_config[$cur_config['conf_name']] = $cur_config['conf_value'];
 
@@ -154,8 +154,8 @@ class PunBB_1_3_1_4 extends Forum
 //			'o_base_url'				=> $old_config['o_base_url'], // No need to change this value
 			'o_admin_email'				=> $old_config['o_admin_email'],
 			'o_webmaster_email'			=> $old_config['o_webmaster_email'],
-			'o_forum_subscriptions'		=> $old_config['o_forum_subscriptions'],
-			'o_topic_subscriptions'		=> $old_config['o_topic_subscriptions'],
+			'o_forum_subscriptions'		=> 1,
+			'o_topic_subscriptions'		=> $old_config['o_subscriptions'],
 			'o_smtp_host'				=> $old_config['o_smtp_host'],
 			'o_smtp_user'				=> $old_config['o_smtp_user'],
 			'o_smtp_pass'				=> $old_config['o_smtp_pass'],
@@ -169,8 +169,8 @@ class PunBB_1_3_1_4 extends Forum
 			'o_maintenance'				=> $old_config['o_maintenance'],
 			'o_maintenance_message'		=> $old_config['o_maintenance_message'],
 			'o_default_dst'				=> $old_config['o_default_dst'],
-			'o_feed_type'				=> $old_config['o_feed_type'],
-			'o_feed_ttl'				=> $old_config['o_feed_ttl'],
+			'o_feed_type'				=> 2,
+			'o_feed_ttl'				=> 0,
 			'p_message_bbcode'			=> $old_config['p_message_bbcode'],
 			'p_message_img_tag'			=> $old_config['p_message_img_tag'],
 			'p_message_all_caps'		=> $old_config['p_message_all_caps'],
