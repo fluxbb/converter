@@ -470,6 +470,10 @@ class Invision_Power_Board_3_2 extends Forum
 	function convert_message($message)
 	{
 		static $patterns, $replacements;
+		global $re_list;
+
+		$errors = array();
+		require_once PUN_ROOT.'include/parser.php';
 
 		$message = html_entity_decode($message);
 
@@ -477,7 +481,6 @@ class Invision_Power_Board_3_2 extends Forum
 		{
 			$patterns = array(
 				'%\[quote name=\'(.*?)\'.*?\]%i'										=>	'[quote=$1]',
-				'%\[\*\](.*?)\n%si'														=>	'[*]$1[/*]'."\n",
 				'%<img src=\'.*?\' class=\'bbc_emoticon\' alt=\'(.*?)\' />%'			=> '$1',
 				'%\[/?(sup|sub|indent|left|center|right|font|size)(?:\=[^\]]*)?\]%i'	=> '',	// Strip tags not supported by FluxBB
 			);
@@ -497,6 +500,6 @@ class Invision_Power_Board_3_2 extends Forum
 			);
 		}
 
-		return str_replace(array_keys($replacements), array_values($replacements), $message);
+		return preparse_bbcode(str_replace(array_keys($replacements), array_values($replacements), $message), $errors);
 	}
 }

@@ -489,6 +489,10 @@ class SMF_2 extends Forum
 	function convert_message($message)
 	{
 		static $patterns, $replacements;
+		global $re_list;
+
+		$errors = array();
+		require_once PUN_ROOT.'include/parser.php';
 
 		$message = html_entity_decode($message, ENT_QUOTES, 'UTF-8');
 
@@ -498,7 +502,6 @@ class SMF_2 extends Forum
 				'%\[quote author=(.*?) link.*?\](.*?)\[/quote\]%si'		=>	'[quote=$1]$2[/quote]',
 				'%\[flash=.*?\](.*?)\[/flash\]%si'						=>	'Flash: [url]$1[/url]',
 				'%\[ftp=(.*?)\](.*?)\[/ftp\]%si'						=>	'[url=$1]$2[/url]',
-				'%\[list(=.*?)?\](.*?)\[/list\]%si'						=>	'[list]$1[/list]',
 				'%\[/?(font|size|glow|s|shadow|move|pre|left|right|center|sup|sub|tt|table)(?:\=[^\]]*)?\]%i'	=> '',	// Strip tags not supported by FluxBB
 			);
 		}
@@ -519,6 +522,7 @@ class SMF_2 extends Forum
 				'::)'		=>	':rolleyes:',
 			);
 		}
-		return str_replace(array_keys($replacements), array_values($replacements), $message);
+
+		return preparse_bbcode(str_replace(array_keys($replacements), array_values($replacements), $message), $errors);
 	}
 }

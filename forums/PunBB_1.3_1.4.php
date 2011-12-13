@@ -244,6 +244,27 @@ class PunBB_1_3_1_4 extends Forum
 
 	function convert_posts($start_at)
 	{
+		// Fetch o_parser_revision from database
+		$pun_config = array();
+		$result = $this->db->query_build(array(
+			'SELECT'	=> 'conf_name, conf_value',
+			'FROM'		=> 'config',
+			'WHERE'		=> 'conf_name = \'o_parser_revision\'',
+		)) or conv_error('Unable to fetch config', __FILE__, __LINE__, $this->db->error());
+
+		while ($cur_config = $this->db->fetch_assoc($result))
+			$pun_config[$cur_config['conf_name']] = $cur_config['conf_value'];
+
+		// Do we need to preparse post messages?
+		$preparse_bbcode = false;
+		if (!isset($pun_config['o_parser_revision']) || $pun_config['o_parser_revision'] != FORUM_PARSER_REVISION)
+		{
+			$preparse_bbcode = true;
+			global $re_list;
+			require_once PUN_ROOT.'include/parser.php';
+			$errors = array();
+		}
+
 		$result = $this->db->query_build(array(
 			'SELECT'	=> 'id, poster, poster_id, poster_ip, poster_email, message, hide_smilies, posted, edited, edited_by, topic_id',
 			'FROM'		=> 'posts',
@@ -260,6 +281,10 @@ class PunBB_1_3_1_4 extends Forum
 		while ($cur_post = $this->db->fetch_assoc($result))
 		{
 			$start_at = $cur_post['id'];
+
+			if ($preparse_bbcode)
+				$cur_post['message'] = preparse_bbcode($cur_post['message'], $errors);
+
 			$this->fluxbb->add_row('posts', $cur_post);
 		}
 

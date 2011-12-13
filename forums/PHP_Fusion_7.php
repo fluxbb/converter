@@ -506,6 +506,10 @@ class PHP_Fusion_7 extends Forum
 	function convert_message($message)
 	{
 		static $replacements;
+		global $re_list;
+
+		$errors = array();
+		require_once PUN_ROOT.'include/parser.php';
 
 		// Convert lists
 		$message = preg_replace_callback('%\[ulist(=.*?)?\](.*?)\[/ulist\]%s', 'PHP_Fusion_7::convert_lists', $message);
@@ -519,6 +523,7 @@ class PHP_Fusion_7 extends Forum
 				'%\[quote\]\[url.*?\[b\](.*?) wrote:\[/b\]\[/url\]\s*%si'	=>	'[quote=$1]',
 			);
 		}
-		return preg_replace(array_keys($replacements), array_values($replacements), $message);
+
+		return preparse_bbcode(str_replace(array_keys($replacements), array_values($replacements), $message), $errors);
 	}
 }

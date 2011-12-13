@@ -460,6 +460,10 @@ class VBulletin_4_1_5 extends Forum
 	function convert_message($message)
 	{
 		static $patterns, $replacements;
+		global $re_list;
+
+		$errors = array();
+		require_once PUN_ROOT.'include/parser.php';
 
 		$message = html_entity_decode($message, ENT_QUOTES, 'UTF-8');
 
@@ -467,7 +471,6 @@ class VBulletin_4_1_5 extends Forum
 		{
 			$patterns = array(
 				'%\[QUOTE=(.*?);\d+\]%si'								=>	'[quote=$1]',
-				'%\[\*\](.*?)\n%si'										=>	'[*]$1[/*]'."\n",
 				'%\[(/?)(HTML|PHP)\]%i'									=>	'[$1code]',
 				'%\[/?(FONT|SIZE|INDENT|LEFT|RIGHT|CENTER|SUP|SUB|TABLE)(?:\=[^\]]*)?\]%i'	=> '',	// Strip tags not supported by FluxBB
 				'%\[([A-Z]+\=)"([^\]]*)"\]%i'							=>	'[$1$2]',	// Strip double quotes from param
@@ -493,6 +496,7 @@ class VBulletin_4_1_5 extends Forum
 				':eek:'		=>	':o',
 			);
 		}
-		return str_replace(array_keys($replacements), array_values($replacements), $message);
+
+		return preparse_bbcode(str_replace(array_keys($replacements), array_values($replacements), $message), $errors);
 	}
 }

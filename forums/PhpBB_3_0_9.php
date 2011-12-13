@@ -442,6 +442,10 @@ class PhpBB_3_0_9 extends Forum
 	function convert_message($message)
 	{
 		static $patterns, $replacements;
+		global $re_list;
+
+		$errors = array();
+		require_once PUN_ROOT.'include/parser.php';
 
 		$message = html_entity_decode($message, ENT_QUOTES, 'UTF-8');
 
@@ -470,6 +474,6 @@ class PhpBB_3_0_9 extends Forum
 			);
 		}
 
-		return str_replace(array_keys($replacements), array_values($replacements), $message);
+		return preparse_bbcode(str_replace(array_keys($replacements), array_values($replacements), $message), $errors);
 	}
 }
