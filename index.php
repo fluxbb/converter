@@ -140,7 +140,7 @@ if (isset($_POST['form_sent']) || isset($_GET['step']))
 		unset($_SESSION['converter']);
 
 	// We're done
-	$alerts = array();
+	$alerts = array($lang_convert['Rebuild search index note']);
 
 	if (!$forum->converts_password())
 		$alerts[] = $lang_convert['Password converter mod'];
@@ -183,7 +183,7 @@ if (isset($_POST['form_sent']) || isset($_GET['step']))
 			<div class="inform">
 				<div class="forminfo">
 					<p style="font-size: 1.1em"><?php echo $lang_convert['Error info 1'] ?></p>
-					<p style="font-size: 1.1em"><?php echo $lang_convert['Error info 2'].' '.$lang_convert['Error info 3'] ?></p>
+					<p style="font-size: 1.1em"><?php echo $lang_convert['Error info 2'].' '.$lang_convert['Click alert button'] ?></p>
 				</div>
 			</div>
 			<div class="inform">

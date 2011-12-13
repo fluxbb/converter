@@ -36,7 +36,6 @@ $lang_convert = array(
 'Start converter'				=>	'Start converter',
 'Converting header'				=>	'Converting',
 'Conversion completed in'		=>	'Conversion completed in %s',
-'Password converter mod'		=>	'This converter does not support converting passwords for specified forum. You have to install Password Converter Mod (file password_converter_mod.txt in converter directory) or you will not be able to login!',
 
 // Processing message (with number of arguments)
 'Processing'					=>	'Processing %s',
@@ -58,6 +57,8 @@ $lang_convert = array(
 'Alert users'					=>	'Alert users',
 
 'Final instructions'			=>	'Final instructions',
+'Rebuild search index note'		=>	'Don\'t forget to rebuild the search index!',
+'Password converter mod'		=>	'This converter does not support converting passwords for specified forum. You have to install Password Converter Mod (file password_converter_mod.txt in converter directory) or you will not be able to login!',
 'Database converted'			=>	'Your forum has been successfully converted! You may now %s.',
 'go to forum index'				=>	'go to the forum index',
 

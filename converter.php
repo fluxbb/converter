@@ -127,7 +127,7 @@ $converter->validate();
 $converter->convert();
 
 // We're done
-$alerts = array();
+$alerts = array($lang_convert['Rebuild search index note']);
 
 if (!$forum->converts_password())
 	$alerts[] = $lang_convert['Password converter mod'];
