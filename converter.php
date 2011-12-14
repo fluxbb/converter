@@ -23,14 +23,15 @@ if (!defined('PUN'))
 echo '=========================================='."\n";
 echo '       FluxBB converter v'.CONVERTER_VERSION.'       '."\n";
 echo '=========================================='."\n\n";
-$params = array('help', 'forum:', 'type:', 'host::', 'name:', 'user:', 'pass:', 'prefix:', 'charset:');
-$options = getopt('hf:t:s:n:u:p:r:c:', $params);
+$params = array('help', 'forum:', 'path:', 'type:', 'host::', 'name:', 'user:', 'pass:', 'prefix:', 'charset:');
+$options = getopt('hf:d:t:s:n:u:p:r:c:', $params);
 
 if (empty($options) || isset($options['h']) || isset($options['help']))
 {
 	echo 'Usage: '."\n";
 	echo "\t".'-f --forum'."\t".'Forum name.'."\n";
 	echo "\t\t\t".'Possible values are: '.implode(", ", array_keys($forums))."\n";
+	echo "\t".'-d --path'."\t".'Old forum directory.'."\n";
 	echo "\t".'-t --type'."\t".'Old database type.'."\n";
 	echo "\t\t\t".'Possible values are: '.implode(", ", $engines)."\n";
 	echo "\t".'-s --host'."\t".'Old database host.'."\n";
@@ -44,6 +45,7 @@ if (empty($options) || isset($options['h']) || isset($options['help']))
 
 $forum_config = array(
 	'type'		=> isset($options['f']) ? $options['f'] : (isset($options['forum']) ? $options['forum'] : null),
+	'path'		=> isset($options['d']) ? $options['d'] : (isset($options['path']) ? $options['path'] : null),
 );
 
 $old_db_config = array(
@@ -60,16 +62,7 @@ $forum_config = array_map('trim', $forum_config);
 $old_db_config = array_map('trim', $old_db_config);
 
 // Check whether we have all needed data valid
-if (!isset($forum_config['type']))
-	conv_error('You have to enter a forum software.');
-if (!isset($old_db_config['type']))
-	conv_error('You have to enter database type for old forum.');
-if (!isset($old_db_config['host']))
-	conv_error('You have to enter a database host for the old forum.');
-if (!isset($old_db_config['name']))
-	conv_error('You have to enter a database name for the old forum.');
-if (!isset($old_db_config['username']))
-	conv_error('You have to enter a database username for the old forum.');
+validate_params($forum_config, $old_db_config);
 
 if (!array_key_exists($forum_config['type'], $forums))
 {

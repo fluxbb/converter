@@ -14,10 +14,12 @@ class FluxBB
 	public $db;
 	public $db_config;
 	public $pun_config;
+	public $avatars_dir;
 
 	function __construct($pun_config)
 	{
 		$this->pun_config = $pun_config;
+		$this->avatars_dir = PUN_ROOT.rtrim($this->pun_config['o_avatars_dir'], '/').'/';
 	}
 
 	/**

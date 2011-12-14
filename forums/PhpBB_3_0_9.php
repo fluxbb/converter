@@ -394,7 +394,7 @@ class PhpBB_3_0_9 extends Forum
 	function convert_users($start_at)
 	{
 		$result = $this->db->query_build(array(
-			'SELECT'	=> 'user_id AS id, group_id AS group_id, username AS username, user_password AS password, user_website AS url, user_icq AS icq, user_msnm AS msn, user_aim AS aim, user_yim AS yahoo, user_posts AS num_posts, user_from AS location, user_allow_viewemail AS email_setting, user_timezone AS timezone, user_regdate AS registered, user_lastvisit AS last_visit, user_sig AS signature, user_email AS email',
+			'SELECT'	=> 'user_id AS id, group_id AS group_id, username AS username, user_password AS password, user_website AS url, user_icq AS icq, user_msnm AS msn, user_aim AS aim, user_yim AS yahoo, user_posts AS num_posts, user_from AS location, user_allow_viewemail AS email_setting, user_timezone AS timezone, user_regdate AS registered, user_lastvisit AS last_visit, user_sig AS signature, user_email AS email, user_avatar',
 			'FROM'		=> 'users',
 			'WHERE'		=> 'group_id <> 6 AND user_id <> 1 AND user_id > '.$start_at,
 			'ORDER BY'	=> 'user_id ASC',
@@ -413,6 +413,9 @@ class PhpBB_3_0_9 extends Forum
 			$cur_user['group_id'] = $this->grp2grp($cur_user['group_id']);
 			$cur_user['email_setting'] = !$cur_user['email_setting'];
 			$cur_user['signature'] = $this->convert_message($cur_user['signature']);
+
+			$this->convert_avatar($cur_user);
+			unset($cur_user['user_avatar']);
 
 			$this->fluxbb->add_row('users', $cur_user);
 		}
@@ -475,5 +478,43 @@ class PhpBB_3_0_9 extends Forum
 		}
 
 		return preparse_bbcode(str_replace(array_keys($replacements), array_values($replacements), $message), $errors);
+	}
+
+	/**
+	 * Copy avatar file to the FluxBB avatars dir
+	 */
+	function convert_avatar($cur_user)
+	{
+		static $avatars_config;
+
+		if (!isset($this->path))
+			return false;
+
+		if (!isset($avatars_config))
+		{
+			$avatars_config = array();
+
+			$result = $this->db->query_build(array(
+				'SELECT'	=> 'config_name, config_value',
+				'FROM'		=> 'config',
+				'WHERE'		=> 'config_name IN (\'avatar_path\', \'avatar_salt\')'
+			)) or conv_error('Unable to fetch config', __FILE__, __LINE__, $this->db->error());
+
+			while ($cur_config = $this->db->fetch_assoc($result))
+				$avatars_config[$cur_config['config_name']] = $cur_config['config_value'];
+		}
+
+		$old_avatars_dir = $this->path.rtrim($avatars_config['avatar_path'], '/').'/';
+
+		$extensions = array('.jpg', '.gif', '.png');
+		foreach ($extensions as $cur_ext)
+		{
+			$cur_avatar_file = $old_avatars_dir.$avatars_config['avatar_salt'].'_'.$cur_user['id'].$cur_ext;
+			if (file_exists($cur_avatar_file))
+			{
+				copy($cur_avatar_file, $this->fluxbb->avatars_dir.$cur_user['id'].$cur_ext);
+				return true;
+			}
+		}
 	}
 }

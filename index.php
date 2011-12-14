@@ -47,6 +47,7 @@ if (isset($_POST['form_sent']))
 {
 	$forum_config = array(
 		'type'		=> isset($_POST['req_forum']) && isset($forums[$_POST['req_forum']]) ? $_POST['req_forum'] : null,
+		'path'		=> isset($_POST['path']) && isset($forums[$_POST['path']]) ? $_POST['path'] : null,
 	);
 
 	$old_db_config = array(
@@ -60,16 +61,7 @@ if (isset($_POST['form_sent']))
 	);
 
 	// Check whether we have all needed data valid
-	if (!isset($forum_config['type']))
-		conv_error('You have to enter a forum software.');
-	if (!isset($old_db_config['type']))
-		conv_error('You have to enter database type for old forum.');
-	if (!isset($old_db_config['host']))
-		conv_error('You have to enter a database host for the old forum.');
-	if (!isset($old_db_config['name']))
-		conv_error('You have to enter a database name for the old forum.');
-	if (!isset($old_db_config['username']))
-		conv_error('You have to enter a database username for the old forum.');
+	validate_params($forum_config, $old_db_config);
 
 	if (!array_key_exists($forum_config['type'], $forums))
 		conv_error('You entered an invalid forum software');
@@ -88,7 +80,10 @@ else if (isset($_SESSION['converter']))
 	$convert_lang = $_SESSION['converter']['lang'];
 }
 else
+{
 	$old_db_config = $db_config_default;
+	$forum_config = array('type' => '', 'path' => '');
+}
 
 if (isset($_POST['form_sent']) || isset($_GET['step']))
 {
@@ -360,6 +355,15 @@ function process_form(the_form)
 ?>
 						</select>
 						<br /></label>
+					</div>
+				</fieldset>
+			</div>
+			<div class="inform">
+				<fieldset>
+				<legend><?php echo $lang_convert['Enter old forum path'] ?></legend>
+					<div class="infldset">
+						<p><?php echo $lang_convert['Old forum path info'] ?></p>
+						<label class="conl"><?php echo $lang_convert['Old forum path'] ?><br /><input type="text" name="path" value="<?php echo pun_htmlspecialchars($forum_config['path']) ?>" size="50" /><br /></label>
 					</div>
 				</fieldset>
 			</div>

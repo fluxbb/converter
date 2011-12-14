@@ -6,6 +6,44 @@
  * @package FluxBB
  */
 
+
+function validate_params($forum_config, $old_db_config)
+{
+	global $pun_config;
+
+	if (!isset($forum_config['type']))
+		conv_error('You have to enter a forum software.');
+
+	if (!empty($forum_config['path']))
+	{
+		// Check whether it is absolute path
+		if (strpos($forum_config['path'], '/') === 0 || strpos($forum_config['path'], ':') === 1)
+			$path = $forum_config['path'];
+
+		// Or relative
+		else
+			$path = PUN_ROOT.$forum_config['path'];
+
+		if (!is_dir($path))
+			conv_error('The directory for the old forum does not exist.');
+
+		if (!is_writable(PUN_ROOT.$pun_config['o_avatars_dir']))
+			conv_error('Avatars directory is not writable.');
+	}
+
+	if (!isset($old_db_config['type']))
+		conv_error('You have to enter database type for old forum.');
+
+	if (!isset($old_db_config['host']))
+		conv_error('You have to enter a database host for the old forum.');
+
+	if (!isset($old_db_config['name']))
+		conv_error('You have to enter a database name for the old forum.');
+
+	if (!isset($old_db_config['username']))
+		conv_error('You have to enter a database username for the old forum.');
+}
+
 /**
  * Connect to the database
  *

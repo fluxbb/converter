@@ -47,6 +47,17 @@ class PunBB_1_3_1_4 extends Forum
 	{
 		if (!$this->db->field_exists('bans', 'id'))
 			conv_error('Selected database does not contain valid PunBB installation');
+
+		$result = $this->db->query_build(array(
+			'SELECT'	=> 'conf_value',
+			'FROM'		=> 'config',
+			'WHERE'		=> 'conf_name = \'o_avatars_dir\''
+		)) or conv_error('Unable to fetch avatars_dir', __FILE__, __LINE__, $this->db->error());
+
+		$avatars_dir = $this->db->result($result);
+
+		if (isset($this->path) && !is_dir($this->path.$avatars_dir))
+			conv_error('Avatars directory does not exist');
 	}
 
 	function convert_bans()
@@ -101,6 +112,7 @@ class PunBB_1_3_1_4 extends Forum
 		)) or conv_error('Unable to fetch config', __FILE__, __LINE__, $this->db->error());
 
 		conv_message('Processing', 'config');
+
 		while ($cur_config = $this->db->fetch_assoc($result))
 			$old_config[$cur_config['conf_name']] = $cur_config['conf_value'];
 
@@ -387,6 +399,8 @@ class PunBB_1_3_1_4 extends Forum
 			$start_at = $cur_user['id'];
 			$cur_user['group_id'] = $this->grp2grp($cur_user['group_id']);
 
+			$this->convert_avatar($cur_user['id']);
+
 			$this->fluxbb->add_row('users', $cur_user, array($this->fluxbb, 'error_users'));
 		}
 
@@ -407,5 +421,42 @@ class PunBB_1_3_1_4 extends Forum
 			return $id;
 
 		return $mapping[$id];
+	}
+
+	/**
+	 * Copy avatar file to the FluxBB avatars dir
+	 */
+	function convert_avatar($id)
+	{
+		static $avatars_config;
+
+		if (!isset($avatars_config))
+		{
+			$avatars_config = array();
+
+			$result = $this->db->query_build(array(
+				'SELECT'	=> 'conf_name, conf_value',
+				'FROM'		=> 'config',
+				'WHERE'		=> 'conf_name IN (\'o_avatars\', \'o_avatars_dir\')'
+			)) or conv_error('Unable to fetch avatars_dir', __FILE__, __LINE__, $this->db->error());
+
+			while ($cur_config = $this->db->fetch_assoc($result))
+				$avatars_config[$cur_config['conf_name']] = $cur_config['conf_value'];
+		}
+
+		if ($avatars_config['o_avatars'] == '0' || !isset($this->path))
+			return false;
+
+		$old_avatars_dir = $this->path.rtrim($avatars_config['o_avatars_dir'], '/').'/';
+
+		$extensions = array('.jpg', '.gif', '.png');
+		foreach ($extensions as $cur_ext)
+		{
+			if (file_exists($old_avatars_dir.$id.$cur_ext))
+			{
+				copy($old_avatars_dir.$id.$cur_ext, $this->fluxbb->avatars_dir.$id.$cur_ext);
+				return true;
+			}
+		}
 	}
 }

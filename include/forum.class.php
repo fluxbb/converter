@@ -13,11 +13,26 @@ class Forum
 	public $stage;
 
 	protected $db_config;
-	private $forum_config;
+	protected $forum_config;
+	protected $path;
 
 	function __construct($forum_config, $fluxbb)
 	{
 		$this->forum_config = $forum_config;
+
+		if (!empty($forum_config['path']))
+		{
+			// Check whether it is absolute path
+			if (strpos($forum_config['path'], '/') === 0 || strpos($forum_config['path'], ':') === 1)
+				$this->path = $forum_config['path'];
+
+			// Or relative
+			else
+				$this->path = PUN_ROOT.$forum_config['path'];
+
+			$this->path = rtrim($this->path, '/').'/';
+		}
+
 		$this->fluxbb = $fluxbb;
 	}
 
