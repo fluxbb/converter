@@ -121,10 +121,6 @@ if (isset($_POST['form_sent']) || isset($_GET['step']))
 	require SCRIPT_ROOT.'include/converter.class.php';
 	$converter = new Converter($fluxbb, $forum);
 
-	// Validate only first time we run converter (check whether database configuration is valid)
-	if (!isset($step))
-		$converter->validate();
-
 	if (!isset($step) || $step != 'results')
 	{
 		// Start the converter. When it do its work, it redirects to the next page

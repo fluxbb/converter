@@ -10,7 +10,6 @@ class Forum
 {
 	public $db;
 	public $fluxbb;
-	public $stage;
 
 	protected $db_config;
 	protected $forum_config;
@@ -77,10 +76,6 @@ class Forum
 	 */
 	function redirect($old_table, $old_field, $start_at)
 	{
-		// TODO: make sure there no more rows when using cmd line
-		if (defined('CMDLINE'))
-			return false;
-
 		$result = $this->db->query_build(array(
 			'SELECT'	=> 1,
 			'FROM'		=> $this->db->escape($old_table),
@@ -89,7 +84,9 @@ class Forum
 		)) or conv_error('Unable to fetch num rows', __FILE__, __LINE__, $this->db->error());
 
 		if ($this->db->num_rows($result))
-			conv_redirect($this->stage, $start_at);
+			return $start_at;
+
+		return false;
 	}
 
 	/**

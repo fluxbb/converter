@@ -25,62 +25,92 @@ class Converter
 	{
 		if (is_callable(array($this->forum, 'validate')))
 			$this->forum->validate();
+
+		// Delete old avatars
+		if (is_writable($this->fluxbb->avatars_dir))
+		{
+			$d = dir($this->fluxbb->avatars_dir);
+			while ($f = $d->read())
+				if ($f != '.' && $f != '..' && in_array(substr($f, -4), array('.jpg', '.gif', '.png')))
+					unlink($this->fluxbb->avatars_dir.$f);
+		}
 	}
 
 	/**
 	 * Runs conversion process
 	 *
-	 * @param mixed $name Table name
+	 * @param mixed $step Table name
 	 * @param integer $start_at A row number from which we start processing table
 	 */
-	function convert($name = null, $start_at = 0, $redirect = false)
+	function convert($step = null, $start_at = 0, $redirect = false)
 	{
+		if (!$redirect && isset($step))
+			conv_message();
+
 		// Start from beginning
-		if (!isset($name))
+		if (!isset($step))
 		{
 			$_SESSION['fluxbb_converter']['start_time'] = get_microtime();
-			$this->initialize();
-			$name = $this->forum->steps[0];
+
+			// Validate only first time we run converter (check whether database configuration is valid)
+			$this->validate();
+
+			// Drop the FluxBB database tables
+			$this->cleanup_database();
+
+			$step = $this->forum->steps[0];
+			return $this->redirect($step, 0, $redirect);
 		}
 
-		$this->forum->stage = $name;
-
 		$start = get_microtime();
+		$redirect_to = false;
 
-		conv_message('Converting', $name);
-		if (is_callable(array($this->forum, 'convert_'.$name)))
-			call_user_func(array($this->forum, 'convert_'.$name), $start_at);
+		conv_message('Converting', $step);
+		if (is_callable(array($this->forum, 'convert_'.$step)))
+			$redirect_to = call_user_func(array($this->forum, 'convert_'.$step), $start_at);
 
 		conv_message('Done in', round(get_microtime() - $start, 4));
 
-		// Redirect to the next stage
-		$current = array_search($name, $this->forum->steps);
+		// Process same step starting from the $start_at row
+		if ($redirect_to != false)
+			$this->redirect($step, $redirect_to, $redirect);
+
+		$current_step = array_search($step, $this->forum->steps);
+
+		// Bassically should never happen
+		if ($current_step === false)
+			return false;
 
 		// No more work to do?
-		if (!isset($this->forum->steps[++$current]))
+		if (!isset($this->forum->steps[++$current_step]))
 		{
 			$this->finnish();
 			$_SESSION['fluxbb_converter']['time'] = get_microtime() - $_SESSION['fluxbb_converter']['start_time'];
-			if ($redirect)
-				conv_redirect('results');
-			else
-				return true;
+			$this->redirect('results', 0, $redirect);
 		}
-
-		$next_stage = $this->forum->steps[$current];
-		if ($redirect)
-			conv_redirect($next_stage);
 		else
 		{
-			conv_message();
-			$this->convert($next_stage);
+			// Redirect to the next step
+			$next_step = $this->forum->steps[$current_step];
+			$this->redirect($next_step, 0, $redirect);
 		}
+	}
+
+	/**
+	 * Redirect to the next step (or when running from command line - do next step without redirecting)
+	 */
+	function redirect($step, $start_at, $redirect)
+	{
+		if ($redirect)
+			conv_redirect($step, $start_at);
+		else if ($step != 'results')
+	 		return $this->convert($step, $start_at, $redirect);
 	}
 
 	/**
 	 * Do some initial cleanup of database
 	 */
-	function initialize()
+	function cleanup_database()
 	{
 		$this->fluxbb->db->truncate_table('bans');
 		$this->fluxbb->db->truncate_table('categories');

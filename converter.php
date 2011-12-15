@@ -113,9 +113,6 @@ $forum->connect_database($old_db_config);
 require SCRIPT_ROOT.'include/converter.class.php';
 $converter = new Converter($fluxbb, $forum);
 
-// Check whether database configuration is valid
-$converter->validate();
-
 // Start the converter
 $converter->convert();
 

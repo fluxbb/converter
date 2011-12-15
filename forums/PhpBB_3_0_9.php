@@ -290,7 +290,7 @@ class PhpBB_3_0_9 extends Forum
 		conv_message('Processing range', 'posts', $this->db->num_rows($result), $start_at, $start_at + PER_PAGE);
 
 		if (!$this->db->num_rows($result))
-			return;
+			return false;
 
 		while ($cur_post = $this->db->fetch_assoc($result))
 		{
@@ -300,7 +300,7 @@ class PhpBB_3_0_9 extends Forum
 			$this->fluxbb->add_row('posts', $cur_post);
 		}
 
-		$this->redirect('posts', 'post_id', $start_at);
+		return $this->redirect('posts', 'post_id', $start_at);
 	}
 
 	function convert_ranks()
@@ -378,7 +378,7 @@ class PhpBB_3_0_9 extends Forum
 		conv_message('Processing range', 'topics', $this->db->num_rows($result), $start_at, $start_at + PER_PAGE);
 
 		if (!$this->db->num_rows($result))
-			return;
+			return false;
 
 		while ($cur_topic = $this->db->fetch_assoc($result))
 		{
@@ -388,7 +388,7 @@ class PhpBB_3_0_9 extends Forum
 			$this->fluxbb->add_row('topics', $cur_topic);
 		}
 
-		$this->redirect('topics', 'topic_id', $start_at);
+		return $this->redirect('topics', 'topic_id', $start_at);
 	}
 
 	function convert_users($start_at)
@@ -404,7 +404,7 @@ class PhpBB_3_0_9 extends Forum
 		conv_message('Processing range', 'users', $this->db->num_rows($result), $start_at, $start_at + PER_PAGE);
 
 		if (!$this->db->num_rows($result))
-			return;
+			return false;
 
 		while ($cur_user = $this->db->fetch_assoc($result))
 		{
@@ -420,7 +420,7 @@ class PhpBB_3_0_9 extends Forum
 			$this->fluxbb->add_row('users', $cur_user);
 		}
 
-		$this->redirect('users', 'user_id', $start_at);
+		return $this->redirect('users', 'user_id', $start_at);
 	}
 
 	/**
