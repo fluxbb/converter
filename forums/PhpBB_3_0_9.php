@@ -490,30 +490,40 @@ class PhpBB_3_0_9 extends Forum
 		if (!isset($this->path))
 			return false;
 
-		if (!isset($avatars_config))
+		if (strpos($cur_user['user_avatar'], 'http://') === 0)
 		{
-			$avatars_config = array();
+			$extension = substr($cur_user['user_avatar'], strrpos($cur_user['user_avatar'], '.'));
 
-			$result = $this->db->query_build(array(
-				'SELECT'	=> 'config_name, config_value',
-				'FROM'		=> 'config',
-				'WHERE'		=> 'config_name IN (\'avatar_path\', \'avatar_salt\')'
-			)) or conv_error('Unable to fetch config', __FILE__, __LINE__, $this->db->error());
-
-			while ($cur_config = $this->db->fetch_assoc($result))
-				$avatars_config[$cur_config['config_name']] = $cur_config['config_value'];
+			// Download avatar from remote url
+			file_put_contents($this->fluxbb->avatars_dir.$cur_user['id'].$extension, file_get_contents($cur_user['user_avatar']));
 		}
-
-		$old_avatars_dir = $this->path.rtrim($avatars_config['avatar_path'], '/').'/';
-
-		$extensions = array('.jpg', '.gif', '.png');
-		foreach ($extensions as $cur_ext)
+		else
 		{
-			$cur_avatar_file = $old_avatars_dir.$avatars_config['avatar_salt'].'_'.$cur_user['id'].$cur_ext;
-			if (file_exists($cur_avatar_file))
+			if (!isset($avatars_config))
 			{
-				copy($cur_avatar_file, $this->fluxbb->avatars_dir.$cur_user['id'].$cur_ext);
-				return true;
+				$avatars_config = array();
+
+				$result = $this->db->query_build(array(
+					'SELECT'	=> 'config_name, config_value',
+					'FROM'		=> 'config',
+					'WHERE'		=> 'config_name IN (\'avatar_path\', \'avatar_salt\')'
+				)) or conv_error('Unable to fetch config', __FILE__, __LINE__, $this->db->error());
+
+				while ($cur_config = $this->db->fetch_assoc($result))
+					$avatars_config[$cur_config['config_name']] = $cur_config['config_value'];
+			}
+
+			$old_avatars_dir = $this->path.rtrim($avatars_config['avatar_path'], '/').'/';
+
+			$extensions = array('.jpg', '.gif', '.png');
+			foreach ($extensions as $cur_ext)
+			{
+				$cur_avatar_file = $old_avatars_dir.$avatars_config['avatar_salt'].'_'.$cur_user['id'].$cur_ext;
+				if (file_exists($cur_avatar_file))
+				{
+					copy($cur_avatar_file, $this->fluxbb->avatars_dir.$cur_user['id'].$cur_ext);
+					return true;
+				}
 			}
 		}
 	}
