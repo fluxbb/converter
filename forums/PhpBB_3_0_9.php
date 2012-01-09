@@ -487,11 +487,10 @@ class PhpBB_3_0_9 extends Forum
 	{
 		static $avatars_config;
 
-//		conv_debug('Converting avatar for user id: '.$cur_user['id']);
-
 		if (!isset($this->path))
 			return false;
 
+		// Fetch avatar from remote url
 		if (strpos($cur_user['user_avatar'], 'http://') === 0)
 		{
 			$extension = substr($cur_user['user_avatar'], strrpos($cur_user['user_avatar'], '.'));
@@ -515,13 +514,28 @@ class PhpBB_3_0_9 extends Forum
 				$result = $this->db->query_build(array(
 					'SELECT'	=> 'config_name, config_value',
 					'FROM'		=> 'config',
-					'WHERE'		=> 'config_name IN (\'avatar_path\', \'avatar_salt\')'
+					'WHERE'		=> 'config_name IN (\'avatar_path\', \'avatar_salt\', \'avatar_gallery_path\')'
 				)) or conv_error('Unable to fetch config', __FILE__, __LINE__, $this->db->error());
 
 				while ($cur_config = $this->db->fetch_assoc($result))
 					$avatars_config[$cur_config['config_name']] = $cur_config['config_value'];
 			}
 
+			// Look for user avatar from gallery
+			$cur_avatar_file = $this->path.rtrim($avatars_config['avatar_gallery_path'], '/').'/'.$cur_user['user_avatar'];
+			if (file_exists($cur_avatar_file))
+			{
+				$extension = substr($cur_user['user_avatar'], strrpos($cur_user['user_avatar'], '.'));
+
+				if (!copy($cur_avatar_file, $this->fluxbb->avatars_dir.$cur_user['id'].$extension))
+				{
+					conv_log('Saving avatar '.$cur_avatar_file.' for user '.$cur_user['id'].' failed');
+					return false;
+				}
+				return true;
+			}
+
+			// Fetch avatar from local file
 			$old_avatars_dir = $this->path.rtrim($avatars_config['avatar_path'], '/').'/';
 
 			$extensions = array('.jpg', '.gif', '.png');
