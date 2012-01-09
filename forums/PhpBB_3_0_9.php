@@ -487,6 +487,8 @@ class PhpBB_3_0_9 extends Forum
 	{
 		static $avatars_config;
 
+//		conv_debug('Converting avatar for user id: '.$cur_user['id']);
+
 		if (!isset($this->path))
 			return false;
 
@@ -495,7 +497,14 @@ class PhpBB_3_0_9 extends Forum
 			$extension = substr($cur_user['user_avatar'], strrpos($cur_user['user_avatar'], '.'));
 
 			// Download avatar from remote url
-			file_put_contents($this->fluxbb->avatars_dir.$cur_user['id'].$extension, file_get_contents($cur_user['user_avatar']));
+			conv_log('Download: '.$cur_user['user_avatar']);
+			if (!file_put_contents($this->fluxbb->avatars_dir.$cur_user['id'].$extension, file_get_contents($cur_user['user_avatar'])))
+			{
+				conv_log('Saving avatar '.$cur_user['user_avatar'].' for user '.$cur_user['id'].' failed');
+				return false;
+			}
+
+			return true;
 		}
 		else
 		{
@@ -521,7 +530,11 @@ class PhpBB_3_0_9 extends Forum
 				$cur_avatar_file = $old_avatars_dir.$avatars_config['avatar_salt'].'_'.$cur_user['id'].$cur_ext;
 				if (file_exists($cur_avatar_file))
 				{
-					copy($cur_avatar_file, $this->fluxbb->avatars_dir.$cur_user['id'].$cur_ext);
+					if (!copy($cur_avatar_file, $this->fluxbb->avatars_dir.$cur_user['id'].$cur_ext))
+					{
+						conv_log('Saving avatar '.$cur_avatar_file.' for user '.$cur_user['id'].' failed');
+						return false;
+					}
 					return true;
 				}
 			}

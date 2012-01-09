@@ -29,10 +29,21 @@ class Converter
 		// Delete old avatars
 		if (is_writable($this->fluxbb->avatars_dir))
 		{
+			conv_log('Cleaning FluxBB avatars directory');
+
 			$d = dir($this->fluxbb->avatars_dir);
+			$num_deleted = 0;
 			while ($f = $d->read())
+			{
 				if ($f != '.' && $f != '..' && in_array(substr($f, -4), array('.jpg', '.gif', '.png')))
-					unlink($this->fluxbb->avatars_dir.$f);
+				{
+					$num_deleted++;
+					if (!unlink($this->fluxbb->avatars_dir.$f))
+						conv_log('Failed to delete avatar: '.$f);
+				}
+			}
+
+			conv_log($num_deleted.' avatars deleted');
 		}
 	}
 
@@ -50,6 +61,7 @@ class Converter
 		// Start from beginning
 		if (!isset($step))
 		{
+			conv_log('Converting: start');
 			$_SESSION['fluxbb_converter']['start_time'] = get_microtime();
 
 			// Validate only first time we run converter (check whether database configuration is valid)
@@ -59,8 +71,12 @@ class Converter
 			$this->cleanup_database();
 
 			$step = $this->forum->steps[0];
+
+			conv_log('Converting: start: done');
 			return $this->redirect($step, 0, $redirect);
 		}
+
+		conv_log('Converting: '.$step.' (from '.$start_at.')');
 
 		$start = get_microtime();
 		$redirect_to = false;
@@ -70,6 +86,7 @@ class Converter
 			$redirect_to = call_user_func(array($this->forum, 'convert_'.$step), $start_at);
 
 		conv_message('Done in', round(get_microtime() - $start, 4));
+		conv_log('Converting: '.$step.' (from '.$start_at.'): done');
 
 		// Process same step starting from the $start_at row
 		if ($redirect_to != false)
@@ -112,6 +129,7 @@ class Converter
 	 */
 	function cleanup_database()
 	{
+		conv_log('Cleaning database');
 		$this->fluxbb->db->truncate_table('bans');
 		$this->fluxbb->db->truncate_table('categories');
 		$this->fluxbb->db->truncate_table('censoring');
@@ -130,6 +148,7 @@ class Converter
 //		$this->fluxbb->db->truncate_table('users');
 		$this->fluxbb->db->query('DELETE FROM '.$this->fluxbb->db->prefix.'users WHERE id > 1');
 		$this->fluxbb->db->query('DELETE FROM '.$this->fluxbb->db->prefix.'groups WHERE g_id > 4');
+		conv_log('Cleaning database: done');
 	}
 
 	function finnish()
@@ -137,11 +156,17 @@ class Converter
 		// Handle users dupe
 		if (!empty($_SESSION['converter']['dupe_users']))
 		{
+			conv_log('Converting dupe users');
+
 			foreach ($_SESSION['converter']['dupe_users'] as $cur_user)
 				$this->fluxbb->convert_users_dupe($cur_user);
+
+			conv_log('Converting dupe users: done');
 		}
 
+		conv_log('Generate cache');
 		$this->generate_cache();
+		conv_log('Generate cache: done');
 	}
 
 	/**

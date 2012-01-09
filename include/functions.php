@@ -6,7 +6,6 @@
  * @package FluxBB
  */
 
-
 function validate_params($forum_config, $old_db_config)
 {
 	global $pun_config;
@@ -185,6 +184,37 @@ function alert_dupe_users()
 	}
 }
 
+
+function conv_log($message, $first_time_only = false, $close = false)
+{
+	static $prev_time, $fh;
+
+	if (!defined('CONV_LOG'))
+		return false;
+
+	if ($first_time_only && isset($_GET['step']))
+		return false;
+
+	if (!isset($fh))
+		$fh = fopen(PUN_ROOT.'cache/converter.log', 'a');
+
+	list($usec, $sec) = explode(' ', microtime());
+	fwrite($fh, date('H:i:s', $sec).substr($usec, 1, 5).' '.$message."\n");
+
+	if ($close)
+		fclose($fh);
+	$prev_time = get_microtime();
+}
+
+function conv_error_handler($errno, $errstr, $errfile, $errline)
+{
+	ob_start();
+	debug_print_backtrace();
+	conv_log(ob_get_clean());
+
+	/* Don't execute PHP internal error handler */
+	return true;
+ }
 
 /**
  * Determines whether $str is UTF-8 encoded or not

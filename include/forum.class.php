@@ -15,7 +15,16 @@ class Forum
 	protected $forum_config;
 	protected $path;
 
-	function __construct($forum_config, $fluxbb)
+	/**
+	 * Constructor
+	 *
+	 * @param array $forum_config
+	 * 		Forum configuration
+	 *
+	 * @param type FluxBB $fluxbb
+	 * 		FluxBB instance
+	 */
+	function __construct(array $forum_config, FluxBB $fluxbb)
 	{
 		$this->forum_config = $forum_config;
 
@@ -30,7 +39,11 @@ class Forum
 				$this->path = PUN_ROOT.$forum_config['path'];
 
 			$this->path = rtrim($this->path, '/').'/';
+			conv_log('Will convert avatars', true);
+			conv_log('Forum path: '.$this->path, true);
 		}
+		else
+			conv_log('Warning: avatars will not be converted due to missing path', true);
 
 		$this->fluxbb = $fluxbb;
 	}

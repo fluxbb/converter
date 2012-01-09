@@ -18,6 +18,9 @@ define('CONVERTER_VERSION', '1.0-dev');
 // Include the common functions
 require SCRIPT_ROOT.'include/functions.php';
 
+error_reporting(E_ALL);
+set_error_handler('conv_error_handler');
+
 // Attempt to load the configuration file config.php
 if (file_exists(PUN_ROOT.'config.php'))
 	require PUN_ROOT.'config.php';

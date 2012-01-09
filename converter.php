@@ -99,6 +99,12 @@ $db_config = array(
 if ($old_db_config == $db_config)
 	conv_error('Old and new tables must be different!');
 
+if (defined('CONV_LOG') && file_exists(PUN_ROOT.'cache/converter.log'))
+	@unlink(PUN_ROOT.'cache/converter.log');
+
+conv_log('Running web based converter for: '.$forum_config['type'].' ('.gmdate('Y-m-d').')');
+conv_log('PHP version: '.PHP_VERSION.', OS: '.PHP_OS);
+
 // Create a wrapper for fluxbb (has easy functions for adding users etc.)
 require SCRIPT_ROOT.'include/fluxbb.class.php';
 $fluxbb = new FluxBB($pun_config);

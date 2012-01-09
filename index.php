@@ -20,6 +20,7 @@ require SCRIPT_ROOT.'include/common.php';
 
 define('PUN_DEBUG', 1);
 define('PUN_SHOW_QUERIES', 1);
+define('CONV_LOG', 1);
 
 // The number of items to process per page view (lower this if the script times out)
 define('PER_PAGE', 500);
@@ -47,7 +48,7 @@ if (isset($_POST['form_sent']))
 {
 	$forum_config = array(
 		'type'		=> isset($_POST['req_forum']) && isset($forums[$_POST['req_forum']]) ? $_POST['req_forum'] : null,
-		'path'		=> isset($_POST['path']) && isset($forums[$_POST['path']]) ? $_POST['path'] : null,
+		'path'		=> isset($_POST['path']) ? $_POST['path'] : null,
 	);
 
 	$old_db_config = array(
@@ -70,6 +71,12 @@ if (isset($_POST['form_sent']))
 		conv_error('Database type for old forum is invalid.');
 
 	$_SESSION['converter'] = array('forum_config' => $forum_config, 'old_db_config' => $old_db_config, 'lang' => $convert_lang);
+
+	if (defined('CONV_LOG') && file_exists(PUN_ROOT.'cache/converter.log'))
+		@unlink(PUN_ROOT.'cache/converter.log');
+
+	conv_log('Running web based converter for: '.$forum_config['type'].' ('.gmdate('Y-m-d').')');
+	conv_log('PHP version: '.PHP_VERSION.', OS: '.PHP_OS);
 }
 
 // Fetch data from session
@@ -408,3 +415,4 @@ function process_form(the_form)
 
 }
 
+conv_log('', false, true);
