@@ -18,9 +18,6 @@ define('CONVERTER_VERSION', '1.0-dev');
 // Include the common functions
 require SCRIPT_ROOT.'include/functions.php';
 
-error_reporting(E_ALL);
-set_error_handler('conv_error_handler');
-
 // Attempt to load the configuration file config.php
 if (file_exists(PUN_ROOT.'config.php'))
 	require PUN_ROOT.'config.php';
@@ -46,6 +43,9 @@ $pun_start = get_microtime();
 
 // Make sure PHP reports all errors except E_NOTICE. FluxBB supports E_ALL, but a lot of scripts it may interact with, do not
 error_reporting(E_ALL/* ^ E_NOTICE*/);
+
+// Set error handler callback
+set_error_handler('conv_error_handler');
 
 // Force POSIX locale (to prevent functions such as strtolower() from messing up UTF-8 strings)
 setlocale(LC_CTYPE, 'C');

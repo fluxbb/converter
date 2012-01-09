@@ -21,7 +21,7 @@ function validate_params($forum_config, $old_db_config)
 
 		// Or relative
 		else
-			$path = PUN_ROOT.$forum_config['path'];
+			$path = is_dir(PUN_ROOT.$forum_config['path']) ? PUN_ROOT.$forum_config['path'] : $forum_config['path'];
 
 		if (!is_dir($path))
 			conv_error('The directory for the old forum does not exist.');

@@ -31,12 +31,14 @@ function conv_message()
  */
 function conv_error($message, $file = null, $line = null, $dberror = false)
 {
-	global $fluxbb;
+	global $fluxbb, $forum;
 
 	if (isset($fluxbb))
 		$fluxbb->close_database();
+	if (isset($forum))
+		$forum->close_database();
 
-	conv_log('', false, true);
+	conv_log('Error: '.$message.' in '.$line.', '.$line.(is_array($dberror) ? ' '.$dberror['errormsg'] : ''), false, true);
 
 	error($message, $file, $line, $dberror);
 }
@@ -47,10 +49,12 @@ function conv_error($message, $file = null, $line = null, $dberror = false)
  */
 function conv_redirect($step, $start_at = 0, $time = 0)
 {
-	global $lang_convert, $default_style, $fluxbb;
+	global $lang_convert, $default_style, $fluxbb, $forum;
 
 	if (isset($fluxbb))
 		$fluxbb->close_database();
+	if (isset($forum))
+		$forum->close_database();
 
 	$contents = ob_get_clean();
 

@@ -144,7 +144,8 @@ if (isset($_POST['form_sent']) || isset($_GET['step']))
 		$alerts[] = $lang_convert['Password converter mod'];
 
 	$fluxbb->close_database();
-
+	$forum->close_database();
+	conv_log('Done', false, true);
 
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
@@ -177,7 +178,7 @@ if (isset($_POST['form_sent']) || isset($_GET['step']))
 <?php if (!empty($_SESSION['converter']['dupe_users'])) : ?>
 	<h2><span><?php echo $lang_convert['Username dupes head'] ?></span></h2>
 	<div class="box">
-		<form method="post" action="index.php?stage=results&alert_dupe_users">
+		<form method="post" action="index.php?stage=results&amp;alert_dupe_users">
 			<div class="inform">
 				<div class="forminfo">
 					<p style="font-size: 1.1em"><?php echo $lang_convert['Error info 1'] ?></p>
@@ -415,4 +416,3 @@ function process_form(the_form)
 
 }
 
-conv_log('', false, true);

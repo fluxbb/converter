@@ -455,7 +455,9 @@ class PhpBB_3_0_9 extends Forum
 		if (!isset($patterns))
 		{
 			$patterns = array(
-				'%\[(/?)(b|i|u|list|\*|color|img|url|code|quote|size)(\=[^:\]]*)?:[a-z0-9]{5,8}\]%i'	=>	'[$1$2$3]', // Strip text after colon in tag name
+				'%\[(/?)(b|i|u|list|\*|color|img|url|code|quote|size)(\=[^\]]*)?(:[a-z])?:[a-z0-9]{5,8}\]%i'	=>	'[$1$2$3]', // Strip text after colon in tag name
+
+				'%\[/?(flash|font|size)(?:\=[^\]]*)?\]%i'													=> '',	// Strip tags not supported by FluxBB
 
 				// Smileys
 				'#<!-- s.*? --><img src=".*?" alt="(.*?)" title=".*?" \/><!-- s.*? -->#i'			=>	'$1',
@@ -477,7 +479,11 @@ class PhpBB_3_0_9 extends Forum
 			);
 		}
 
-		return preparse_bbcode(str_replace(array_keys($replacements), array_values($replacements), $message), $errors);
+		$message = preparse_bbcode(str_replace(array_keys($replacements), array_values($replacements), $message), $errors);
+		if (!empty($errors))
+			conv_log('convert_message: bbcode error: '.implode(', ', $errors));
+
+		return $message;
 	}
 
 	/**

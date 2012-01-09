@@ -33,10 +33,12 @@ function conv_message()
  */
 function conv_error($message, $file = null, $line = null, $dberror = false)
 {
-	global $fluxbb;
+	global $fluxbb, $forum;
 
 	if (isset($fluxbb))
 		$fluxbb->close_database();
+	if (isset($forum))
+		$forum->close_database();
 
 	echo 'ERROR: '.$message.(defined('PUN_DEBUG') && isset($file) ? ' in '.$file.', '.$line : '')."\n";
 	if (defined('PUN_DEBUG') && $dberror !== false)

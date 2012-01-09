@@ -454,7 +454,11 @@ class PunBB_1_3_1_4 extends Forum
 		{
 			if (file_exists($old_avatars_dir.$id.$cur_ext))
 			{
-				copy($old_avatars_dir.$id.$cur_ext, $this->fluxbb->avatars_dir.$id.$cur_ext);
+				if (!copy($old_avatars_dir.$id.$cur_ext, $this->fluxbb->avatars_dir.$id.$cur_ext))
+				{
+					conv_log('Copying avatar '.$cur_avatar_file.' for user id '.$id.' failed');
+					return false;
+				}
 				return true;
 			}
 		}

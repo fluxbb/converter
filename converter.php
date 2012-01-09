@@ -12,6 +12,8 @@ define('SCRIPT_ROOT', dirname(__FILE__).'/');
 require SCRIPT_ROOT.'include/functions_cmd.php';
 require SCRIPT_ROOT.'include/common.php';
 
+define('CONV_LOG', 1);
+
 // The number of items to process per page view (very hackish :P)
 define('PER_PAGE', pow(2, 32));
 
@@ -159,5 +161,7 @@ if (!empty($alerts))
 
 conv_message();
 conv_message($lang_convert['Conversion completed in'], round($_SESSION['fluxbb_converter']['time'], 4));
+
+conv_log('Done', false, true);
 
 exit(1);
