@@ -12,7 +12,8 @@ define('SCRIPT_ROOT', dirname(__FILE__).'/');
 require SCRIPT_ROOT.'include/functions_cmd.php';
 require SCRIPT_ROOT.'include/common.php';
 
-define('CONV_LOG', 1);
+// Output log messages to file
+define('CONV_LOG', PUN_ROOT.'cache/converter.log');
 
 // The number of items to process per page view (very hackish :P)
 define('PER_PAGE', pow(2, 32));

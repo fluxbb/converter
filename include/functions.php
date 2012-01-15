@@ -196,7 +196,7 @@ function conv_log($message, $first_time_only = false, $close = false)
 		return false;
 
 	if (!isset($fh))
-		$fh = fopen(PUN_ROOT.'cache/converter.log', 'a');
+		$fh = fopen(CONV_LOG, 'a');
 
 	list($usec, $sec) = explode(' ', microtime());
 	fwrite($fh, date('H:i:s', $sec).substr($usec, 1, 5).' '.$message."\n");

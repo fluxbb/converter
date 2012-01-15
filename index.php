@@ -20,7 +20,9 @@ require SCRIPT_ROOT.'include/common.php';
 
 define('PUN_DEBUG', 1);
 define('PUN_SHOW_QUERIES', 1);
-define('CONV_LOG', 1);
+
+// Output log messages to file
+define('CONV_LOG', PUN_ROOT.'cache/converter.log');
 
 // The number of items to process per page view (lower this if the script times out)
 define('PER_PAGE', 500);
