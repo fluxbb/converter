@@ -25,7 +25,9 @@ function conv_message()
 
 	$message = count($args) > 0 ? array_shift($args) : '';
 
-	echo vsprintf($message, $args)."\n";
+	$output = vsprintf($message, $args);
+	echo $output."\n";
+	conv_log($output);
 }
 
 /**

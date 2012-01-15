@@ -13,7 +13,7 @@ define('PUN_SEARCH_MIN_WORD', 3);
 define('PUN_SEARCH_MAX_WORD', 20);
 
 define('PUN_ROOT', SCRIPT_ROOT.'/../');
-define('CONVERTER_VERSION', '1.0-dev');
+define('CONV_VERSION', '1.0-dev');
 
 // Include the common functions
 require SCRIPT_ROOT.'include/functions.php';
@@ -42,7 +42,7 @@ forum_unregister_globals();
 $pun_start = get_microtime();
 
 // Make sure PHP reports all errors except E_NOTICE. FluxBB supports E_ALL, but a lot of scripts it may interact with, do not
-error_reporting(E_ALL/* ^ E_NOTICE*/);
+error_reporting(E_ALL ^ E_NOTICE);
 
 // Set error handler callback
 set_error_handler('conv_error_handler');

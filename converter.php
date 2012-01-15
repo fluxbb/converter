@@ -24,7 +24,7 @@ if (!defined('PUN'))
 
 
 echo '=========================================='."\n";
-echo '       FluxBB converter v'.CONVERTER_VERSION.'       '."\n";
+echo '       FluxBB converter v'.CONV_VERSION.'       '."\n";
 echo '=========================================='."\n\n";
 $params = array('help', 'forum:', 'path:', 'type:', 'host::', 'name:', 'user:', 'pass:', 'prefix:', 'charset:');
 $options = getopt('hf:d:t:s:n:u:p:r:c:', $params);

@@ -155,7 +155,7 @@ if (isset($_POST['form_sent']) || isset($_GET['step']))
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title><?php echo sprintf($lang_convert['FluxBB converter'], CONVERTER_VERSION) ?></title>
+<title><?php echo sprintf($lang_convert['FluxBB converter'], CONV_VERSION) ?></title>
 <link rel="stylesheet" type="text/css" href="../style/<?php echo $default_style ?>.css" />
 </head>
 <body>
@@ -167,7 +167,7 @@ if (isset($_POST['form_sent']) || isset($_GET['step']))
 <div id="brdheader" class="block">
 	<div class="box">
 		<div id="brdtitle" class="inbox">
-			<h1><span><?php echo sprintf($lang_convert['FluxBB converter'], CONVERTER_VERSION) ?></span></h1>
+			<h1><span><?php echo sprintf($lang_convert['FluxBB converter'], CONV_VERSION) ?></span></h1>
 			<div id="brddesc"><p><?php echo sprintf($lang_convert['Conversion completed in'], round($_SESSION['fluxbb_converter']['time'], 4)) ?></p></div>
 		</div>
 	</div>
@@ -249,7 +249,7 @@ else
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en" dir="ltr">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title><?php echo sprintf($lang_convert['FluxBB converter'], CONVERTER_VERSION) ?></title>
+<title><?php echo sprintf($lang_convert['FluxBB converter'], CONV_VERSION) ?></title>
 <link rel="stylesheet" type="text/css" href="../style/<?php echo $default_style ?>.css" />
 <script type="text/javascript">
 /* <![CDATA[ */
@@ -292,7 +292,7 @@ function process_form(the_form)
 <div id="brdheader" class="block">
 	<div class="box">
 		<div id="brdtitle" class="inbox">
-			<h1><span><?php echo sprintf($lang_convert['FluxBB converter'], CONVERTER_VERSION) ?></span></h1>
+			<h1><span><?php echo sprintf($lang_convert['FluxBB converter'], CONV_VERSION) ?></span></h1>
 			<div id="brddesc"><p><?php echo $lang_convert['Convert message'] ?></p></div>
 		</div>
 	</div>

@@ -61,7 +61,8 @@ class Converter
 		// Start from beginning
 		if (!isset($step))
 		{
-			conv_log('Converting: start');
+			conv_message('Converting', 'start');
+			$start = get_microtime();
 			$_SESSION['fluxbb_converter']['start_time'] = get_microtime();
 
 			// Validate only first time we run converter (check whether database configuration is valid)
@@ -72,11 +73,9 @@ class Converter
 
 			$step = $this->forum->steps[0];
 
-			conv_log('Converting: start: done');
+			conv_message('Done in', round(get_microtime() - $start, 4));
 			return $this->redirect($step, 0, $redirect);
 		}
-
-		conv_log('Converting: '.$step.' (from '.$start_at.')');
 
 		$start = get_microtime();
 		$redirect_to = false;
@@ -86,7 +85,6 @@ class Converter
 			$redirect_to = call_user_func(array($this->forum, 'convert_'.$step), $start_at);
 
 		conv_message('Done in', round(get_microtime() - $start, 4));
-		conv_log('Converting: '.$step.' (from '.$start_at.'): done');
 
 		// Process same step starting from the $start_at row
 		if ($redirect_to != false)

@@ -196,7 +196,10 @@ function conv_log($message, $first_time_only = false, $close = false)
 		return false;
 
 	if (!isset($fh))
+	{
 		$fh = fopen(CONV_LOG, 'a');
+		error_reporting(E_ALL);
+	}
 
 	list($usec, $sec) = explode(' ', microtime());
 	fwrite($fh, date('H:i:s', $sec).substr($usec, 1, 5).' '.$message."\n");

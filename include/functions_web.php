@@ -22,7 +22,9 @@ function conv_message()
 
 	$message = count($args) > 0 ? array_shift($args) : '';
 
-	echo vsprintf($message, $args)."\n".'<br />';
+	$output = vsprintf($message, $args);
+	echo $output."\n".'<br />';
+	conv_log($output);;
 }
 
 
@@ -65,7 +67,7 @@ function conv_redirect($step, $start_at = 0, $time = 0)
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta http-equiv="refresh" content="<?php echo $time ?>; url=index.php?step=<?php echo htmlspecialchars($step).($start_at > 0 ? '&start_at='.$start_at : '') ?>">
-<title><?php echo sprintf($lang_convert['FluxBB converter'], CONVERTER_VERSION) ?></title>
+<title><?php echo sprintf($lang_convert['FluxBB converter'], CONV_VERSION) ?></title>
 <link rel="stylesheet" type="text/css" href="../style/<?php echo $default_style ?>.css" />
 </head>
 <body>
