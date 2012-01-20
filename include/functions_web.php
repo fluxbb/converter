@@ -24,7 +24,7 @@ function conv_message()
 
 	$output = vsprintf($message, $args);
 	echo $output."\n".'<br />';
-	conv_log($output);;
+	conv_log($output);
 }
 
 

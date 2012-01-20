@@ -67,6 +67,9 @@ class Forum
 	 */
 	function close_database()
 	{
+		if (!isset($this->db))
+			return false;
+
 		$this->db->end_transaction();
 		$this->db->close();
 	}
