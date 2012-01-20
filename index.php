@@ -22,7 +22,7 @@ define('PUN_DEBUG', 1);
 define('PUN_SHOW_QUERIES', 1);
 
 // Output log messages to file
-define('CONV_LOG', PUN_ROOT.'cache/converter.log');
+define('CONV_LOG', PUN_ROOT.'cache/converter_'.session_id().'.log');
 
 // The number of items to process per page view (lower this if the script times out)
 define('PER_PAGE', 500);

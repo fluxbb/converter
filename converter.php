@@ -13,7 +13,7 @@ require SCRIPT_ROOT.'include/functions_cmd.php';
 require SCRIPT_ROOT.'include/common.php';
 
 // Output log messages to file
-define('CONV_LOG', PUN_ROOT.'cache/converter.log');
+define('CONV_LOG', PUN_ROOT.'cache/converter_'.substr(sha1(time()), 0, 7).'.log');
 
 // The number of items to process per page view (very hackish :P)
 define('PER_PAGE', pow(2, 32));
