@@ -58,7 +58,7 @@ if (isset($_POST['form_sent']))
 		'host'		=> isset($_POST['req_old_db_host']) ? trim($_POST['req_old_db_host']) : null,
 		'name'		=> isset($_POST['req_old_db_name']) ? trim($_POST['req_old_db_name']) : null,
 		'username'	=> isset($_POST['old_db_username']) ? trim($_POST['old_db_username']) : null,
-		'password'	=> isset($_POST['old_db_pass']) ? $_POST['old_db_pass'] : '',
+		'password'	=> isset($_POST['old_db_password']) ? $_POST['old_db_password'] : '',
 		'prefix'	=> isset($_POST['old_db_prefix']) ? trim($_POST['old_db_prefix']) : '',
 		'charset'	=> isset($_POST['old_db_charset']) ? trim($_POST['old_db_charset']) : 'UTF-8'
 	);
