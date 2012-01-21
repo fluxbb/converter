@@ -30,16 +30,16 @@ function validate_params($forum_config, $old_db_config)
 			conv_error('Avatars directory is not writable.');
 	}
 
-	if (!isset($old_db_config['type']))
+	if (!empty($old_db_config['type']))
 		conv_error('You have to enter database type for old forum.');
 
-	if (!isset($old_db_config['host']))
+	if (!empty($old_db_config['host']))
 		conv_error('You have to enter a database host for the old forum.');
 
-	if (!isset($old_db_config['name']))
+	if (!empty($old_db_config['name']))
 		conv_error('You have to enter a database name for the old forum.');
 
-	if (!isset($old_db_config['username']))
+	if (!empty($old_db_config['username']))
 		conv_error('You have to enter a database username for the old forum.');
 }
 

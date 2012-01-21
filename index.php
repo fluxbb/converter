@@ -67,10 +67,10 @@ if (isset($_POST['form_sent']))
 	validate_params($forum_config, $old_db_config);
 
 	if (!array_key_exists($forum_config['type'], $forums))
-		conv_error('You entered an invalid forum software');
+		conv_error('Invalid forum software');
 
 	if (!in_array($old_db_config['type'], $engines))
-		conv_error('Database type for old forum is invalid.');
+		conv_error('Invalid database type');
 
 	$_SESSION['converter'] = array('forum_config' => $forum_config, 'old_db_config' => $old_db_config, 'lang' => $convert_lang);
 
@@ -97,7 +97,7 @@ else
 if (isset($_POST['form_sent']) || isset($_GET['step']))
 {
 	if (!isset($forum_config))
-		conv_error($lang_convert['Bad request']);
+		conv_error('Bad request');
 
 	$step = isset($_GET['step']) ? $_GET['step'] : null;
 	$start_at = isset($_GET['start_at']) ? $_GET['start_at'] : 0;
@@ -114,7 +114,7 @@ if (isset($_POST['form_sent']) || isset($_GET['step']))
 
 	// Check we aren't trying to convert to the same database
 	if ($old_db_config == $db_config)
-		conv_error('Old and new tables must be different!');
+		conv_error('Same database tables');
 
 	// Create a wrapper for fluxbb (has easy functions for adding users etc.)
 	require SCRIPT_ROOT.'include/fluxbb.class.php';

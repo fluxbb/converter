@@ -94,7 +94,7 @@ if (!in_array($convert_lang, $languages))
 	$convert_lang = 'English';
 
 // Load converter language file
-require SCRIPT_ROOT.'lang/'.$convert_lang.'/convert.php';
+$lang_convert = require SCRIPT_ROOT.'lang/'.$convert_lang.'/convert.php';
 
 // Make sure we are running at least MIN_PHP_VERSION
 if (!function_exists('version_compare') || version_compare(PHP_VERSION, MIN_PHP_VERSION, '<'))
@@ -125,7 +125,7 @@ $db_config_default = array(
 	'type'			=> 'mysqli',
 	'host'			=> 'localhost',
 	'name'			=> '',
-	'username'		=> '',
+	'username'		=> 'root',
 	'password'		=> '',
 	'prefix'		=> '',
 	'charset'		=> 'UTF-8',

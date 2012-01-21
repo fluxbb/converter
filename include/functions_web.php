@@ -17,6 +17,7 @@ function conv_message()
 
 	$args = func_get_args();
 
+	// Translate message
 	if (count($args) && isset($lang_convert[$args[0]]))
 		$args[0] = $lang_convert[$args[0]];
 
@@ -33,14 +34,17 @@ function conv_message()
  */
 function conv_error($message, $file = null, $line = null, $dberror = false)
 {
-	global $fluxbb, $forum;
+	global $fluxbb, $forum, $lang_convert;
 
 	if (isset($fluxbb))
 		$fluxbb->close_database();
 	if (isset($forum))
 		$forum->close_database();
 
-	conv_log('Error: '.$message.' in '.$line.', '.$line.(is_array($dberror) ? ' '.$dberror['errormsg'] : ''), false, true);
+	conv_log('Error: '.$message.' in '.$line.', '.$line.(is_array($dberror) ? ' '.implode(', ', $dberror) : ''), false, true);
+
+	if (isset($lang_convert[$message]))
+		$message = $lang_convert[$message];
 
 	error($message, $file, $line, $dberror);
 }

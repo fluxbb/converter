@@ -24,25 +24,25 @@ if (!defined('PUN'))
 
 
 echo '=========================================='."\n";
-echo '       FluxBB converter v'.CONV_VERSION.'       '."\n";
+echo '       '.sprintf($lang_convert['FluxBB converter'], CONV_VERSION).'       '."\n";
 echo '=========================================='."\n\n";
 $params = array('help', 'forum:', 'path:', 'type:', 'host::', 'name:', 'user:', 'pass:', 'prefix:', 'charset:');
 $options = getopt('hf:d:t:s:n:u:p:r:c:', $params);
 
 if (empty($options) || isset($options['h']) || isset($options['help']))
 {
-	echo 'Usage: '."\n";
-	echo "\t".'-f --forum'."\t".'Forum name.'."\n";
-	echo "\t\t\t".'Possible values are: '.implode(", ", array_keys($forums))."\n";
-	echo "\t".'-d --path'."\t".'Old forum directory.'."\n";
-	echo "\t".'-t --type'."\t".'Old database type.'."\n";
-	echo "\t\t\t".'Possible values are: '.implode(", ", $engines)."\n";
-	echo "\t".'-s --host'."\t".'Old database host.'."\n";
-	echo "\t".'-n --name'."\t".'Old database name.'."\n";
-	echo "\t".'-u --user'."\t".'Old database username.'."\n";
-	echo "\t".'-p --pass'."\t".'Old database password.'."\n";
-	echo "\t".'-r --prefix'."\t".'Old database table prefix.'."\n";
-	echo "\t".'-c --charset'."\t".'Old database charset (default UTF-8).'."\n";
+	echo $lang_convert['Usage'].': '."\n";
+	echo "\t".'-f --forum'."\t".$lang_convert['Forum software']."\n";
+	echo "\t\t\t".sprintf($lang_convert['Possible values'], "\n\t\t\t\t".implode("\n\t\t\t\t", array_keys($forums)))."\n";
+	echo "\t".'-d --path'."\t".$lang_convert['Old forum path']."\n";
+	echo "\t".'-t --type'."\t".$lang_convert['Database type'].' '.sprintf($lang_convert['Default value'], $db_config_default['type'])."\n";
+	echo "\t\t\t".sprintf($lang_convert['Possible values'], "\n\t\t\t\t".implode("\n\t\t\t\t", $engines))."\n";
+	echo "\t".'-s --host'."\t".$lang_convert['Database server hostname'].' '.sprintf($lang_convert['Default value'], $db_config_default['host'])."\n";
+	echo "\t".'-n --name'."\t".$lang_convert['Database name']."\n";
+	echo "\t".'-u --user'."\t".$lang_convert['Database username'].' '.sprintf($lang_convert['Default value'], $db_config_default['username'])."\n";
+	echo "\t".'-p --pass'."\t".$lang_convert['Database password']."\n";
+	echo "\t".'-r --prefix'."\t".$lang_convert['Table prefix']."\n";
+	echo "\t".'-c --charset'."\t".$lang_convert['Database charset'].' '.sprintf($lang_convert['Default value'], $db_config_default['charset'])."\n";
 	exit(1);
 }
 
@@ -52,13 +52,13 @@ $forum_config = array(
 );
 
 $old_db_config = array(
-	'type'		=> isset($options['t']) ? $options['t'] : (isset($options['type']) ? $options['type'] : null),
-	'host'		=> isset($options['s']) ? $options['s'] : (isset($options['host']) ? $options['host'] : null),
-	'name'		=> isset($options['n']) ? $options['n'] : (isset($options['name']) ? $options['name'] : null),
-	'username'	=> isset($options['u']) ? $options['u'] : (isset($options['user']) ? $options['user'] : null),
-	'password'	=> isset($options['p']) ? $options['p'] : (isset($options['pass']) ? $options['pass'] : ''),
-	'prefix'	=> isset($options['r']) ? $options['r'] : (isset($options['prefix']) ? $options['prefix'] : ''),
-	'charset'	=> isset($options['c']) ? $options['c'] : (isset($options['charset']) ? $options['charset'] : 'UTF-8'),
+	'type'		=> isset($options['t']) ? $options['t'] : (isset($options['type']) ? $options['type'] : $db_config_default['type']),
+	'host'		=> isset($options['s']) ? $options['s'] : (isset($options['host']) ? $options['host'] : $db_config_default['host']),
+	'name'		=> isset($options['n']) ? $options['n'] : (isset($options['name']) ? $options['name'] : $db_config_default['name']),
+	'username'	=> isset($options['u']) ? $options['u'] : (isset($options['user']) ? $options['user'] : $db_config_default['username']),
+	'password'	=> isset($options['p']) ? $options['p'] : (isset($options['pass']) ? $options['pass'] : $db_config_default['password']),
+	'prefix'	=> isset($options['r']) ? $options['r'] : (isset($options['prefix']) ? $options['prefix'] : $db_config_default['prefix']),
+	'charset'	=> isset($options['c']) ? $options['c'] : (isset($options['charset']) ? $options['charset'] : $db_config_default['charset']),
 );
 
 $forum_config = array_map('trim', $forum_config);
@@ -81,11 +81,11 @@ if (!array_key_exists($forum_config['type'], $forums))
 	else if (($key = array_search(strtolower($forum_config['type']), array_map('strtolower', $keys))) !== false)
 		$forum_config['type'] = $keys[$key];
 	else
-		conv_error('You entered an invalid forum software. Possible values are:'."\n".implode("\n", array_keys($forums)));
+		conv_error($lang_convert['Invalid forum software'].' '.sprintf($lang_convert['Possible values'], "\n".implode("\n", array_keys($forums))));
 }
 
 if (!in_array($old_db_config['type'], $engines))
-	conv_error('Database type for old forum is invalid.'.(defined('CMDLINE') ? ' Possible values are:'."\n".implode("\n", $engines) : ''));
+	conv_error($lang_convert['Invalid database type'].' '.sprintf($lang_convert['Possible values'], "\n".implode("\n", $engines)));
 
 
 // Get database configuration from config.php
@@ -100,12 +100,12 @@ $db_config = array(
 
 // Check we aren't trying to convert to the same database
 if ($old_db_config == $db_config)
-	conv_error('Old and new tables must be different!');
+	conv_error('Same database tables');
 
 if (defined('CONV_LOG') && file_exists(PUN_ROOT.'cache/converter.log'))
 	@unlink(PUN_ROOT.'cache/converter.log');
 
-conv_log('Running web based converter for: '.$forum_config['type'].' ('.gmdate('Y-m-d').')');
+conv_log('Running command line based converter for: '.$forum_config['type'].' ('.gmdate('Y-m-d').')');
 conv_log('PHP version: '.PHP_VERSION.', OS: '.PHP_OS);
 
 // Create a wrapper for fluxbb (has easy functions for adding users etc.)
@@ -157,7 +157,7 @@ if (!empty($_SESSION['converter']['dupe_users']))
 if (!empty($alerts))
 {
 	conv_message("\n".'---------------------------'."\n");
-	conv_message('NOTES:'."\n".implode("\n", $alerts));
+	conv_message($lang_convert['Notes'].':'."\n".implode("\n", $alerts));
 }
 
 conv_message();

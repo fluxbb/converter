@@ -2,10 +2,11 @@
 
 // Language definitions used in install.php
 
-$lang_convert = array(
+return array(
 'Bad request'					=>	'Bad request. The link you followed is incorrect or outdated.',
 'You are running error'			=>	'You are running %1$s version %2$s. FluxBB converter %3$s requires at least %1$s %4$s to run properly. You must upgrade your %1$s installation before you can continue.',
 'Bad request'					=>	'Bad request. The link you followed is incorrect or outdated.',
+'Not installed'					=>	'FluxBB was not installed.',
 
 'Choose convert language'		=>	'Choose the convert script language',
 'Choose convert language info'	=>	'The language used for this convert script.',
@@ -40,6 +41,10 @@ $lang_convert = array(
 'Converting header'				=>	'Converting',
 'Conversion completed in'		=>	'Conversion completed in %s',
 
+'Invalid forum software'		=>	'You entered an invalid forum software',
+'Invalid database type'			=>	'Database type for old forum is invalid.',
+'Same database tables'			=>	'Old and new tables must be different!',
+
 // Processing message (with number of arguments)
 'Processing'					=>	'Processing %s',
 'Processing num'				=>	'Processing %2$d %1$s',
@@ -65,4 +70,12 @@ $lang_convert = array(
 'Database converted'			=>	'Your forum has been successfully converted! You may now %s.',
 'go to forum index'				=>	'go to the forum index',
 
+// Command line based
+'Possible values'				=>	'Possible values are: %s',
+'Default value'					=>	'(default: %s)',
+'Usage'							=>	'Usage',
+'Notes'							=>	'NOTES',
+'Error'							=>	'ERROR: %s',
+'Error file line'				=>	'in %s, line %s',
+'Database reported'				=>	'Database reported: %s',
 );

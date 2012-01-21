@@ -17,9 +17,11 @@ function conv_message()
 
 	$args = func_get_args();
 
+	// Do not show proccessing rows range
 	if (count($args) && $args[0] == 'Processing range')
 		$args[0] = 'Processing num';
 
+	// Translate message
 	if (count($args) && isset($lang_convert[$args[0]]))
 		$args[0] = $lang_convert[$args[0]];
 
@@ -35,16 +37,21 @@ function conv_message()
  */
 function conv_error($message, $file = null, $line = null, $dberror = false)
 {
-	global $fluxbb, $forum;
+	global $fluxbb, $forum, $lang_convert;
 
 	if (isset($fluxbb))
 		$fluxbb->close_database();
 	if (isset($forum))
 		$forum->close_database();
 
-	echo 'ERROR: '.$message.(defined('PUN_DEBUG') && isset($file) ? ' in '.$file.', '.$line : '')."\n";
+	conv_log('Error: '.$message.' in '.$line.', '.$line.(is_array($dberror) ? "\n".implode(', ', $dberror) : ''), false, true);
+
+	if (isset($lang_convert[$message]))
+		$message = $lang_convert[$message];
+
+	echo sprintf($lang_convert['Error'], $message).(defined('PUN_DEBUG') && isset($file) ? sprintf($lang_convert['Error file line'], $file, $line) : '')."\n";
 	if (defined('PUN_DEBUG') && $dberror !== false)
-		echo 'Database reported: '.$dberror['error_msg']."\n";
+		echo sprintf($lang_convert['Database reported'], $dberror['error_msg'])."\n";
 	exit(0);
 }
 
