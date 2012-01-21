@@ -9,7 +9,7 @@
  */
 
 define('SCRIPT_ROOT', dirname(__FILE__).'/');
-require SCRIPT_ROOT.'include/functions_cmd.php';
+require SCRIPT_ROOT.'include/functions_cli.php';
 require SCRIPT_ROOT.'include/common.php';
 
 // Output log messages to file
@@ -157,7 +157,7 @@ if (!empty($_SESSION['converter']['dupe_users']))
 if (!empty($alerts))
 {
 	conv_message("\n".'---------------------------'."\n");
-	conv_message('NOTE: '.implode("\n\n".'NOTE: ', $alerts));
+	conv_message('NOTES:'."\n".implode("\n", $alerts));
 }
 
 conv_message();
