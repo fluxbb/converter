@@ -18,9 +18,6 @@ define('SCRIPT_ROOT', dirname(__FILE__).'/');
 require SCRIPT_ROOT.'include/functions_web.php';
 require SCRIPT_ROOT.'include/common.php';
 
-define('PUN_DEBUG', 1);
-define('PUN_SHOW_QUERIES', 1);
-
 // Output log messages to file
 define('CONV_LOG', PUN_ROOT.'cache/converter_'.session_id().'.log');
 
@@ -74,8 +71,8 @@ if (isset($_POST['form_sent']))
 
 	$_SESSION['converter'] = array('forum_config' => $forum_config, 'old_db_config' => $old_db_config, 'lang' => $convert_lang);
 
-	if (defined('CONV_LOG') && file_exists(PUN_ROOT.'cache/converter.log'))
-		@unlink(PUN_ROOT.'cache/converter.log');
+	if (defined('CONV_LOG') && file_exists(CONV_LOG))
+		@unlink(CONV_LOG);
 
 	conv_log('Running web based converter for: '.$forum_config['type'].' ('.gmdate('Y-m-d').')');
 	conv_log('PHP version: '.PHP_VERSION.', OS: '.PHP_OS);

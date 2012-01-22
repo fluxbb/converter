@@ -102,8 +102,8 @@ $db_config = array(
 if ($old_db_config == $db_config)
 	conv_error('Same database tables');
 
-if (defined('CONV_LOG') && file_exists(PUN_ROOT.'cache/converter.log'))
-	@unlink(PUN_ROOT.'cache/converter.log');
+if (defined('CONV_LOG') && file_exists(CONV_LOG))
+	@unlink(CONV_LOG);
 
 conv_log('Running command line based converter for: '.$forum_config['type'].' ('.gmdate('Y-m-d').')');
 conv_log('PHP version: '.PHP_VERSION.', OS: '.PHP_OS);
