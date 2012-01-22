@@ -340,7 +340,7 @@ class PhpBB_3_0_9 extends Forum
 	function convert_topic_subscriptions()
 	{
 		$result = $this->db->query_build(array(
-			'SELECT'	=> 'user_id, topic_id',
+			'SELECT'	=> 'DISTINCT user_id, topic_id',
 			'FROM'		=> 'topics_watch',
 		)) or conv_error('Unable to fetch topic subscriptions', __FILE__, __LINE__, $this->db->error());
 
@@ -354,7 +354,7 @@ class PhpBB_3_0_9 extends Forum
 	function convert_forum_subscriptions()
 	{
 		$result = $this->db->query_build(array(
-			'SELECT'	=> 'user_id, forum_id',
+			'SELECT'	=> 'DISTINCT user_id, forum_id',
 			'FROM'		=> 'forums_watch',
 		)) or conv_error('Unable to fetch forum subscriptions', __FILE__, __LINE__, $this->db->error());
 
