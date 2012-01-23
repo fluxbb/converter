@@ -3,7 +3,7 @@
 /**
  * Web based converter script
  *
- * @copyright (C) 2011 FluxBB (http://fluxbb.org)
+ * @copyright (C) 2012 FluxBB (http://fluxbb.org)
  * @license LGPL - GNU Lesser General Public License (http://www.gnu.org/licenses/lgpl.html)
  * @package FluxBB
  */
