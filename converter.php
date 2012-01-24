@@ -8,9 +8,9 @@
  * @package FluxBB
  */
 
-define('SCRIPT_ROOT', dirname(__FILE__).'/');
-require SCRIPT_ROOT.'include/functions_cli.php';
-require SCRIPT_ROOT.'include/common.php';
+define('CONV_ROOT', dirname(__FILE__).'/');
+require CONV_ROOT.'include/functions_cli.php';
+require CONV_ROOT.'include/common.php';
 
 // Output log messages to file
 define('CONV_LOG', PUN_ROOT.'cache/converter_'.substr(sha1(time()), 0, 7).'.log');
@@ -111,17 +111,17 @@ conv_log('Running command line based converter for: '.$forum_config['type'].' ('
 conv_log('PHP version: '.PHP_VERSION.', OS: '.PHP_OS);
 
 // Create a wrapper for fluxbb (has easy functions for adding users etc.)
-require SCRIPT_ROOT.'include/fluxbb.class.php';
+require CONV_ROOT.'include/fluxbb.class.php';
 $fluxbb = new FluxBB($pun_config);
 $db = $fluxbb->connect_database($db_config);
 
 // Load the migration script
-require SCRIPT_ROOT.'include/forum.class.php';
+require CONV_ROOT.'include/forum.class.php';
 $forum = load_forum($forum_config, $fluxbb);
 $forum->connect_database($old_db_config);
 
 // Load converter script
-require SCRIPT_ROOT.'include/converter.class.php';
+require CONV_ROOT.'include/converter.class.php';
 $converter = new Converter($fluxbb, $forum);
 
 // Start the converter

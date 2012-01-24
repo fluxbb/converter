@@ -54,10 +54,10 @@ function connect_database($db_config)
 
 	if (!class_exists($class))
 	{
-		if (!file_exists(SCRIPT_ROOT.'include/dblayer/'.$db_config['type'].'.php'))
+		if (!file_exists(CONV_ROOT.'include/dblayer/'.$db_config['type'].'.php'))
 			error('Unsupported database type: '.$db_config['type'], __FILE__, __LINE__);
 
-		require SCRIPT_ROOT.'include/dblayer/'.$db_config['type'].'.php';
+		require CONV_ROOT.'include/dblayer/'.$db_config['type'].'.php';
 	}
 
 	$db = new $class($db_config['host'], $db_config['username'], $db_config['password'], $db_config['name'], $db_config['prefix'], false);
@@ -76,10 +76,10 @@ function load_forum($forum_config, $fluxbb)
 {
 	if (!class_exists($forum_config['type']))
 	{
-		if (!file_exists(SCRIPT_ROOT.'forums/'.$forum_config['type'].'.php'))
+		if (!file_exists(CONV_ROOT.'forums/'.$forum_config['type'].'.php'))
 			error('Unsupported forum type: '.$forum_config['type'], __FILE__, __LINE__);
 
-		require SCRIPT_ROOT.'forums/'.$forum_config['type'].'.php';
+		require CONV_ROOT.'forums/'.$forum_config['type'].'.php';
 	}
 
 	$class = str_replace('.', '_', $forum_config['type']);
@@ -93,7 +93,7 @@ function forum_list_forums()
 {
 	$forums = array();
 
-	$d = dir(SCRIPT_ROOT.'forums');
+	$d = dir(CONV_ROOT.'forums');
 	while ($entry = $d->read())
 	{
 		if (substr($entry, -4) == '.php')
@@ -121,7 +121,7 @@ function forum_list_engines()
 {
 	$engines = array();
 
-	$d = dir(SCRIPT_ROOT.'include/dblayer');
+	$d = dir(CONV_ROOT.'include/dblayer');
 	while ($entry = $d->read())
 	{
 		if (substr($entry, -4) == '.php')
@@ -139,10 +139,10 @@ function converter_list_langs()
 {
 	$langs = array();
 
-	$d = dir(SCRIPT_ROOT.'lang');
+	$d = dir(CONV_ROOT.'lang');
 	while ($entry = $d->read())
 	{
-		if ($entry != '.' && $entry != '..' && is_dir(SCRIPT_ROOT.'lang/'.$entry) && file_exists(SCRIPT_ROOT.'lang/'.$entry.'/convert.php'))
+		if ($entry != '.' && $entry != '..' && is_dir(CONV_ROOT.'lang/'.$entry) && file_exists(CONV_ROOT.'lang/'.$entry.'/convert.php'))
 			$langs[] = $entry;
 	}
 	asort($langs);

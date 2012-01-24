@@ -12,11 +12,11 @@ define('MIN_PGSQL_VERSION', '7.0.0');
 define('PUN_SEARCH_MIN_WORD', 3);
 define('PUN_SEARCH_MAX_WORD', 20);
 
-define('PUN_ROOT', SCRIPT_ROOT.'/../');
+define('PUN_ROOT', CONV_ROOT.'/../');
 define('CONV_VERSION', '1.0-dev');
 
 // Include the common functions
-require SCRIPT_ROOT.'include/functions.php';
+require CONV_ROOT.'include/functions.php';
 
 // Attempt to load the configuration file config.php
 if (file_exists(PUN_ROOT.'config.php'))
@@ -100,7 +100,7 @@ if (!in_array($convert_lang, $languages))
 	$convert_lang = 'English';
 
 // Load converter language file
-$lang_convert = require SCRIPT_ROOT.'lang/'.$convert_lang.'/convert.php';
+$lang_convert = require CONV_ROOT.'lang/'.$convert_lang.'/convert.php';
 
 // Make sure we are running at least MIN_PHP_VERSION
 if (!function_exists('version_compare') || version_compare(PHP_VERSION, MIN_PHP_VERSION, '<'))

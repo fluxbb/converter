@@ -14,9 +14,9 @@ ob_start();
 // Start session
 session_start();
 
-define('SCRIPT_ROOT', dirname(__FILE__).'/');
-require SCRIPT_ROOT.'include/functions_web.php';
-require SCRIPT_ROOT.'include/common.php';
+define('CONV_ROOT', dirname(__FILE__).'/');
+require CONV_ROOT.'include/functions_web.php';
+require CONV_ROOT.'include/common.php';
 
 // Output log messages to file
 define('CONV_LOG', PUN_ROOT.'cache/converter_'.session_id().'.log');
@@ -114,17 +114,17 @@ if (isset($_POST['form_sent']) || isset($_GET['step']))
 		conv_error('Same database tables');
 
 	// Create a wrapper for fluxbb (has easy functions for adding users etc.)
-	require SCRIPT_ROOT.'include/fluxbb.class.php';
+	require CONV_ROOT.'include/fluxbb.class.php';
 	$fluxbb = new FluxBB($pun_config);
 	$db = $fluxbb->connect_database($db_config);
 
 	// Load the migration script
-	require SCRIPT_ROOT.'include/forum.class.php';
+	require CONV_ROOT.'include/forum.class.php';
 	$forum = load_forum($forum_config, $fluxbb);
 	$forum->connect_database($old_db_config);
 
 	// Load converter script
-	require SCRIPT_ROOT.'include/converter.class.php';
+	require CONV_ROOT.'include/converter.class.php';
 	$converter = new Converter($fluxbb, $forum);
 
 	if (!isset($step) || $step != 'results')
