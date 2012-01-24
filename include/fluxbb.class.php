@@ -150,4 +150,57 @@ class FluxBB
 
 		$_SESSION['converter']['dupe_users'][$cur_user['id']]['old_username'] = $old_username;
 	}
+
+	/*
+	 * The following functions comes from the AP_Forum_cleanup plugin for FluxBB
+	*/
+	function forum_posts_sync()
+	{
+	    // synchronise forum posts
+	    $this->db->query('CREATE TEMPORARY TABLE IF NOT EXISTS '.$this->db->prefix.'forum_posts SELECT t.forum_id, count(*) as posts FROM '.$this->db->prefix.'posts as p LEFT JOIN '.$this->db->prefix.'topics as t on p.topic_id=t.id GROUP BY t.forum_id') or conv_error('Creating posts table failed', __FILE__, __LINE__, $this->db->error());
+	    $this->db->query('UPDATE '.$this->db->prefix.'forums, '.$this->db->prefix.'forum_posts SET num_posts=posts WHERE id=forum_id') or conv_error('Could not update post counts', __FILE__, __LINE__, $this->db->error());
+	    $this->db->query('CREATE TEMPORARY TABLE IF NOT EXISTS '.$this->db->prefix.'forum_topics SELECT forum_id, count(*) as topics FROM '.$this->db->prefix.'topics GROUP BY forum_id') or conv_error('Creating topics table failed', __FILE__, __LINE__, $this->db->error());
+	    $this->db->query('UPDATE '.$this->db->prefix.'forums, '.$this->db->prefix.'forum_topics SET num_topics=topics WHERE id=forum_id') or conv_error('Could not update topic counts', __FILE__, __LINE__, $this->db->error());
+	}
+
+	function topic_post_sync()
+	{
+	    // synchronise topic posts
+	    $this->db->query('CREATE TEMPORARY TABLE IF NOT EXISTS '.$this->db->prefix.'topic_posts SELECT topic_id, count(*)-1 as replies FROM '.$this->db->prefix.'posts GROUP BY topic_id') or conv_error('Creating topics table failed', __FILE__, __LINE__, $this->db->error());
+	    $this->db->query('UPDATE '.$this->db->prefix.'topics, '.$this->db->prefix.'topic_posts SET num_replies=replies WHERE id=topic_id') or conv_error('Could not update topic counts', __FILE__, __LINE__, $this->db->error());
+	}
+
+	function user_post_sync()
+	{
+	    // synchronise user posts
+	    $this->db->query('CREATE TEMPORARY TABLE IF NOT EXISTS '.$this->db->prefix.'user_posts SELECT poster_id, count(*)as posts FROM '.$this->db->prefix.'posts GROUP BY poster_id') or conv_error('Creating posts table failed', __FILE__, __LINE__, $this->db->error());
+	    $this->db->query('UPDATE '.$this->db->prefix.'users, '.$this->db->prefix.'user_posts SET num_posts=posts WHERE id=poster_id') or conv_error('Could not update post counts', __FILE__, __LINE__, $this->db->error());
+	}
+
+	function forum_last_post_sync()
+	{
+	    // synchronise forum last posts
+	    $this->db->query('CREATE TEMPORARY TABLE IF NOT EXISTS '.$this->db->prefix.'forum_last SELECT p.posted AS n_last_post, p.id AS n_last_post_id, p.poster AS n_last_poster, t.forum_id FROM '.$this->db->prefix.'posts AS p LEFT JOIN '.$this->db->prefix.'topics AS t ON p.topic_id=t.id ORDER BY p.posted DESC') or conv_error('Creating last posts table failed', __FILE__, __LINE__, $this->db->error());
+	    $this->db->query('CREATE TEMPORARY TABLE IF NOT EXISTS '.$this->db->prefix.'forum_lastb SELECT * FROM '.$this->db->prefix.'forum_last WHERE forum_id > 0 GROUP BY forum_id') or conv_error('Creating last posts tableb failed', __FILE__, __LINE__, $this->db->error());
+	    $this->db->query('UPDATE '.$this->db->prefix.'forums, '.$this->db->prefix.'forum_lastb SET last_post_id=n_last_post_id, last_post=n_last_post, last_poster=n_last_poster WHERE id=forum_id') or conv_error('Could not update last post', __FILE__, __LINE__, $this->db->error());
+	}
+
+	function topic_last_post_sync()
+	{
+	    // synchronise topic last posts
+	    $this->db->query('CREATE TEMPORARY TABLE IF NOT EXISTS '.$this->db->prefix.'topic_last SELECT posted AS n_last_post, id AS n_last_post_id, poster AS n_last_poster, topic_id FROM '.$this->db->prefix.'posts ORDER BY posted DESC') or conv_error('Creating last posts table failed', __FILE__, __LINE__, $this->db->error());
+	    $this->db->query('CREATE TEMPORARY TABLE IF NOT EXISTS '.$this->db->prefix.'topic_lastb SELECT * FROM '.$this->db->prefix.'topic_last WHERE topic_id > 0 GROUP BY topic_id') or conv_error('Creating last posts tableb failed', __FILE__, __LINE__, $this->db->error());
+	    $this->db->query('UPDATE '.$this->db->prefix.'topics, '.$this->db->prefix.'topic_lastb SET last_post_id=n_last_post_id, last_post=n_last_post, last_poster=n_last_poster WHERE id=topic_id') or conv_error('Could not update last post', __FILE__, __LINE__, $this->db->error());
+	}
+
+	function delete_orphans()
+	{
+	    // Clear orphans
+	    $this->db->query('CREATE TEMPORARY TABLE IF NOT EXISTS '.$this->db->prefix.'orph_topic SELECT t.id as o_id FROM '.$this->db->prefix.'topics AS t LEFT JOIN '.$this->db->prefix.'posts AS p ON p.topic_id = t.id WHERE p.id IS NULL') or conv_error('Creating orphaned topics table failed', __FILE__, __LINE__, $this->db->error());
+	    $this->db->query('DELETE '.$this->db->prefix.'topics FROM '.$this->db->prefix.'topics, '.$this->db->prefix.'orph_topic WHERE o_id=id') or conv_error('Could not delete topics', __FILE__, __LINE__, $this->db->error());
+	    $this->db->query('CREATE TEMPORARY TABLE IF NOT EXISTS '.$this->db->prefix.'orph_posts SELECT p.id as o_id FROM '.$this->db->prefix.'posts p LEFT JOIN '.$this->db->prefix.'topics t ON p.topic_id=t.id WHERE t.id IS NULL') or conv_error('Creating orphaned posts table failed', __FILE__, __LINE__, $this->db->error());
+	    $this->db->query('DELETE '.$this->db->prefix.'posts FROM '.$this->db->prefix.'posts, '.$this->db->prefix.'orph_posts WHERE o_id=id') or conv_error('Could not delete posts', __FILE__, __LINE__, $this->db->error());
+	    $this->db->query('CREATE TEMPORARY TABLE IF NOT EXISTS '.$this->db->prefix.'orph_topics SELECT t.id as o_id FROM '.$this->db->prefix.'topics as t LEFT JOIN '.$this->db->prefix.'forums as f ON t.forum_id=f.id WHERE f.id is NULL') or conv_error('Creating orphaned topics table failed', __FILE__, __LINE__, $this->db->error());
+	    $this->db->query('DELETE '.$this->db->prefix.'topics FROM '.$this->db->prefix.'topics, '.$this->db->prefix.'orph_topics WHERE o_id=id') or conv_error('Could not delete topics', __FILE__, __LINE__, $this->db->error());
+	}
 }

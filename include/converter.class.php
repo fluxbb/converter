@@ -162,6 +162,13 @@ class Converter
 			conv_log('Converting dupe users: done');
 		}
 
+		$this->fluxbb->forum_posts_sync();
+		$this->fluxbb->topic_post_sync();
+		$this->fluxbb->user_post_sync();
+		$this->fluxbb->forum_last_post_sync();
+		$this->fluxbb->topic_last_post_sync();
+		$this->fluxbb->delete_orphans();
+
 		conv_log('Generate cache');
 		$this->generate_cache();
 		conv_log('Generate cache: done');

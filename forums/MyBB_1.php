@@ -225,8 +225,8 @@ class MyBB_1 extends Forum
 				)) or conv_error('Unable to fetch forum last post', __FILE__, __LINE__, $this->db->error());
 
 				$cur_forum['last_post_id'] = $this->db->result($result_last_post_id);
-				unset($cur_forum['lastposttid']);
 			}
+			unset($cur_forum['lastposttid']);
 
 			$this->fluxbb->add_row('forums', $cur_forum);
 		}
@@ -351,13 +351,7 @@ class MyBB_1 extends Forum
 	function convert_topics($start_at)
 	{
 		$result = $this->db->query_build(array(
-			'SELECT'	=> 't.tid AS id, t.username AS poster, t.subject, t.dateline AS posted, t.views AS num_views, t.replies AS num_replies, t.firstpost AS first_post_id, t.lastpost AS last_post, MAX(p.pid) AS last_post_id, t.lastposter AS last_poster, t.sticky, t.closed, t.fid AS forum_id',
-			'JOINS'        => array(
-				array(
-					'LEFT JOIN'	=> 'posts AS p',
-					'ON'		=> 'p.tid=t.tid'
-				),
-			),
+			'SELECT'	=> 't.tid AS id, t.username AS poster, t.subject, t.dateline AS posted, t.views AS num_views, t.replies AS num_replies, t.firstpost AS first_post_id, t.lastpost AS last_post, t.lastposter AS last_poster, t.sticky, t.closed, t.fid AS forum_id',
 			'FROM'		=> 'threads AS t',
 			'WHERE'		=> 't.tid > '.$start_at,
 			'ORDER BY'	=> 't.tid ASC',
@@ -372,6 +366,16 @@ class MyBB_1 extends Forum
 		while ($cur_topic = $this->db->fetch_assoc($result))
 		{
 			$start_at = $cur_topic['id'];
+
+			$result_last_post = $this->db->query_build(array(
+				'SELECT'	=> 'p.pid',
+				'FROM'		=> 'posts AS p',
+				'WHERE'		=> 'p.tid = '.$cur_topic['id'],
+				'ORDER BY'	=> 'p.pid DESC',
+				'LIMIT'		=> '1',
+			)) or conv_error('Unable to fetch last post for topic', __FILE__, __LINE__, $this->db->error());
+			if ($this->db->num_rows($result_last_post))
+				$cur_topic['last_post_id'] = $this->db->result($result_last_post);
 
 			$this->fluxbb->add_row('topics', $cur_topic);
 		}
