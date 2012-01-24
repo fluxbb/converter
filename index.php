@@ -4,7 +4,7 @@
  * Web based converter script
  *
  * @copyright (C) 2012 FluxBB (http://fluxbb.org)
- * @license LGPL - GNU Lesser General Public License (http://www.gnu.org/licenses/lgpl.html)
+ * @license GPL - GNU General Public License (http://www.gnu.org/licenses/gpl.html)
  * @package FluxBB
  */
 
