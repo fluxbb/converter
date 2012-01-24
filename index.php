@@ -333,11 +333,12 @@ function process_form(the_form)
 	<h2><span><?php echo $lang_convert['Convert'] ?></span></h2>
 	<div class="box">
 		<form id="install" method="post" action="index.php" onsubmit="this.start.disabled=true;if(process_form(this)){return true;}else{this.start.disabled=false;return false;}">
-		<div><input type="hidden" name="module" value="Convert" /><input type="hidden" name="form_sent" value="1" /><input type="hidden" name="convert_lang" value="<?php echo pun_htmlspecialchars($convert_lang) ?>" /></div>
+			<input type="hidden" name="form_sent" value="1" />
+			<input type="hidden" name="convert_lang" value="<?php echo pun_htmlspecialchars($convert_lang) ?>" />
 			<div class="inform">
 				<div class="forminfo">
-					<h3><?php echo $lang_convert['Convert from'] ?></h3>
-					<p><?php echo $lang_convert['Convert info 1'] ?></p>
+					<h3><?php echo $lang_convert['Note'] ?></h3>
+					<p><?php echo $lang_convert['Note info'] ?></p>
 				</div>
 				<fieldset>
 				<legend><?php echo $lang_convert['Select software'] ?></legend>

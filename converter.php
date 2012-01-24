@@ -43,6 +43,8 @@ if (empty($options) || isset($options['h']) || isset($options['help']))
 	echo "\t".'-p --pass'."\t".$lang_convert['Database password']."\n";
 	echo "\t".'-r --prefix'."\t".$lang_convert['Table prefix']."\n";
 	echo "\t".'-c --charset'."\t".$lang_convert['Database charset'].' '.sprintf($lang_convert['Default value'], $db_config_default['charset'])."\n";
+	echo "\n".$lang_convert['Note']."\n";
+	echo $lang_convert['Note info']."\n";
 	exit(1);
 }
 

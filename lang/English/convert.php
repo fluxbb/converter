@@ -15,8 +15,9 @@ return array(
 
 'FluxBB converter'				=>	'FluxBB converter %s',
 'Convert message'				=>	'Welcome to the FluxBB Forum Converter! You can use this simple script to convert your forum to a FluxBB forum with just one click - and take all the data with you!',
+'Note'							=>	'Note',
+'Note info'			=>	'The converter is not used for upgrading forums. In addition, please make sure all modifications or plugins that may interefere with the conversion process are deactivated on your old forum, before you run the converter. It is also strongly recommended to make a backup of both forums before you continue.',
 'Convert'						=>	'Convert',
-'Convert from'					=>	'Convert from',
 'Convert info 1'				=>	'Convert from other forum software',
 'Select software'				=>	'Select forum software',
 'Convert info 2'				=>	'Choose the forum software you want to convert from. If you cannot find the exact version, the conversion might still be possible with just a minor version number change.',
