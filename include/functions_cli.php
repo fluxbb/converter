@@ -49,7 +49,7 @@ function conv_error($message, $file = null, $line = null, $dberror = false)
 	if (isset($lang_convert[$message]))
 		$message = $lang_convert[$message];
 
-	echo sprintf($lang_convert['Error'], $message).(defined('PUN_DEBUG') && isset($file) ? sprintf($lang_convert['Error file line'], $file, $line) : '')."\n";
+	echo sprintf($lang_convert['Error'], $message).(defined('PUN_DEBUG') && isset($file) ? ' '.sprintf($lang_convert['Error file line'], $file, $line) : '')."\n";
 	if (defined('PUN_DEBUG') && $dberror !== false)
 		echo sprintf($lang_convert['Database reported'], $dberror['error_msg'])."\n";
 	exit(0);
@@ -61,5 +61,10 @@ function conv_error($message, $file = null, $line = null, $dberror = false)
  */
 function conv_redirect($step, $start_at = 0, $time = 0)
 {
-	return false;
+	global $converter;
+
+	conv_message();
+	conv_log('-----------------'."\n");
+
+	$converter->convert($step, $start_at);
 }

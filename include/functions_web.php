@@ -106,7 +106,10 @@ function conv_redirect($step, $start_at = 0, $time = 0)
 </html>
 <?php
 
-	conv_log('Redirect', false, true);
+	conv_log('Redirect');
+	conv_log();
+	conv_log('-----------------');
+	conv_log('', false, true);
 	exit;
 
 }

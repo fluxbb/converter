@@ -98,6 +98,15 @@ class Merge_FluxBB extends Forum
 
 	function convert_categories()
 	{
+		$result = $this->fluxbb->db->query_build(array(
+			'SELECT'	=> 'disp_position',
+			'FROM'		=> 'categories',
+			'ORDER BY'	=> 'disp_position DESC',
+			'LIMIT'		=> '1',
+		)) or conv_error('Unable to fetch last disp position', __FILE__, __LINE__, $this->fluxbb->db->error());
+
+		$last_disp_postion = $this->fluxbb->db->num_rows($result) ? $this->fluxbb->db->result($result) : 0;
+
 		$result = $this->db->query_build(array(
 			'SELECT'	=> 'id, cat_name, disp_position',
 			'FROM'		=> 'categories',
@@ -107,6 +116,7 @@ class Merge_FluxBB extends Forum
 		while ($cur_cat = $this->db->fetch_assoc($result))
 		{
 			$cur_cat['id'] += $this->last_id['categories'];
+			$cur_cat['disp_position'] += $last_disp_postion;
 			$this->fluxbb->add_row('categories', $cur_cat);
 		}
 	}
@@ -346,6 +356,13 @@ class Merge_FluxBB extends Forum
 		while ($cur_user = $this->db->fetch_assoc($result))
 		{
 			$start_at = $cur_user['id'];
+
+			$uid = $this->fetchUid($cur_user['username']);
+			if ($uid > 0)
+				$cur_user['id'] = $uid;
+			else
+				$cur_user['id'] += $this->last_id['users'];
+
 			if ($cur_user['group_id'] > 4)
 				$cur_user['group_id'] += $this->last_id['groups'];
 

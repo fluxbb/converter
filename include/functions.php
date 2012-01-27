@@ -185,9 +185,9 @@ function alert_dupe_users()
 }
 
 
-function conv_log($message, $first_time_only = false, $close = false)
+function conv_log($message = '', $first_time_only = false, $close = false)
 {
-	static $prev_time, $fh;
+	static $prev_time, $fh, $pun_start;
 
 	if (!defined('CONV_LOG'))
 		return false;
@@ -201,19 +201,17 @@ function conv_log($message, $first_time_only = false, $close = false)
 		error_reporting(E_ALL);
 	}
 
-	list($usec, $sec) = explode(' ', microtime());
-	fwrite($fh, date('H:i:s', $sec).substr($usec, 1, 5).' '.$message."\n");
+	fwrite($fh, $message."\n");
 
 	if ($close)
 		fclose($fh);
-	$prev_time = get_microtime();
 }
 
 function conv_error_handler($errno, $errstr, $errfile, $errline)
 {
 	ob_start();
 	debug_print_backtrace();
-	conv_log(ob_get_clean());
+	conv_log("\n".ob_get_clean());
 
 	/* Don't execute PHP internal error handler */
 	return true;

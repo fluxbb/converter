@@ -150,4 +150,137 @@ class FluxBB
 
 		$_SESSION['converter']['dupe_users'][$cur_user['id']]['old_username'] = $old_username;
 	}
+
+
+	function sync_db()
+	{
+		conv_log('Updating post count for each user');
+		$start = get_microtime();
+
+		// Update user post count
+		$result = $this->db->query_build(array(
+			'SELECT'	=> 'poster_id, COUNT(id) AS num_posts',
+			'FROM'		=> 'posts',
+			'GROUP BY'	=> 'poster_id',
+		)) or conv_error('Unable to fetch user posts', __FILE__, __LINE__, $this->db->error());
+
+		while ($cur_user = $this->db->fetch_assoc($result))
+		{
+			$this->db->query_build(array(
+				'UPDATE'	=> 'users',
+				'SET'		=> 'num_posts = '.$cur_user['num_posts'],
+				'WHERE'		=> 'id = '.$cur_user['poster_id'],
+			)) or conv_error('Unable to update user post count', __FILE__, __LINE__, $this->db->error());
+		}
+
+		conv_log('Done in '.round(get_microtime() - $start, 6)."\n");
+		conv_log('Updating post count for each topic');
+		$start = get_microtime();
+
+		// Update post count for each topic
+		$result = $this->db->query_build(array(
+			'SELECT'	=> 'p.topic_id, COUNT(p.id) AS num_posts',
+			'FROM'		=> 'posts AS p',
+			'GROUP BY'	=> 'p.topic_id',
+		)) or conv_error('Unable to fetch topic posts', __FILE__, __LINE__, $this->db->error());
+
+		while ($cur_topic = $this->db->fetch_assoc($result))
+		{
+			$this->db->query_build(array(
+				'UPDATE'	=> 'topics',
+				'SET'		=> 'num_replies = '.($cur_topic['num_posts'] - 1),
+				'WHERE'		=> 'id = '.$cur_topic['topic_id'],
+			)) or conv_error('Unable to update topic post count', __FILE__, __LINE__, $this->db->error());
+		}
+
+		conv_log('Done in '.round(get_microtime() - $start, 6)."\n");
+		conv_log('Updating last post for each topic');
+		$start = get_microtime();
+
+		// Update last post for each topic
+		$subquery = array(
+			'SELECT'	=> 'topic_id, MAX(posted) AS last_post',
+			'FROM'		=> 'posts',
+			'GROUP BY'	=> 'topic_id',
+		);
+
+		$result = $this->db->query_build(array(
+			'SELECT'	=> 'p.topic_id, p.id, p.posted, p.poster',
+			'JOINS'		=> array(
+				array(
+					'INNER JOIN'=> $this->db->prefix.'posts AS p',
+					'ON'		=> 'p.topic_id = t.topic_id AND p.posted = t.last_post',
+				)
+			),
+			'FROM'		=> '('.$this->db->query_build($subquery, true).') AS t',
+			'PARAMS'	=> array(
+				'NO_PREFIX'		=> true,
+			)
+		)) or conv_error('Unable to fetch topic last post', __FILE__, __LINE__, $this->db->error());
+
+		while ($cur_topic = $this->db->fetch_assoc($result))
+		{
+			$this->db->query_build(array(
+				'UPDATE'	=> 'topics',
+				'SET'		=> 'last_post = '.$cur_topic['posted'].', last_poster = \''.$this->db->escape($cur_topic['poster']).'\', last_post_id = '.$cur_topic['id'],
+				'WHERE'		=> 'id = '.$cur_topic['topic_id'],
+			)) or conv_error('Unable to update last post for topic', __FILE__, __LINE__, $this->db->error());
+		}
+
+		conv_log('Done in '.round(get_microtime() - $start, 6)."\n");
+		conv_log('Updating num topics and num posts for each forum');
+		$start = get_microtime();
+
+		// Update num_topics and num_posts for each forum
+		$result = $this->db->query_build(array(
+			'SELECT'	=> 'forum_id, COUNT(id) AS num_topics, SUM(num_replies) + COUNT(id) AS num_posts',
+			'FROM'		=> 'topics',
+			'GROUP BY'	=> 'forum_id',
+		)) or conv_error('Unable to fetch topics for forum', __FILE__, __LINE__, $this->db->error());
+
+		while ($cur_forum = $this->db->fetch_assoc($result))
+		{
+			$this->db->query_build(array(
+				'UPDATE'	=> 'forums',
+				'SET'		=> 'num_topics = '.$cur_forum['num_topics'].', num_posts = '.$cur_forum['num_posts'],
+				'WHERE'		=> 'id = '.$cur_forum['forum_id'],
+			)) or conv_error('Unable to update topic count for forum', __FILE__, __LINE__, $this->db->error());
+		}
+
+		conv_log('Done in '.round(get_microtime() - $start, 6)."\n");
+		conv_log('Updating last post for each forum');
+		$start = get_microtime();
+
+		// Update last post for each forum
+		$subquery = array(
+			'SELECT'	=> 'forum_id, MAX(last_post) AS last_post',
+			'FROM'		=> 'topics',
+			'GROUP BY'	=> 'forum_id',
+		);
+
+		$result = $this->db->query_build(array(
+			'SELECT'	=> 't.forum_id, t.last_post_id, t.last_post, t.last_poster',
+			'JOINS'		=> array(
+				array(
+					'INNER JOIN'=> $this->db->prefix.'topics AS t',
+					'ON'		=> 't.forum_id = f.forum_id AND f.last_post = t.last_post',
+				)
+			),
+			'FROM'		=> '('.$this->db->query_build($subquery, true).') AS f',
+			'PARAMS'	=> array(
+				'NO_PREFIX'		=> true,
+			)
+		)) or conv_error('Unable to fetch forum last post', __FILE__, __LINE__, $this->db->error());
+
+		while ($cur_forum = $this->db->fetch_assoc($result))
+		{
+			$this->db->query_build(array(
+				'UPDATE'	=> 'forums',
+				'SET'		=> 'last_post = '.$cur_forum['last_post'].', last_poster = \''.$this->db->escape($cur_forum['last_poster']).'\', last_post_id = '.$cur_forum['last_post_id'],
+				'WHERE'		=> 'id = '.$cur_forum['forum_id'],
+			)) or conv_error('Unable to update last post for forum', __FILE__, __LINE__, $this->db->error());
+		}
+
+		conv_log('Done in '.round(get_microtime() - $start, 6)."\n");
+	}
 }

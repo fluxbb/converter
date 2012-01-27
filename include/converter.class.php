@@ -30,6 +30,7 @@ class Converter
 		if (is_writable($this->fluxbb->avatars_dir))
 		{
 			conv_log('Cleaning FluxBB avatars directory');
+			$start = get_microtime();
 
 			$d = dir($this->fluxbb->avatars_dir);
 			$num_deleted = 0;
@@ -43,7 +44,7 @@ class Converter
 				}
 			}
 
-			conv_log($num_deleted.' avatars deleted');
+			conv_log($num_deleted.' avatars deleted in '.round(get_microtime() - $start, 6)."\n");
 		}
 	}
 
@@ -53,16 +54,13 @@ class Converter
 	 * @param mixed $step Table name
 	 * @param integer $start_at A row number from which we start processing table
 	 */
-	function convert($step = null, $start_at = 0, $redirect = false)
+	function convert($step = null, $start_at = 0)
 	{
-		if (!$redirect && isset($step))
-			conv_message();
-
 		// Start from beginning
 		if (!isset($step))
 		{
+			conv_log();
 			conv_message('Converting', 'start');
-			$start = get_microtime();
 			$_SESSION['fluxbb_converter']['start_time'] = get_microtime();
 
 			// Validate only first time we run converter (check whether database configuration is valid)
@@ -74,8 +72,7 @@ class Converter
 
 			$step = $this->forum->steps[0];
 
-			conv_message('Done in', round(get_microtime() - $start, 4));
-			return $this->redirect($step, 0, $redirect);
+			return conv_redirect($step);
 		}
 
 		$start = get_microtime();
@@ -84,43 +81,37 @@ class Converter
 		conv_message('Converting', $step);
 		if (is_callable(array($this->forum, 'convert_'.$step)))
 			$redirect_to = call_user_func(array($this->forum, 'convert_'.$step), $start_at);
+		else if (is_callable(array($this, $step)))
+			$redirect_to = call_user_func(array($this, $step));
 
-		conv_message('Done in', round(get_microtime() - $start, 4));
+		conv_message('Done in', round(get_microtime() - $start, 6));
 
 		// Process same step starting from the $start_at row
 		if ($redirect_to != false)
-			$this->redirect($step, $redirect_to, $redirect);
+			conv_redirect($step, $redirect_to);
 
-		$current_step = array_search($step, $this->forum->steps);
-
-		// Bassically should never happen
-		if ($current_step === false)
-			return false;
-
-		// No more work to do?
-		if (!isset($this->forum->steps[++$current_step]))
-		{
-			$this->finnish();
-			$_SESSION['fluxbb_converter']['time'] = get_microtime() - $_SESSION['fluxbb_converter']['start_time'];
-			$this->redirect('results', 0, $redirect);
-		}
+		// Are we done?
+		if ($step == 'finish')
+			conv_redirect('results');
 		else
 		{
-			// Redirect to the next step
-			$next_step = $this->forum->steps[$current_step];
-			$this->redirect($next_step, 0, $redirect);
-		}
-	}
+			$current_step = array_search($step, $this->forum->steps);
 
-	/**
-	 * Redirect to the next step (or when running from command line - do next step without redirecting)
-	 */
-	function redirect($step, $start_at, $redirect)
-	{
-		if ($redirect)
-			conv_redirect($step, $start_at);
-		else if ($step != 'results')
-	 		return $this->convert($step, $start_at, $redirect);
+			// Basically should never happen
+			if ($current_step === false)
+				return false;
+
+			// No more tables to process?
+			if (!isset($this->forum->steps[++$current_step]))
+				conv_redirect('finish');
+
+			else
+			{
+				// Redirect to the next step
+				$next_step = $this->forum->steps[$current_step];
+				conv_redirect($next_step);
+			}
+		}
 	}
 
 	/**
@@ -129,6 +120,8 @@ class Converter
 	function cleanup_database()
 	{
 		conv_log('Cleaning database');
+		$start = get_microtime();
+
 		$this->fluxbb->db->truncate_table('bans');
 		$this->fluxbb->db->truncate_table('categories');
 		$this->fluxbb->db->truncate_table('censoring');
@@ -147,25 +140,32 @@ class Converter
 //		$this->fluxbb->db->truncate_table('users');
 		$this->fluxbb->db->query('DELETE FROM '.$this->fluxbb->db->prefix.'users WHERE id > 1');
 		$this->fluxbb->db->query('DELETE FROM '.$this->fluxbb->db->prefix.'groups WHERE g_id > 4');
-		conv_log('Cleaning database: done');
+
+		conv_log('Done in '.round(get_microtime() - $start, 6)."\n");
 	}
 
-	function finnish()
+	function finish()
 	{
 		// Handle users dupe
 		if (!empty($_SESSION['converter']['dupe_users']))
 		{
 			conv_log('Converting dupe users');
+			$start = get_microtime();
 
 			foreach ($_SESSION['converter']['dupe_users'] as $cur_user)
 				$this->fluxbb->convert_users_dupe($cur_user);
 
-			conv_log('Converting dupe users: done');
+			conv_log('Done in '.round(get_microtime() - $start, 6)."\n");
 		}
 
+		$this->fluxbb->sync_db();
+
 		conv_log('Generate cache');
+		$start = get_microtime();
 		$this->generate_cache();
-		conv_log('Generate cache: done');
+		conv_log('Done in '.round(get_microtime() - $start, 6)."\n");
+
+		$_SESSION['fluxbb_converter']['time'] = get_microtime() - $_SESSION['fluxbb_converter']['start_time'];
 	}
 
 	/**

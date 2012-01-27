@@ -13,7 +13,7 @@ require CONV_ROOT.'include/functions_cli.php';
 require CONV_ROOT.'include/common.php';
 
 // Output log messages to file
-define('CONV_LOG', PUN_ROOT.'cache/converter_'.substr(sha1(time()), 0, 7).'.log');
+define('CONV_LOG', PUN_ROOT.'cache/converter_'.uniqid().'.log');
 
 // The number of items to process per page view (very hackish :P)
 define('PER_PAGE', pow(2, 32));
@@ -165,6 +165,6 @@ if (!empty($alerts))
 conv_message();
 conv_message($lang_convert['Conversion completed in'], round($_SESSION['fluxbb_converter']['time'], 4));
 
-conv_log('Done', false, true);
+conv_log('Conversion completed in '.$_SESSION['fluxbb_converter']['time'], false, true);
 
 exit(1);
