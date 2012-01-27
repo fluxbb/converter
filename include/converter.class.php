@@ -128,10 +128,6 @@ class Converter
 	 */
 	function cleanup_database()
 	{
-		// TODO: do not hardcode it here
-		if (get_class($this->forum) == 'merge')
-			return false;
-
 		conv_log('Cleaning database');
 		$this->fluxbb->db->truncate_table('bans');
 		$this->fluxbb->db->truncate_table('categories');
