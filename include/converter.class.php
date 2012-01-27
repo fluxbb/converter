@@ -68,8 +68,9 @@ class Converter
 			// Validate only first time we run converter (check whether database configuration is valid)
 			$this->validate();
 
-			// Drop the FluxBB database tables
-			$this->cleanup_database();
+			// Drop the FluxBB database tables (when there is no NO_DB_CLEANUP constant defined for forum)
+			if (!defined(get_class($this->forum).'::NO_DB_CLEANUP'))
+				$this->cleanup_database();
 
 			$step = $this->forum->steps[0];
 
@@ -127,6 +128,10 @@ class Converter
 	 */
 	function cleanup_database()
 	{
+		// TODO: do not hardcode it here
+		if (get_class($this->forum) == 'merge')
+			return false;
+
 		conv_log('Cleaning database');
 		$this->fluxbb->db->truncate_table('bans');
 		$this->fluxbb->db->truncate_table('categories');

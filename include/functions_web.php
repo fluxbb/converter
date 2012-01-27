@@ -36,6 +36,9 @@ function conv_error($message, $file = null, $line = null, $dberror = false)
 {
 	global $fluxbb, $forum, $lang_convert;
 
+	unset($_SESSION);
+	session_destroy();
+
 	if (isset($fluxbb))
 		$fluxbb->close_database();
 	if (isset($forum))

@@ -13,6 +13,7 @@ Supported forums
  - SMF 1.1
  - SMF 2
  - vBulletin 4.1
+ - Merge FluxBB - merge two fluxbb installations into one database. Categories, forums, topics and posts are added to the current database and the users are merged from the both installations.
 
 Notes
 -------------------
