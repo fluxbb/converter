@@ -12,7 +12,8 @@ define('MIN_PGSQL_VERSION', '7.0.0');
 define('PUN_SEARCH_MIN_WORD', 3);
 define('PUN_SEARCH_MAX_WORD', 20);
 
-define('PUN_ROOT', CONV_ROOT.'/../');
+if (!defined('PUN_ROOT'))
+	define('PUN_ROOT', CONV_ROOT.'/../');
 define('CONV_VERSION', '1.0-dev');
 
 // Include the common functions

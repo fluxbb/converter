@@ -1,0 +1,28 @@
+branches:
+  only:
+    - master
+
+language: php
+
+php:
+  - 5.3
+
+before_script:
+  - "mkdir fluxbb && cd fluxbb"
+  - "git clone --quiet git://github.com/fluxbb/fluxbb.git ."
+  - "git checkout fluxbb-1.4"
+  - "cd .. && mkdir sql-dumps && cd sql-dumps"
+  - "git clone --quiet git://github.com/daris/sql-dumps.git ."
+  - "mysql -e 'create database fluxbb__test;'"
+  - "mysql fluxbb__test < fluxbb-1.4.sql"
+  - "mysql -e 'create database phpbb__test;'"
+  - "mysql phpbb__test < phpbb3.sql"
+  - "cd .."
+  - "cp tests/config.php fluxbb/config.php"
+  - "php fluxbb/index.php" # Generate fluxbb cache
+#  - "psql -c 'create database fluxbb__test;' -U postgres"
+
+script: "cd tests && phpunit --bootstrap bootstrap.example.php ConverterTest.php"
+
+notifications:
+  email: false
