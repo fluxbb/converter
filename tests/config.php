@@ -1,7 +1,7 @@
 <?php
 
 $db_type = 'mysqli';
-$db_host = 'localhost';
+$db_host = '0.0.0.0';
 $db_name = 'fluxbb__test';
 $db_username = 'root';
 $db_password = '';

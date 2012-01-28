@@ -167,4 +167,4 @@ conv_message($lang_convert['Conversion completed in'], round($_SESSION['fluxbb_c
 
 conv_log('Conversion completed in '.$_SESSION['fluxbb_converter']['time'], false, true);
 
-exit(1);
+exit(0);

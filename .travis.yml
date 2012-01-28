@@ -19,7 +19,7 @@ before_script:
   - "mysql phpbb__test < phpbb3.sql"
   - "cd .."
   - "cp tests/config.php fluxbb/config.php"
-  - "php fluxbb/index.php" # Generate fluxbb cache
+  - "php fluxbb/index.php 2>&1 /dev/null" # Generate fluxbb cache
 #  - "psql -c 'create database fluxbb__test;' -U postgres"
 
 script: "cd tests && phpunit --bootstrap bootstrap.example.php ConverterTest.php"

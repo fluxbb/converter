@@ -52,9 +52,9 @@ class ConverterTest extends PHPUnit_Framework_TestCase
 		// Default database configuration
 		$old_db_config = array(
 			'type'			=> 'mysqli',
-			'host'			=> 'localhost',
+			'host'			=> '0.0.0.0',
 			'name'			=> 'phpbb__test',
-			'username'		=> '',
+			'username'		=> 'root',
 			'password'		=> '',
 			'prefix'		=> 'phpbb_',
 			'charset'		=> 'UTF-8',

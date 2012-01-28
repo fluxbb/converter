@@ -52,7 +52,7 @@ function conv_error($message, $file = null, $line = null, $dberror = false)
 	echo sprintf($lang_convert['Error'], $message).(defined('PUN_DEBUG') && isset($file) ? ' '.sprintf($lang_convert['Error file line'], $file, $line) : '')."\n";
 	if (defined('PUN_DEBUG') && $dberror !== false)
 		echo sprintf($lang_convert['Database reported'], $dberror['error_msg'])."\n";
-	exit(0);
+	exit(1);
 }
 
 
