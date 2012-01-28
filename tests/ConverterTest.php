@@ -39,49 +39,81 @@ $db_config = array(
 	'prefix'		=> $db_prefix,
 );
 
+// Default database configuration
+$old_db_config = array(
+	'type'			=> 'mysqli',
+	'host'			=> $db_config['host'],
+	'name'			=> 'phpbb__test',
+	'username'		=> $db_config['username'],
+	'password'		=> $db_config['password'],
+	'prefix'		=> 'phpbb_',
+	'charset'		=> 'UTF-8',
+);
+
+$forum_config = array(
+	'type'		=> 'PhpBB_3_0_9',
+	'path'		=> ''
+);
+
+// Create a wrapper for fluxbb (has easy functions for adding users etc.)
+require CONV_ROOT.'include/fluxbb.class.php';
+
+// Load the migration script
+require CONV_ROOT.'include/forum.class.php';
+
+// Load converter script
+require CONV_ROOT.'include/converter.class.php';
+
+function convert($forum_type, $old_db_name, $old_db_prefix)
+{
+	global $old_db_config, $pun_config, $db_config, $db, $forum_config, $converter;
+
+	$fluxbb = new FluxBB($pun_config);
+	$db = $fluxbb->connect_database($db_config);
+
+	echo "\n\n".$forum_type.': '.$old_db_name."\n\n";
+	$forum_config['type'] = $forum_type;
+	$old_db_config['name'] = $old_db_name;
+	$old_db_config['prefix'] = $old_db_prefix;
+	$forum = load_forum($forum_config, $fluxbb);
+	$forum->connect_database($old_db_config);
+
+	$converter = new Converter($fluxbb, $forum);
+	$converter->convert();
+	$forum->close_database();
+
+	$fluxbb->close_database();
+}
+
 class ConverterTest extends PHPUnit_Framework_TestCase
 {
-	protected $converter;
-	protected $fluxbb;
-	protected $forum;
-
-	public function setUp()
+	function testMyBB()
 	{
-		global $pun_config, $db, $db_config, $old_db_config, $forum_config;
-
-		// Default database configuration
-		$old_db_config = array(
-			'type'			=> 'mysqli',
-			'host'			=> '0.0.0.0',
-			'name'			=> 'phpbb__test',
-			'username'		=> 'root',
-			'password'		=> '',
-			'prefix'		=> 'phpbb_',
-			'charset'		=> 'UTF-8',
-		);
-
-		$forum_config = array(
-			'type'		=> 'PhpBB_3_0_9',
-			'path'		=> ''
-		);
-
-		// Create a wrapper for fluxbb (has easy functions for adding users etc.)
-		require CONV_ROOT.'include/fluxbb.class.php';
-		$this->fluxbb = new FluxBB($pun_config);
-		$db = $this->fluxbb->connect_database($db_config);
-
-		// Load the migration script
-		require CONV_ROOT.'include/forum.class.php';
-		$this->forum = load_forum($forum_config, $fluxbb);
-		$this->forum->connect_database($old_db_config);
-
-		// Load converter script
-		require CONV_ROOT.'include/converter.class.php';
-		$this->converter = new Converter($this->fluxbb, $this->forum);
+		convert('MyBB_1', 'mybb__test', 'mybb_');
 	}
 
-	public function testA()
+	function testFusion()
 	{
-		$this->assertEquals(true, true);
+		convert('PHP_Fusion_7', 'fusion__test', 'fusion_');
+	}
+
+	function testPhpbb3()
+	{
+		convert('PhpBB_3_0_9', 'phpbb__test', 'phpbb_');
+	}
+
+	function testPunBB()
+	{
+		convert('PunBB_1.3_1.4', 'punbb__test', 'pun_');
+	}
+
+	function testSmf1()
+	{
+		convert('SMF_1_1_11', 'smf1__test', 'smf_');
+	}
+
+	function testSmf2()
+	{
+		convert('SMF_2', 'smf2__test', 'smf_');
 	}
 }

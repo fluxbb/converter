@@ -5,7 +5,9 @@ branches:
 language: php
 
 php:
+  - 5.2
   - 5.3
+  - 5.4
 
 before_script:
   - "mkdir fluxbb && cd fluxbb"
@@ -13,16 +15,17 @@ before_script:
   - "git checkout fluxbb-1.4"
   - "cd .. && mkdir sql-dumps && cd sql-dumps"
   - "git clone --quiet git://github.com/daris/sql-dumps.git ."
-  - "mysql -e 'create database fluxbb__test;'"
-  - "mysql fluxbb__test < fluxbb-1.4.sql"
-  - "mysql -e 'create database phpbb__test;'"
-  - "mysql phpbb__test < phpbb3.sql"
+  - for i in *.sql; do db_name=`echo $i| sed 's/.sql//g'`; echo Importing $db_name; mysql -e "create database $db_name"; mysql $db_name < $db_name.sql ; done
   - "cd .."
   - "cp tests/config.php fluxbb/config.php"
-  - "php fluxbb/index.php 2>&1 /dev/null" # Generate fluxbb cache
+  - "php fluxbb/index.php > index.txt" # Generate fluxbb cache
 #  - "psql -c 'create database fluxbb__test;' -U postgres"
 
 script: "cd tests && phpunit --bootstrap bootstrap.example.php ConverterTest.php"
 
 notifications:
-  email: false
+  email:
+    recipients:
+      - daris91@gmail.com
+    on_success: never
+    on_failure: always

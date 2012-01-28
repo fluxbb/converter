@@ -44,14 +44,20 @@ function conv_error($message, $file = null, $line = null, $dberror = false)
 	if (isset($forum))
 		$forum->close_database();
 
-	conv_log('Error: '.$message.' in '.$line.', '.$line.(is_array($dberror) ? "\n".implode(', ', $dberror) : ''), false, true);
+	conv_log('Error: '.$message.' in '.$line.', '.$line.(is_array($dberror) ? "\n".implode(', ', $dberror) : ''));
 
 	if (isset($lang_convert[$message]))
 		$message = $lang_convert[$message];
 
 	echo sprintf($lang_convert['Error'], $message).(defined('PUN_DEBUG') && isset($file) ? ' '.sprintf($lang_convert['Error file line'], $file, $line) : '')."\n";
 	if (defined('PUN_DEBUG') && $dberror !== false)
+	{
 		echo sprintf($lang_convert['Database reported'], $dberror['error_msg'])."\n";
+		conv_log('['.$dberror['error_no'].'] Query: '.$dberror['error_sql']);
+	}
+
+	conv_log('', false, true);
+
 	exit(1);
 }
 
