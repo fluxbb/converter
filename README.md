@@ -1,10 +1,8 @@
-FluxBB converter
-=====================
+# FluxBB converter ![Build status](https://secure.travis-ci.org/fluxbb/converter.png?branch=master)
 
 FluxBB converter tool
 
-Supported forums
-----------------
+## Supported forums
  - Invision Power Board 3.2
  - MyBB 1
  - PHP Fusion 7
@@ -15,14 +13,12 @@ Supported forums
  - vBulletin 4.1
  - Merge FluxBB - merge two fluxbb installations into one database. Categories, forums, topics and posts are added to the current database and the users are merged from the both installations.
 
-Notes
--------------------
+## Notes
 - All FluxBB tables are dumped.
 - MAKE BACKUP BEFORE USING THIS CONVERTER!
 - The passwords in some forums are NOT converted due to differences in password storing between the forums.
 
-Installation instructions
--------------------
+## Installation instructions
  - Install FluxBB on the server (example: "www.example.com/fluxbb/").
  - Create a subdirectory in the FluxBB directory (example name: "converter").
  - Put all files from the converter zipfile in that directory.
