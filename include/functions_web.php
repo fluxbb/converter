@@ -17,6 +17,8 @@ function conv_message()
 
 	$args = func_get_args();
 
+	conv_log($args[0].': '.implode(', ', array_slice($args, 1)));
+
 	// Translate message
 	if (count($args) && isset($lang_convert[$args[0]]))
 		$args[0] = $lang_convert[$args[0]];
@@ -25,7 +27,6 @@ function conv_message()
 
 	$output = vsprintf($message, $args);
 	echo $output."\n".'<br />';
-	conv_log($output);
 }
 
 
@@ -67,13 +68,15 @@ function conv_redirect($step, $start_at = 0, $time = 0)
 
 	$contents = ob_get_clean();
 
+	$url = 'index.php?step='.htmlspecialchars($step).($start_at > 0 ? '&start_at='.$start_at : '');
+
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<meta http-equiv="refresh" content="<?php echo $time ?>; url=index.php?step=<?php echo htmlspecialchars($step).($start_at > 0 ? '&start_at='.$start_at : '') ?>">
+<meta http-equiv="refresh" content="<?php echo $time ?>; url=<?php echo $url ?>">
 <title><?php echo sprintf($lang_convert['FluxBB converter'], CONV_VERSION) ?></title>
 <link rel="stylesheet" type="text/css" href="../style/<?php echo $default_style ?>.css" />
 </head>
@@ -111,5 +114,4 @@ function conv_redirect($step, $start_at = 0, $time = 0)
 	conv_log('-----------------');
 	conv_log('', false, true);
 	exit;
-
 }

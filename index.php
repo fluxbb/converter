@@ -74,7 +74,7 @@ if (isset($_POST['form_sent']))
 	if (defined('CONV_LOG') && file_exists(CONV_LOG))
 		@unlink(CONV_LOG);
 
-	conv_log('Running web based converter for: '.$forum_config['type'].' ('.gmdate('Y-m-d').')');
+	conv_log('Running web based converter for: '.$forum_config['type'].' ('.gmdate('Y-m-d H:i:s').')');
 	conv_log('PHP version: '.PHP_VERSION.', OS: '.PHP_OS);
 }
 
@@ -130,7 +130,12 @@ if (isset($_POST['form_sent']) || isset($_GET['step']))
 	if (!isset($step) || $step != 'results')
 	{
 		// Start the converter. When it do its work, it redirects to the next page
-		$converter->convert($step, $start_at, true);
+		$redirect = $converter->convert($step, $start_at);
+
+		if ($redirect === false)
+			conv_redirect('results');
+		else
+			conv_redirect($redirect[0], isset($redirect[1]) ? $redirect[1] : 0);
 	}
 
 	if (empty($_SESSION['converter']['dupe_users']))

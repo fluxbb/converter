@@ -17,6 +17,8 @@ function conv_message()
 
 	$args = func_get_args();
 
+	conv_log($args[0].': '.implode(', ', array_slice($args, 1)));
+
 	// Do not show proccessing rows range
 	if (count($args) && $args[0] == 'Processing range')
 		$args[0] = 'Processing num';
@@ -29,7 +31,6 @@ function conv_message()
 
 	$output = vsprintf($message, $args);
 	echo $output."\n";
-	conv_log($output);
 }
 
 /**
@@ -59,18 +60,4 @@ function conv_error($message, $file = null, $line = null, $dberror = false)
 	conv_log('', false, true);
 
 	exit(1);
-}
-
-
-/**
- * Redirect to the next stage
- */
-function conv_redirect($step, $start_at = 0, $time = 0)
-{
-	global $converter;
-
-	conv_message();
-	conv_log('-----------------'."\n");
-
-	$converter->convert($step, $start_at);
 }

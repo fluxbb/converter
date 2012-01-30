@@ -44,6 +44,9 @@ class Merge_FluxBB extends Forum
 	{
 		$this->db->set_names('utf8');
 
+		if (!session_id())
+			session_start();
+
 		if (isset($_SESSION['converter']['last_id']))
 			$this->last_id = $_SESSION['converter']['last_id'];
 		else

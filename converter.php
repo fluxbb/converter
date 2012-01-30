@@ -107,7 +107,7 @@ if ($old_db_config == $db_config)
 if (defined('CONV_LOG') && file_exists(CONV_LOG))
 	@unlink(CONV_LOG);
 
-conv_log('Running command line based converter for: '.$forum_config['type'].' ('.gmdate('Y-m-d').')');
+conv_log('Running command line based converter for: '.$forum_config['type'].' ('.gmdate('Y-m-d H:i:s').')');
 conv_log('PHP version: '.PHP_VERSION.', OS: '.PHP_OS);
 
 // Create a wrapper for fluxbb (has easy functions for adding users etc.)
@@ -125,7 +125,13 @@ require CONV_ROOT.'include/converter.class.php';
 $converter = new Converter($fluxbb, $forum);
 
 // Start the converter
-$converter->convert();
+$redirect = array(null);
+while ($redirect !== false)
+{
+	conv_message();
+	conv_log('-----------------'."\n");
+	$redirect = $converter->convert($redirect[0], isset($redirect[1]) ? $redirect[1] : 0);
+}
 
 // We're done
 $alerts = array($lang_convert['Rebuild search index note']);

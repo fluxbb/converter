@@ -66,52 +66,56 @@ class Converter
 			// Validate only first time we run converter (check whether database configuration is valid)
 			$this->validate();
 
+			$_SESSION['fluxbb_converter']['count'] = array();
+			foreach ($this->forum->steps as $cur_step)
+			{
+				if (is_callable(array($this->forum, 'count_'.$cur_step)))
+					$_SESSION['fluxbb_converter']['count'][$cur_step] = call_user_func(array($this->forum, 'count_'.$cur_step));
+			}
+			print_r($_SESSION['fluxbb_converter']);
+
 			// Drop the FluxBB database tables (when there is no NO_DB_CLEANUP constant defined for forum)
 			if (!defined(get_class($this->forum).'::NO_DB_CLEANUP'))
 				$this->cleanup_database();
 
 			$step = $this->forum->steps[0];
 
-			return conv_redirect($step);
+			return array($step);
 		}
 
 		$start = get_microtime();
-		$redirect_to = false;
+		$redirect_to = null;
 
 		conv_message('Converting', $step);
 		if (is_callable(array($this->forum, 'convert_'.$step)))
 			$redirect_to = call_user_func(array($this->forum, 'convert_'.$step), $start_at);
 		else if (is_callable(array($this, $step)))
 			$redirect_to = call_user_func(array($this, $step));
+		else
+			conv_message('Not implemented', $step);
 
 		conv_message('Done in', round(get_microtime() - $start, 6));
 
-		// Process same step starting from the $start_at row
-		if ($redirect_to != false)
-			conv_redirect($step, $redirect_to);
+		// Process same step starting from $start_at
+		if ($redirect_to != null)
+			return array($step, $redirect_to);
 
 		// Are we done?
 		if ($step == 'finish')
-			conv_redirect('results');
-		else
-		{
-			$current_step = array_search($step, $this->forum->steps);
+			return false;
 
-			// Basically should never happen
-			if ($current_step === false)
-				return false;
+		$current_step = array_search($step, $this->forum->steps);
 
-			// No more tables to process?
-			if (!isset($this->forum->steps[++$current_step]))
-				conv_redirect('finish');
+		// Basically should never happen
+		if ($current_step === false)
+			return false;
 
-			else
-			{
-				// Redirect to the next step
-				$next_step = $this->forum->steps[$current_step];
-				conv_redirect($next_step);
-			}
-		}
+		// No more tables to process?
+		if (!isset($this->forum->steps[++$current_step]))
+			return array('finish');
+
+		// Redirect to the next step
+		return array($this->forum->steps[$current_step]);
 	}
 
 	/**
