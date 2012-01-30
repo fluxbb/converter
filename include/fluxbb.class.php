@@ -16,6 +16,23 @@ class FluxBB
 	public $pun_config;
 	public $avatars_dir;
 
+	public $tables = array(
+		'bans'					=> array('id'),
+		'categories'			=> array('id'),
+		'censoring'				=> array('id'),
+		'config'				=> 0,
+		'forums'				=> array('id'),
+//		'forum_perms'			=> 0,
+		'groups'				=> array('g_id', 'g_id > 4'),
+		'posts'					=> array('id'),
+		'ranks'					=> array('id'),
+		'reports'				=> array('id'),
+		'topic_subscriptions'	=> array('topic_id'),
+		'forum_subscriptions'	=> array('forum_id'),
+		'topics'				=> array('id'),
+		'users'					=> array('id', 'id <> 1'),
+	);
+
 	function __construct($pun_config)
 	{
 		$this->pun_config = $pun_config;
@@ -44,6 +61,30 @@ class FluxBB
 	{
 		$this->db->end_transaction();
 		$this->db->close();
+	}
+
+	function fetch_count()
+	{
+		$tables = array();
+		foreach ($this->tables as $cur_table => $table_info)
+		{
+			$count = 0;
+			if (is_array($table_info))
+			{
+				$query = array(
+					'SELECT'	=> 'COUNT('.$this->db->escape($table_info[0]).')',
+					'FROM'		=> $this->db->escape($cur_table)
+				);
+				if (isset($table_info[1]))
+					$query['WHERE'] = $table_info[1];
+
+				$result = $this->db->query_build($query) or conv_error('Unable to fetch num rows for '.$cur_table, __FILE__, __LINE__, $this->db->error());
+				$count = $this->db->result($result);
+			}
+
+			$tables[$cur_table] = $count;
+		}
+		return $tables;
 	}
 
 	/**

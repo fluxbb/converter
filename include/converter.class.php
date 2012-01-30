@@ -56,6 +56,8 @@ class Converter
 	 */
 	function convert($step = null, $start_at = 0)
 	{
+		$steps = array_keys($this->forum->steps);
+
 		// Start from beginning
 		if (!isset($step))
 		{
@@ -66,19 +68,13 @@ class Converter
 			// Validate only first time we run converter (check whether database configuration is valid)
 			$this->validate();
 
-			$_SESSION['fluxbb_converter']['count'] = array();
-			foreach ($this->forum->steps as $cur_step)
-			{
-				if (is_callable(array($this->forum, 'count_'.$cur_step)))
-					$_SESSION['fluxbb_converter']['count'][$cur_step] = call_user_func(array($this->forum, 'count_'.$cur_step));
-			}
-//			print_r($_SESSION['fluxbb_converter']);
+			$_SESSION['fluxbb_converter']['count'] = $this->forum->fetch_count();
 
 			// Drop the FluxBB database tables (when there is no NO_DB_CLEANUP constant defined for forum)
 			if (!defined(get_class($this->forum).'::NO_DB_CLEANUP'))
 				$this->cleanup_database();
 
-			$step = $this->forum->steps[0];
+			$step = $steps[0];
 
 			return array($step);
 		}
@@ -104,18 +100,18 @@ class Converter
 		if ($step == 'finish')
 			return false;
 
-		$current_step = array_search($step, $this->forum->steps);
+		$current_step = array_search($step, $steps);
 
 		// Basically should never happen
 		if ($current_step === false)
 			return false;
 
 		// No more tables to process?
-		if (!isset($this->forum->steps[++$current_step]))
+		if (!isset($steps[++$current_step]))
 			return array('finish');
 
 		// Redirect to the next step
-		return array($this->forum->steps[$current_step]);
+		return array($steps[$current_step]);
 	}
 
 	/**
@@ -169,6 +165,7 @@ class Converter
 		$this->generate_cache();
 		conv_log('Done in '.round(get_microtime() - $start, 6)."\n");
 
+		$_SESSION['fluxbb_converter']['fluxbb_count'] = $this->fluxbb->fetch_count();
 		$_SESSION['fluxbb_converter']['time'] = get_microtime() - $_SESSION['fluxbb_converter']['start_time'];
 	}
 

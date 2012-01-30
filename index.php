@@ -179,7 +179,7 @@ if (isset($_POST['form_sent']) || isset($_GET['step']))
 
 <div class="blockform">
 
-<?php if (!empty($_SESSION['converter']['dupe_users'])) : ?>
+<?php if (!empty($_SESSION['fluxbb_converter']['dupe_users'])) : ?>
 	<h2><span><?php echo $lang_convert['Username dupes head'] ?></span></h2>
 	<div class="box">
 		<form method="post" action="index.php?stage=results&amp;alert_dupe_users">
@@ -195,7 +195,7 @@ if (isset($_POST['form_sent']) || isset($_GET['step']))
 					<div class="infldset">
 						<p>
 <?php
-			foreach ($_SESSION['converter']['dupe_users'] as $id => $cur_user)
+			foreach ($_SESSION['fluxbb_converter']['dupe_users'] as $id => $cur_user)
 				echo sprintf($lang_convert['was renamed to'], '<strong>'.pun_htmlspecialchars($cur_user['old_username']).'</strong>', '<strong>'.pun_htmlspecialchars($cur_user['username']).'</strong>').'<br />'."\n";
 
 ?>
@@ -229,6 +229,31 @@ foreach ($alerts as $cur_alert)
 			</div>
 		</div>
 	</div>
+
+	<h2><span><?php echo $lang_convert['Final instructions'] ?></span></h2>
+	<div class="box">
+		<div class="fakeform">
+			<div class="inform">
+				<fieldset>
+					<legend>Number of items</legend>
+					<div class="infldset">
+						<table style="width: 300px">
+							<tr>
+								<th>&nbsp;</th>
+								<th>Old forum</th>
+								<th>FluxBB</th>
+							</tr>
+<?php
+	foreach ($_SESSION['fluxbb_converter']['count'] as $table => $count)
+		echo '<tr><td>'.pun_htmlspecialchars($table).'</td>'.'<td>'.intval($count).'</td>'.'<td>'.(isset($_SESSION['fluxbb_converter']['fluxbb_count'][$table]) ? intval($_SESSION['fluxbb_converter']['fluxbb_count'][$table]) : '').'</td></td>';
+?>
+						</table>
+					</div>
+				</fieldset>
+			</div>
+		</div>
+	</div>
+
 </div>
 
 </div>

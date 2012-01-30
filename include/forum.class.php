@@ -8,8 +8,8 @@
 
 class Forum
 {
-	public $db;
-	public $fluxbb;
+	protected $db;
+	protected $fluxbb;
 
 	protected $db_config;
 	protected $forum_config;
@@ -103,6 +103,30 @@ class Forum
 			return $start_at;
 
 		return false;
+	}
+
+	function fetch_count()
+	{
+		$tables = array();
+		foreach ($this->steps as $cur_step => $table_info)
+		{
+			$count = 0;
+			if (is_array($table_info))
+			{
+				$query = array(
+					'SELECT'	=> 'COUNT('.$this->db->escape($table_info[1]).')',
+					'FROM'		=> $this->db->escape($table_info[0])
+				);
+				if (isset($table_info[2]))
+					$query['WHERE'] = $table_info[2];
+
+				$result = $this->db->query_build($query) or conv_error('Unable to fetch num rows for '.$cur_step, __FILE__, __LINE__, $this->db->error());
+				$count = $this->db->result($result);
+			}
+
+			$tables[$cur_step] = $count;
+		}
+		return $tables;
 	}
 
 	/**

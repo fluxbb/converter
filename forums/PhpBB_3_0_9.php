@@ -19,20 +19,20 @@ class PhpBB_3_0_9 extends Forum
 	const CONVERTS_PASSWORD = false;
 
 	public $steps = array(
-		'bans',
-		'categories',
-		'censoring',
-		'config',
-		'forums',
-//		'forum_perms',
-		'groups',
-		'posts',
-		'ranks',
-		'reports',
-		'topic_subscriptions',
-		'forum_subscriptions',
-		'topics',
-		'users',
+		'bans'					=> array('banlist', 'ban_id'),
+		'categories'			=> array('forums', 'forum_id', 'forum_type = 0'),
+		'censoring'				=> array('words', 'word_id'),
+		'config'				=> 0,
+		'forums'				=> array('forums', 'forum_id', 'forum_type <> 0'),
+//		'forum_perms'			=> 0,
+		'groups'				=> array('groups', 'group_id', 'group_id > 7'),
+		'posts'					=> array('posts', 'post_id'),
+		'ranks'					=> array('ranks', 'rank_id'),
+		'reports'				=> array('reports', 'report_id'),
+		'topic_subscriptions'	=> array('topics_watch', 'topic_id'),
+		'forum_subscriptions'	=> array('forums_watch', 'forum_id'),
+		'topics'				=> array('topics', 'topic_id'),
+		'users'					=> array('users', 'user_id', 'group_id <> 6 AND user_id <> 1'),
 	);
 
 	function initialize()
