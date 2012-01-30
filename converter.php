@@ -125,12 +125,12 @@ require CONV_ROOT.'include/converter.class.php';
 $converter = new Converter($fluxbb, $forum);
 
 // Start the converter
-$redirect = array(null);
-while ($redirect !== false)
+$next_step = array(null);
+while ($next_step !== false)
 {
 	conv_message();
 	conv_log('-----------------'."\n");
-	$redirect = $converter->convert($redirect[0], isset($redirect[1]) ? $redirect[1] : 0);
+	$next_step = $converter->convert($next_step[0], isset($next_step[1]) ? $next_step[1] : 0);
 }
 
 // We're done
