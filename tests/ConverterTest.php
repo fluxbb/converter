@@ -79,7 +79,16 @@ function convert($forum_type, $old_db_name, $old_db_prefix)
 	$forum->connect_database($old_db_config);
 
 	$converter = new Converter($fluxbb, $forum);
-	$converter->convert();
+
+	// Start the converter
+	$redirect = array(null);
+	while ($redirect !== false)
+	{
+		conv_message();
+		conv_log('-----------------'."\n");
+		$redirect = $converter->convert($redirect[0], isset($redirect[1]) ? $redirect[1] : 0);
+	}
+
 	$forum->close_database();
 
 	$fluxbb->close_database();

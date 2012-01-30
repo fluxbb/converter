@@ -72,7 +72,7 @@ class Converter
 				if (is_callable(array($this->forum, 'count_'.$cur_step)))
 					$_SESSION['fluxbb_converter']['count'][$cur_step] = call_user_func(array($this->forum, 'count_'.$cur_step));
 			}
-			print_r($_SESSION['fluxbb_converter']);
+//			print_r($_SESSION['fluxbb_converter']);
 
 			// Drop the FluxBB database tables (when there is no NO_DB_CLEANUP constant defined for forum)
 			if (!defined(get_class($this->forum).'::NO_DB_CLEANUP'))
