@@ -24,7 +24,7 @@ class PunBB_1_3_1_4 extends Forum
 		'censoring'				=> array('censoring', 'id'),
 		'config'				=> array('config', 'conf_name'),
 		'forums'				=> array('forums', 'id'),
-		'forum_perms'			=> array('forum_perms', 'id'),
+		'forum_perms'			=> array('forum_perms', 'forum_id'),
 		'groups'				=> array('groups', 'g_id', 'g_id > 4'),
 		'posts'					=> array('posts', 'id'),
 		'ranks'					=> array('ranks', 'id'),

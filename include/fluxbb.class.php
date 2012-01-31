@@ -22,7 +22,7 @@ class FluxBB
 		'censoring'				=> array('id'),
 		'config'				=> 0,
 		'forums'				=> array('id'),
-//		'forum_perms'			=> 0,
+		'forum_perms'			=> array('forum_id'),
 		'groups'				=> array('g_id', 'g_id > 4'),
 		'posts'					=> array('id'),
 		'ranks'					=> array('id'),

@@ -29,7 +29,7 @@ class Merge_FluxBB extends Forum
 		'censoring'				=> array('censoring', 'id'),
 		'config'				=> array('config', 'conf_name'),
 		'forums'				=> array('forums', 'id'),
-		'forum_perms'			=> array('forum_perms', 'id'),
+		'forum_perms'			=> array('forum_perms', 'forum_id'),
 		'topics'				=> array('topics', 'id'),
 		'posts'					=> array('posts', 'id'),
 		'ranks'					=> array('ranks', 'id'),
