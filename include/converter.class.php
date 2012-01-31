@@ -169,6 +169,22 @@ class Converter
 		$_SESSION['fluxbb_converter']['time'] = get_microtime() - $_SESSION['fluxbb_converter']['start_time'];
 	}
 
+	function get_forum_item_count()
+	{
+		if (isset($_SESSION['fluxbb_converter']['count']))
+			return $_SESSION['fluxbb_converter']['count'];
+		else
+			return $_SESSION['fluxbb_converter']['count'] = $this->forum->fetch_count();
+	}
+
+	function get_fluxbb_item_count()
+	{
+		if (isset($_SESSION['fluxbb_converter']['fluxbb_count']))
+			return $_SESSION['fluxbb_converter']['fluxbb_count'];
+		else
+			return $_SESSION['fluxbb_converter']['fluxbb_count'] = $this->fluxbb->fetch_count();
+	}
+
 	/**
 	 * Regenerate FluxBB cache after conversion
 	 */

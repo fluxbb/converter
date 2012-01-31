@@ -64,65 +64,77 @@ require CONV_ROOT.'include/forum.class.php';
 // Load converter script
 require CONV_ROOT.'include/converter.class.php';
 
-function convert($forum_type, $old_db_name, $old_db_prefix)
-{
-	global $old_db_config, $pun_config, $db_config, $db, $forum_config, $converter;
-
-	$fluxbb = new FluxBB($pun_config);
-	$db = $fluxbb->connect_database($db_config);
-
-	echo "\n\n".$forum_type.': '.$old_db_name."\n\n";
-	$forum_config['type'] = $forum_type;
-	$old_db_config['name'] = $old_db_name;
-	$old_db_config['prefix'] = $old_db_prefix;
-	$forum = load_forum($forum_config, $fluxbb);
-	$forum->connect_database($old_db_config);
-
-	$converter = new Converter($fluxbb, $forum);
-
-	// Start the converter
-	$redirect = array(null);
-	while ($redirect !== false)
-	{
-		conv_message();
-		conv_log('-----------------'."\n");
-		$redirect = $converter->convert($redirect[0], isset($redirect[1]) ? $redirect[1] : 0);
-	}
-
-	$forum->close_database();
-
-	$fluxbb->close_database();
-}
-
 class ConverterTest extends PHPUnit_Framework_TestCase
 {
-	function testMyBB()
+	protected function convert($forum_type, $old_db_name, $old_db_prefix)
 	{
-		convert('MyBB_1', 'mybb__test', 'mybb_');
+		global $old_db_config, $pun_config, $db_config, $db, $forum_config;
+
+		$fluxbb = new FluxBB($pun_config);
+		$db = $fluxbb->connect_database($db_config);
+
+		echo "\n\n".$forum_type.': '.$old_db_name."\n\n";
+		$forum_config['type'] = $forum_type;
+		$old_db_config['name'] = $old_db_name;
+		$old_db_config['prefix'] = $old_db_prefix;
+		$forum = load_forum($forum_config, $fluxbb);
+		$forum->connect_database($old_db_config);
+
+		$converter = new Converter($fluxbb, $forum);
+
+		// Start the converter
+		$next_step = array(null);
+		while ($next_step !== false)
+		{
+			conv_message();
+			conv_log('-----------------'."\n");
+			$next_step = $converter->convert($next_step[0], isset($next_step[1]) ? $next_step[1] : 0);
+		}
+
+		$fluxbb_item_count = $converter->get_fluxbb_item_count();
+		$forum_item_count = $converter->get_forum_item_count();
+
+		foreach ($fluxbb_item_count as $table => $fluxbb_count)
+		{
+			if (!isset($forum_item_count[$table]))
+				continue;
+
+			$forum_count = $forum_item_count[$table];
+			if ($fluxbb_count != -1 && $forum_count != -1)
+				$this->assertEquals($fluxbb_count, $forum_count, 'Different item count for '.$table);
+		}
+
+		$forum->close_database();
+		$fluxbb->close_database();
 	}
 
-	function testFusion()
+	function testMyBB()
 	{
-		convert('PHP_Fusion_7', 'fusion__test', 'fusion_');
+		$this->convert('MyBB_1', 'mybb__test', 'mybb_');
+	}
+
+	function testPhpFusion()
+	{
+		$this->convert('PHP_Fusion_7', 'fusion__test', 'fusion_');
 	}
 
 	function testPhpbb3()
 	{
-		convert('PhpBB_3_0_9', 'phpbb__test', 'phpbb_');
+		$this->convert('PhpBB_3_0_9', 'phpbb__test', 'phpbb_');
 	}
 
 	function testPunBB()
 	{
-		convert('PunBB_1.3_1.4', 'punbb__test', 'pun_');
+		$this->convert('PunBB_1.3_1.4', 'punbb__test', 'pun_');
 	}
 
 	function testSmf1()
 	{
-		convert('SMF_1_1_11', 'smf1__test', 'smf_');
+		$this->convert('SMF_1_1_11', 'smf1__test', 'smf_');
 	}
 
 	function testSmf2()
 	{
-		convert('SMF_2', 'smf2__test', 'smf_');
+		$this->convert('SMF_2', 'smf2__test', 'smf_');
 	}
 }

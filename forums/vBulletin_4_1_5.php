@@ -22,7 +22,7 @@ class VBulletin_4_1_5 extends Forum
 		'bans'					=> array('userban', 'userid'),
 		'categories'			=> array('forum', 'forumid', 'parentid = -1'),
 		'censoring'				=> 0,//array('words', 'word_id'),
-		'config'				=> 0,
+		'config'				=> -1,
 		'forums'				=> array('forum', 'forumid', 'parentid <> -1'),
 //		'forum_perms'			=> 0,
 		'groups'				=> array('usergroup', 'usergroup', 'usergroupid > 8'),

@@ -13,7 +13,7 @@ define('FORUM_DB_REVISION', 15);
 define('FORUM_SI_REVISION', 2);
 define('FORUM_PARSER_REVISION', 2);
 
-class Invision_Power_Board_3_2 extends Forum
+class IP_Board_3_2 extends Forum
 {
 	// Will the passwords be converted?
 	const CONVERTS_PASSWORD = false;
@@ -22,7 +22,7 @@ class Invision_Power_Board_3_2 extends Forum
 		'bans'					=> array('banfilters', 'ban_id'),
 		'categories'			=> array('forums', 'id', 'parent_id = -1'),
 		'censoring'				=> array('badwords', 'wid'),
-		'config'				=> 0,
+		'config'				=> -1,
 		'forums'				=> array('forums', 'id', 'parent_id <> -1'),
 //		'forum_perms'			=> 0,
 		'groups'				=> array('groups', 'g_id', 'g_id > 6'),

@@ -111,7 +111,11 @@ class Forum
 		foreach ($this->steps as $cur_step => $table_info)
 		{
 			$count = 0;
-			if (is_array($table_info))
+
+			if (is_numeric($table_info))
+				$count = $table_info;
+
+			else if (is_array($table_info))
 			{
 				$query = array(
 					'SELECT'	=> 'COUNT('.$this->db->escape($table_info[1]).')',

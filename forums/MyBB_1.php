@@ -22,7 +22,7 @@ class MyBB_1 extends Forum
 		'bans'					=> array('banned', 'uid'),
 		'categories'			=> array('forums', 'fid', 'type = \'c\''),
 		'censoring'				=> 0,//array('words', 'word_id'),
-		'config'				=> 0,
+		'config'				=> -1,
 		'forums'				=> array('forums', 'fid', 'type = \'f\''),
 //		'forum_perms'			=> 0,
 		'groups'				=> array('usergroups', 'gid', 'gid > 7'),

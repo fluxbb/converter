@@ -22,7 +22,7 @@ class SMF_2 extends Forum
 		'bans'					=> array('ban_items', 'id_ban'),
 		'categories'			=> array('categories', 'id_cat'),
 		'censoring'				=> -1,
-		'config'				=> 0,
+		'config'				=> -1,
 		'forums'				=> array('boards', 'id_board'),
 //		'forum_perms'			=> 0,
 		'groups'				=> array('membergroups', 'id_group', 'min_posts = -1 AND id_group > 3'),

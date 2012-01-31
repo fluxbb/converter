@@ -22,7 +22,7 @@ class PHP_Fusion_7 extends Forum
 		'bans'					=> array('blacklist', 'blacklist_id'),
 		'categories'			=> array('forums', 'forum_id', 'forum_cat = 0'),
 		'censoring'				=> -1,
-		'config'				=> 0,
+		'config'				=> -1,
 		'forums'				=> array('forums', 'forum_id', 'forum_cat <> 0'),
 //		'forum_perms'			=> 0,
 		'groups'				=> array('user_groups', 'group_id'),

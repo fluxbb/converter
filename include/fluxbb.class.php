@@ -20,7 +20,7 @@ class FluxBB
 		'bans'					=> array('id'),
 		'categories'			=> array('id'),
 		'censoring'				=> array('id'),
-		'config'				=> 0,
+		'config'				=> -1,
 		'forums'				=> array('id'),
 		'forum_perms'			=> array('forum_id'),
 		'groups'				=> array('g_id', 'g_id > 4'),
@@ -72,6 +72,10 @@ class FluxBB
 		foreach ($this->tables as $cur_table => $table_info)
 		{
 			$count = 0;
+
+			if (is_numeric($table_info))
+				$count = $table_info;
+
 			if (is_array($table_info))
 			{
 				$query = array(
