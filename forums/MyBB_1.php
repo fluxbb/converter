@@ -441,8 +441,11 @@ class MyBB_1 extends Forum
 	{
 		static $last_uid;
 
+		if ($id == 0)
+			return 1;
+
 		// id=1 is reserved for the guest user
-		if ($id == 1)
+		else if ($id == 1)
 		{
 			if (!isset($last_uid))
 			{

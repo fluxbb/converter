@@ -269,16 +269,26 @@ class FluxBB
 
 		// Update user post count
 		$result = $this->db->query_build(array(
-			'SELECT'	=> 'poster_id, COUNT(id) AS num_posts',
-			'FROM'		=> 'posts',
-			'GROUP BY'	=> 'poster_id',
+			'SELECT'	=> 'p.poster_id, COUNT(p.id) AS post_count, u.num_posts',
+			'JOINS'		=> array(
+				array(
+					'INNER JOIN'	=> 'users AS u',
+					'ON'			=> 'u.id = p.poster_id'
+				)
+			),
+			'FROM'		=> 'posts AS p',
+			'GROUP BY'	=> 'p.poster_id',
+			'WHERE'		=> 'p.poster_id > 0'
 		)) or conv_error('Unable to fetch user posts', __FILE__, __LINE__, $this->db->error());
 
 		while ($cur_user = $this->db->fetch_assoc($result))
 		{
+			if ($cur_user['num_posts'] == $cur_user['post_count'])
+				continue;
+
 			$this->db->query_build(array(
 				'UPDATE'	=> 'users',
-				'SET'		=> 'num_posts = '.$cur_user['num_posts'],
+				'SET'		=> 'num_posts = '.$cur_user['post_count'],
 				'WHERE'		=> 'id = '.$cur_user['poster_id'],
 			)) or conv_error('Unable to update user post count', __FILE__, __LINE__, $this->db->error());
 		}
@@ -289,16 +299,25 @@ class FluxBB
 
 		// Update post count for each topic
 		$result = $this->db->query_build(array(
-			'SELECT'	=> 'p.topic_id, COUNT(p.id) AS num_posts',
+			'SELECT'	=> 'p.topic_id, COUNT(p.id) AS post_count, t.num_replies',
+			'JOINS'		=> array(
+				array(
+					'INNER JOIN'	=> 'topics AS t',
+					'ON'			=> 't.id = p.topic_id'
+				)
+			),
 			'FROM'		=> 'posts AS p',
 			'GROUP BY'	=> 'p.topic_id',
 		)) or conv_error('Unable to fetch topic posts', __FILE__, __LINE__, $this->db->error());
 
 		while ($cur_topic = $this->db->fetch_assoc($result))
 		{
+			if ($cur_topic['num_replies'] == ($cur_topic['post_count'] - 1))
+				continue;
+
 			$this->db->query_build(array(
 				'UPDATE'	=> 'topics',
-				'SET'		=> 'num_replies = '.($cur_topic['num_posts'] - 1),
+				'SET'		=> 'num_replies = '.($cur_topic['post_count'] - 1),
 				'WHERE'		=> 'id = '.$cur_topic['topic_id'],
 			)) or conv_error('Unable to update topic post count', __FILE__, __LINE__, $this->db->error());
 		}
@@ -315,14 +334,18 @@ class FluxBB
 		);
 
 		$result = $this->db->query_build(array(
-			'SELECT'	=> 'p.topic_id, p.id, p.posted, p.poster',
+			'SELECT'	=> 'p.topic_id, p.id, p.posted, p.poster, t.last_post, t.last_post_id, t.last_poster',
 			'JOINS'		=> array(
 				array(
-					'INNER JOIN'=> $this->db->prefix.'posts AS p',
-					'ON'		=> 'p.topic_id = t.topic_id AND p.posted = t.last_post',
+					'INNER JOIN'	=> $this->db->prefix.'posts AS p',
+					'ON'			=> 'p.topic_id = s.topic_id AND p.posted = s.last_post',
+				),
+				array(
+					'INNER JOIN'	=> $this->db->prefix.'topics AS t',
+					'ON'			=> 'p.topic_id = t.id',
 				)
 			),
-			'FROM'		=> '('.$this->db->query_build($subquery, true).') AS t',
+			'FROM'		=> '('.$this->db->query_build($subquery, true).') AS s',
 			'PARAMS'	=> array(
 				'NO_PREFIX'		=> true,
 			)
@@ -330,31 +353,52 @@ class FluxBB
 
 		while ($cur_topic = $this->db->fetch_assoc($result))
 		{
-			$this->db->query_build(array(
-				'UPDATE'	=> 'topics',
-				'SET'		=> 'last_post = '.$cur_topic['posted'].', last_poster = \''.$this->db->escape($cur_topic['poster']).'\', last_post_id = '.$cur_topic['id'],
-				'WHERE'		=> 'id = '.$cur_topic['topic_id'],
-			)) or conv_error('Unable to update last post for topic', __FILE__, __LINE__, $this->db->error());
-		}
+			$values = array();
+			if ($cur_topic['posted'] != $cur_topic['last_post'])
+				$values[] = 'last_post = '.$cur_topic['posted'];
+			if ($cur_topic['poster'] != $cur_topic['last_poster'])
+				$values[] = 'last_poster = \''.$this->db->escape($cur_topic['poster']).'\'';
+			if ($cur_topic['id'] != $cur_topic['last_post_id'])
+				$values[] = 'last_post_id = '.$cur_topic['id'];
 
+			if (!empty($values))
+				$this->db->query_build(array(
+					'UPDATE'	=> 'topics',
+					'SET'		=> implode(', ', $values),
+					'WHERE'		=> 'id = '.$cur_topic['topic_id'],
+				)) or conv_error('Unable to update last post for topic', __FILE__, __LINE__, $this->db->error());
+		}
 		conv_log('Done in '.round(get_microtime() - $start, 6)."\n");
 		conv_log('Updating num topics and num posts for each forum');
 		$start = get_microtime();
 
 		// Update num_topics and num_posts for each forum
 		$result = $this->db->query_build(array(
-			'SELECT'	=> 'forum_id, COUNT(id) AS num_topics, SUM(num_replies) + COUNT(id) AS num_posts',
-			'FROM'		=> 'topics',
-			'GROUP BY'	=> 'forum_id',
+			'SELECT'	=> 't.forum_id, COUNT(t.id) AS topic_count, SUM(t.num_replies) + COUNT(t.id) AS post_count, f.num_posts, f.num_topics',
+			'JOINS'		=> array(
+				array(
+					'INNER JOIN'	=> 'forums AS f',
+					'ON'			=> 'f.id = t.forum_id'
+				)
+			),
+			'FROM'		=> 'topics AS t',
+			'GROUP BY'	=> 't.forum_id',
 		)) or conv_error('Unable to fetch topics for forum', __FILE__, __LINE__, $this->db->error());
 
 		while ($cur_forum = $this->db->fetch_assoc($result))
 		{
-			$this->db->query_build(array(
-				'UPDATE'	=> 'forums',
-				'SET'		=> 'num_topics = '.$cur_forum['num_topics'].', num_posts = '.$cur_forum['num_posts'],
-				'WHERE'		=> 'id = '.$cur_forum['forum_id'],
-			)) or conv_error('Unable to update topic count for forum', __FILE__, __LINE__, $this->db->error());
+			$values = array();
+			if ($cur_forum['topic_count'] != $cur_forum['num_topics'])
+				$values[] = 'num_topics = '.$cur_forum['topic_count'];
+			if ($cur_forum['post_count'] != $cur_forum['num_posts'])
+				$values[] = 'num_posts = '.$cur_forum['post_count'];
+
+			if (!empty($values))
+				$this->db->query_build(array(
+					'UPDATE'	=> 'forums',
+					'SET'		=> implode(', ', $values),
+					'WHERE'		=> 'id = '.$cur_forum['forum_id'],
+				)) or conv_error('Unable to update topic count for forum', __FILE__, __LINE__, $this->db->error());
 		}
 
 		conv_log('Done in '.round(get_microtime() - $start, 6)."\n");
@@ -369,14 +413,18 @@ class FluxBB
 		);
 
 		$result = $this->db->query_build(array(
-			'SELECT'	=> 't.forum_id, t.last_post_id, t.last_post, t.last_poster',
+			'SELECT'	=> 't.forum_id, t.last_post_id AS new_last_post_id, t.last_post AS new_last_post, t.last_poster AS new_last_poster, f.last_post_id, f.last_poster, f.last_post',
 			'JOINS'		=> array(
 				array(
-					'INNER JOIN'=> $this->db->prefix.'topics AS t',
-					'ON'		=> 't.forum_id = f.forum_id AND f.last_post = t.last_post',
+					'INNER JOIN'	=> $this->db->prefix.'topics AS t',
+					'ON'			=> 't.forum_id = s.forum_id AND s.last_post = t.last_post',
+				),
+				array(
+					'INNER JOIN'	=> $this->db->prefix.'forums AS f',
+					'ON'			=> 't.forum_id = f.id',
 				)
 			),
-			'FROM'		=> '('.$this->db->query_build($subquery, true).') AS f',
+			'FROM'		=> '('.$this->db->query_build($subquery, true).') AS s',
 			'PARAMS'	=> array(
 				'NO_PREFIX'		=> true,
 			)
@@ -384,13 +432,21 @@ class FluxBB
 
 		while ($cur_forum = $this->db->fetch_assoc($result))
 		{
-			$this->db->query_build(array(
-				'UPDATE'	=> 'forums',
-				'SET'		=> 'last_post = '.$cur_forum['last_post'].', last_poster = \''.$this->db->escape($cur_forum['last_poster']).'\', last_post_id = '.$cur_forum['last_post_id'],
-				'WHERE'		=> 'id = '.$cur_forum['forum_id'],
-			)) or conv_error('Unable to update last post for forum', __FILE__, __LINE__, $this->db->error());
-		}
+			$values = array();
+			if ($cur_forum['new_last_post'] != $cur_forum['last_post'])
+				$values[] = 'last_post = '.$cur_forum['new_last_post'];
+			if ($cur_forum['new_last_poster'] != $cur_forum['last_poster'])
+				$values[] = 'last_poster = \''.$this->db->escape($cur_forum['new_last_poster']).'\'';
+			if ($cur_forum['new_last_post_id'] != $cur_forum['last_post_id'])
+				$values[] = 'last_post_id = '.$cur_forum['new_last_post_id'];
 
+			if (!empty($values))
+				$this->db->query_build(array(
+					'UPDATE'	=> 'forums',
+					'SET'		=> implode(', ', $values),
+					'WHERE'		=> 'id = '.$cur_forum['forum_id'],
+				)) or conv_error('Unable to update last post for forum', __FILE__, __LINE__, $this->db->error());
+		}
 		conv_log('Done in '.round(get_microtime() - $start, 6)."\n");
 	}
 }
