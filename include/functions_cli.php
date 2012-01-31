@@ -17,7 +17,7 @@ function conv_message()
 
 	$args = func_get_args();
 
-	conv_log($args[0].': '.implode(', ', array_slice($args, 1)));
+	conv_log(empty($args) ? '' : $args[0].': '.implode(', ', array_slice($args, 1)));
 
 	// Do not show proccessing rows range
 	if (count($args) && $args[0] == 'Processing range')

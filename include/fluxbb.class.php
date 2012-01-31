@@ -16,6 +16,9 @@ class FluxBB
 	public $pun_config;
 	public $avatars_dir;
 
+	public $avatar_exts = array('jpg', 'gif', 'png');
+	public $avatar_mimes = array('image/jpg' => 'jpg', 'image/gif' => 'gif', 'image/png' => 'png');
+
 	function __construct($pun_config)
 	{
 		$this->pun_config = $pun_config;
@@ -151,6 +154,68 @@ class FluxBB
 		$_SESSION['converter']['dupe_users'][$cur_user['id']]['old_username'] = $old_username;
 	}
 
+	function save_avatar($file, $user_id)
+	{
+		// Download remote file
+		if (strpos($file, '://') !== false)
+		{
+			conv_log('Download avatar: '.$file.' for user '.$user_id);
+			$extension = strtolower(substr($file, strrpos($file, '.') + 1));
+
+			// Download avatar to temporary location (FluxBB cache directory)
+			$tmp_file = FORUM_CACHE_DIR.uniqid();
+			if (!file_put_contents($tmp_file, file_get_contents($file)))
+			{
+				conv_log('Failed to download avatar file "'.$file.'"" for user '.$user_id);
+				return false;
+			}
+
+			// Check image mime type
+			$info = @getimagesize($tmp_file);
+			if (!isset($info['mime']))
+			{
+				conv_log('Failed to get miemtype for file '.$file);
+				unlink($tmp_file);
+				return false;
+			}
+			else if (!array_key_exists($info['mime'], $this->avatar_mimes))
+			{
+				conv_log('Invalid avatar mimetype for file '.$file.' ('.$info['mime'].')');
+				unlink($tmp_file);
+				return false;
+			}
+
+			$extension = $this->avatar_mimes[$info['mime']];
+			if (!rename($tmp_file, $this->avatars_dir.$user_id.'.'.$extension))
+			{
+				conv_log('Failed to move avatar file to '.$tmp_file.' to '.$this->avatars_dir.$user_id.'.'.$extension);
+				return false;
+			}
+
+			return true;
+		}
+
+		// Copy local file
+		else if (file_exists($file))
+		{
+			$extension = strtolower(substr($file, strrpos($file, '.') + 1));
+			if (!in_array($extension, $this->avatar_exts))
+			{
+				conv_log('Invalid avatar extension for file '.$file);
+				return false;
+			}
+
+			if (!copy($file, $this->avatars_dir.$user_id.'.'.$extension))
+			{
+				conv_log('Failed to save avatar file "'.$file.'"" for user '.$user_id);
+				return false;
+			}
+			return true;
+		}
+
+		conv_log('Avatar file '.$file.' for user '.$user_id.' does not exist');
+		return false;
+	}
 
 	function sync_db()
 	{

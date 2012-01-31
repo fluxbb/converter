@@ -388,7 +388,7 @@ class Invision_Power_Board_3_2 extends Forum
 			$this->fluxbb->db->add_field('users', 'salt', 'VARCHAR(255)', true, '', 'password') or error('Unable to add field', __FILE__, __LINE__, $this->db->error());
 
 		$result = $this->db->query_build(array(
-			'SELECT'	=> 'u.member_id AS id, u.member_group_id AS group_id, u.name AS username, u.members_pass_hash AS password, u.members_pass_salt AS salt, u.title, f.field_3 AS url, f.field_4 AS icq, f.field_2 AS msn, f.field_1 AS aim, f.field_8 AS yahoo, f.field_6 AS location, IF(u.time_offset IS NULL, 0, u.time_offset) AS timezone, u.posts AS num_posts, u.last_post, u.view_img AS show_img, 1 AS show_avatars, u.view_sigs AS show_sig, u.joined AS registered, u.ip_address AS registration_ip, u.last_visit AS last_visit, 1 AS email_setting, u.dst_in_use AS dst, p.signature',
+			'SELECT'	=> 'u.member_id AS id, u.member_group_id AS group_id, u.name AS username, u.members_pass_hash AS password, u.members_pass_salt AS salt, u.title, f.field_3 AS url, f.field_4 AS icq, f.field_2 AS msn, f.field_1 AS aim, f.field_8 AS yahoo, f.field_6 AS location, IF(u.time_offset IS NULL, 0, u.time_offset) AS timezone, u.posts AS num_posts, u.last_post, u.view_img AS show_img, 1 AS show_avatars, u.view_sigs AS show_sig, u.joined AS registered, u.ip_address AS registration_ip, u.last_visit AS last_visit, 1 AS email_setting, u.dst_in_use AS dst, p.signature, p.pp_main_photo',
 			'JOINS'        => array(
 				array(
 					'LEFT JOIN'	=> 'pfields_content AS f',
@@ -416,6 +416,9 @@ class Invision_Power_Board_3_2 extends Forum
 			$cur_user['group_id'] = $this->grp2grp($cur_user['group_id']);
 			$cur_user['id'] = $this->uid2uid($cur_user['id']);
 			$cur_user['signature'] = $this->convert_message($cur_user['signature']);
+
+			$this->convert_avatar($cur_user);
+			unset($cur_user['pp_main_photo']);
 
 			$this->fluxbb->add_row('users', $cur_user, array($this->fluxbb, 'error_users'));
 		}
@@ -501,5 +504,44 @@ class Invision_Power_Board_3_2 extends Forum
 		}
 
 		return preparse_bbcode(str_replace(array_keys($replacements), array_values($replacements), $message), $errors);
+	}
+
+	/**
+	 * Copy avatar file to the FluxBB avatars dir
+	 */
+	function convert_avatar($cur_user)
+	{
+		static $config;
+
+		if (empty($cur_user['pp_main_photo']))
+			return false;
+
+		// Fetch avatar from remote url
+		if (strpos($cur_user['pp_main_photo'], '://') !== false)
+			return $this->fluxbb->save_avatar($cur_user['pp_main_photo'], $cur_user['id']);
+
+		else if (isset($this->path))
+		{
+			if (!isset($config))
+			{
+				$config = array();
+
+				$result = $this->db->query_build(array(
+					'SELECT'	=> 'conf_key, conf_value',
+					'FROM'		=> 'core_sys_conf_settings',
+					'WHERE'		=> 'conf_key = \'upload_dir\''
+				)) or conv_error('Unable to fetch config', __FILE__, __LINE__, $this->db->error());
+
+				while ($cur_config = $this->db->fetch_assoc($result))
+					$config[$cur_config['conf_key']] = $cur_config['conf_value'];
+			}
+
+			// Fetch avatar from local file
+			$cur_avatar_file = $this->path.rtrim($config['upload_dir'], '/').'/'.$cur_user['pp_main_photo'];
+			if (file_exists($cur_avatar_file))
+				return $this->fluxbb->save_avatar($cur_avatar_file, $cur_user['id']);
+		}
+
+		return false;
 	}
 }
