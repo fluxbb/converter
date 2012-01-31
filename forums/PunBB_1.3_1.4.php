@@ -19,20 +19,20 @@ class PunBB_1_3_1_4 extends Forum
 	const CONVERTS_PASSWORD = true;
 
 	public $steps = array(
-		'bans',
-		'categories',
-		'censoring',
-		'config',
-		'forums',
-//		'forum_perms',
-		'groups',
-		'posts',
-		'ranks',
-		'reports',
-		'topic_subscriptions',
-		'forum_subscriptions',
-		'topics',
-		'users',
+		'bans'					=> array('bans', 'id'),
+		'categories'			=> array('categories', 'id'),
+		'censoring'				=> array('censoring', 'id'),
+		'config'				=> array('config', 'conf_name'),
+		'forums'				=> array('forums', 'id'),
+		'forum_perms'			=> array('forum_perms', 'id'),
+		'groups'				=> array('groups', 'g_id', 'g_id > 4'),
+		'posts'					=> array('posts', 'id'),
+		'ranks'					=> array('ranks', 'id'),
+		'reports'				=> array('reports', 'id'),
+		'topic_subscriptions'	=> array('topic_subscriptions', 'topic_id'),
+		'forum_subscriptions'	=> 0,//array('forum_subscriptions', 'forum_id'),
+		'topics'				=> array('topics', 'id'),
+		'users'					=> array('users', 'id', 'id > 1'),
 	);
 
 	function initialize()

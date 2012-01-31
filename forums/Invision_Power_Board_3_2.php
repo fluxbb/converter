@@ -19,20 +19,20 @@ class Invision_Power_Board_3_2 extends Forum
 	const CONVERTS_PASSWORD = false;
 
 	public $steps = array(
-		'bans',
-		'categories',
-		'censoring',
-		'config',
-		'forums',
-//		'forum_perms',
-		'groups',
-		'posts',
-		'ranks',
-		'reports',
-		'topic_subscriptions',
-		'forum_subscriptions',
-		'topics',
-		'users',
+		'bans'					=> array('banfilters', 'ban_id'),
+		'categories'			=> array('forums', 'id', 'parent_id = -1'),
+		'censoring'				=> array('badwords', 'wid'),
+		'config'				=> 0,
+		'forums'				=> array('forums', 'id', 'parent_id <> -1'),
+//		'forum_perms'			=> 0,
+		'groups'				=> array('groups', 'g_id', 'g_id > 6'),
+		'posts'					=> array('posts', 'pid'),
+		'ranks'					=> array('titles', 'id'),
+		'reports'				=> array('rc_reports', 'rid'),
+		'topic_subscriptions'	=> 0, // TODO:
+		'forum_subscriptions'	=> 0, // TODO:
+		'topics'				=> array('topics', 'tid'),
+		'users'					=> array('members', 'member_id'),
 	);
 
 	function initialize()
@@ -211,6 +211,7 @@ class Invision_Power_Board_3_2 extends Forum
 		$result = $this->db->query_build(array(
 			'SELECT'	=> 'id, name AS forum_name, description AS forum_desc, topics AS num_topics, posts AS num_posts, position AS disp_position, last_poster_name AS last_poster, last_post, parent_id AS cat_id',
 			'FROM'		=> 'forums',
+			'WHERE'		=> 'parent_id <> -1'
 		)) or conv_error('Unable to fetch forums', __FILE__, __LINE__, $this->db->error());
 
 		conv_message('Processing num', 'forums', $this->db->num_rows($result));

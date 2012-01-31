@@ -30,7 +30,7 @@ class FluxBB
 		'topic_subscriptions'	=> array('topic_id'),
 		'forum_subscriptions'	=> array('forum_id'),
 		'topics'				=> array('id'),
-		'users'					=> array('id', 'id <> 1'),
+		'users'					=> array('id', 'id > 1'),
 	);
 
 	function __construct($pun_config)

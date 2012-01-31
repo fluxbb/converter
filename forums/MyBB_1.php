@@ -19,20 +19,20 @@ class MyBB_1 extends Forum
 	const CONVERTS_PASSWORD = false;
 
 	public $steps = array(
-		'bans',
-		'categories',
-		'censoring',
-		'config',
-		'forums',
-//		'forum_perms',
-		'groups',
-		'posts',
-		'ranks',
-		'reports',
-		'topic_subscriptions',
-		'forum_subscriptions',
-		'topics',
-		'users',
+		'bans'					=> array('banned', 'uid'),
+		'categories'			=> array('forums', 'fid', 'type = \'c\''),
+		'censoring'				=> 0,//array('words', 'word_id'),
+		'config'				=> 0,
+		'forums'				=> array('forums', 'fid', 'type = \'f\''),
+//		'forum_perms'			=> 0,
+		'groups'				=> array('usergroups', 'gid', 'gid > 7'),
+		'posts'					=> array('posts', 'pid'),
+		'ranks'					=> array('usertitles', 'utid'),
+		'reports'				=> array('reportedposts', 'rid'),
+		'topic_subscriptions'	=> array('threadsubscriptions', 'tid'),
+		'forum_subscriptions'	=> array('forumsubscriptions', 'fid'),
+		'topics'				=> array('threads', 'tid'),
+		'users'					=> array('users', 'uid'),
 	);
 
 	function initialize()

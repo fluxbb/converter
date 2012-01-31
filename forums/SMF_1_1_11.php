@@ -19,20 +19,20 @@ class SMF_1_1_11 extends Forum
 	const CONVERTS_PASSWORD = true;
 
 	public $steps = array(
-		'bans',
-		'categories',
-		'censoring',
-		'config',
-		'forums',
-//		'forum_perms',
-		'groups',
-		'posts',
-		'ranks',
-		'reports',
-		'topic_subscriptions',
-		'forum_subscriptions',
-		'topics',
-		'users',
+		'bans'					=> array('ban_items', 'ID_BAN'),
+		'categories'			=> array('categories', 'ID_CAT'),
+		'censoring'				=> -1,
+		'config'				=> 0,
+		'forums'				=> array('boards', 'ID_BOARD'),
+//		'forum_perms'			=> 0,
+		'groups'				=> array('membergroups', 'ID_GROUP', 'minPosts = -1 AND ID_GROUP > 3'),
+		'posts'					=> array('messages', 'ID_MSG'),
+		'ranks'					=> array('membergroups', 'ID_GROUP', 'minPosts <> -1'),
+		// 'reports'				=> array('reports', 'report_id'),
+		'topic_subscriptions'	=> array('log_notify', 'ID_TOPIC', 'ID_TOPIC > 0'),
+		'forum_subscriptions'	=> array('log_notify', 'ID_BOARD', 'ID_BOARD > 0'),
+		'topics'				=> array('topics', 'ID_TOPIC'),
+		'users'					=> array('members', 'ID_MEMBER'),
 	);
 
 	function initialize()
@@ -219,13 +219,13 @@ class SMF_1_1_11 extends Forum
 	{
 		$result = $this->db->query_build(array(
 			'SELECT'	=> 'b.ID_BOARD AS id, b.name AS forum_name, b.description AS forum_desc, b.numTopics AS num_topics, b.numPosts AS num_posts, m.posterTime AS last_post, b.ID_LAST_MSG AS last_post_id, m.posterName AS last_poster, b.boardOrder AS disp_position, b.ID_CAT AS cat_id',
-			'FROM'		=> 'boards AS b',
 			'JOINS'		=> array(
 				array(
 					'LEFT JOIN'	=> 'messages AS m',
 					'ON'		=> 'm.ID_MSG = b.ID_LAST_MSG'
 				)
-			)
+			),
+			'FROM'		=> 'boards AS b',
 		)) or conv_error('Unable to fetch forums', __FILE__, __LINE__, $this->db->error());
 
 		conv_message('Processing num', 'forums', $this->db->num_rows($result));
@@ -403,8 +403,8 @@ class SMF_1_1_11 extends Forum
 		$result = $this->db->query_build(array(
 			'SELECT'	=> 'ID_MEMBER AS id, ID_GROUP AS group_id, memberName AS username, passwd AS password, passwordSalt AS salt, websiteUrl AS url, ICQ AS icq, MSN AS msn, AIM AS aim, YIM AS yahoo, signature AS signature, timeOffset AS timezone, posts AS num_posts, dateRegistered AS registered, lastLogin AS last_visit, location AS location, emailAddress AS email',
 			'FROM'		=> 'members',
-			'WHERE'		=> 'id_member > '.$start_at,
-			'ORDER BY'	=> 'id_member ASC',
+			'WHERE'		=> 'ID_MEMBER > '.$start_at,
+			'ORDER BY'	=> 'ID_MEMBER ASC',
 			'LIMIT'		=> PER_PAGE,
 		)) or conv_error('Unable to fetch users', __FILE__, __LINE__, $this->db->error());
 

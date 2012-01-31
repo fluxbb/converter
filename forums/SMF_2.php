@@ -19,20 +19,20 @@ class SMF_2 extends Forum
 	const CONVERTS_PASSWORD = false;
 
 	public $steps = array(
-		'bans',
-		'categories',
-		'censoring',
-		'config',
-		'forums',
-//		'forum_perms',
-		'groups',
-		'posts',
-		'ranks',
-		'reports',
-		'topic_subscriptions',
-		'forum_subscriptions',
-		'topics',
-		'users',
+		'bans'					=> array('ban_items', 'id_ban'),
+		'categories'			=> array('categories', 'id_cat'),
+		'censoring'				=> -1,
+		'config'				=> 0,
+		'forums'				=> array('boards', 'id_board'),
+//		'forum_perms'			=> 0,
+		'groups'				=> array('membergroups', 'id_group', 'minPosts = -1 AND ID_GROUP > 3'),
+		'posts'					=> array('messages', 'id_msg'),
+		'ranks'					=> array('membergroups', 'id_group', 'minPosts <> -1'),
+		// 'reports'				=> array('reports', 'report_id'),
+		'topic_subscriptions'	=> array('log_notify', 'id_topic', 'id_topic > 0'),
+		'forum_subscriptions'	=> array('log_notify', 'id_board', 'id_board > 0'),
+		'topics'				=> array('topics', 'id_topic'),
+		'users'					=> array('members', 'id_member'),
 	);
 
 	function initialize()

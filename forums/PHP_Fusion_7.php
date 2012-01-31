@@ -19,20 +19,20 @@ class PHP_Fusion_7 extends Forum
 	const CONVERTS_PASSWORD = false;
 
 	public $steps = array(
-		'bans',
-		'categories',
-		'censoring',
-		'config',
-		'forums',
-//		'forum_perms',
-		'groups',
-		'posts',
-		'ranks',
-		'reports',
-		'topic_subscriptions',
-		'forum_subscriptions',
-		'topics',
-		'users',
+		'bans'					=> array('blacklist', 'blacklist_id'),
+		'categories'			=> array('forums', 'forum_id', 'forum_cat = 0'),
+		'censoring'				=> -1,
+		'config'				=> 0,
+		'forums'				=> array('forums', 'forum_id', 'forum_cat <> 0'),
+//		'forum_perms'			=> 0,
+		'groups'				=> array('user_groups', 'group_id'),
+		'posts'					=> array('posts', 'post_id'),
+		'ranks'					=> 0,//array('ranks', 'rank_id'),
+		'reports'				=> 0,//array('reports', 'report_id'),
+		'topic_subscriptions'	=> array('thread_notify', 'thread_id'),
+		'forum_subscriptions'	=> 0,//array('forums_watch', 'forum_id'),
+		'topics'				=> array('threads', 'thread_id'),
+		'users'					=> array('users', 'user_id'),
 	);
 
 	function initialize()

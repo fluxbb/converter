@@ -19,20 +19,20 @@ class VBulletin_4_1_5 extends Forum
 	const CONVERTS_PASSWORD = false;
 
 	public $steps = array(
-		'bans',
-		'categories',
-		'censoring',
-		'config',
-		'forums',
-//		'forum_perms',
-		'groups',
-		'posts',
-		'ranks',
-		'reports',
-		'topic_subscriptions',
-		'forum_subscriptions',
-		'topics',
-		'users',
+		'bans'					=> array('userban', 'userid'),
+		'categories'			=> array('forum', 'forumid', 'parentid = -1'),
+		'censoring'				=> 0,//array('words', 'word_id'),
+		'config'				=> 0,
+		'forums'				=> array('forum', 'forumid', 'parentid <> -1'),
+//		'forum_perms'			=> 0,
+		'groups'				=> array('usergroup', 'usergroup', 'usergroupid > 8'),
+		'posts'					=> array('post', 'postid'),
+		'ranks'					=> array('usertitle', 'usertitleid'),
+		// 'reports'				=> array('reports', 'report_id'),
+		'topic_subscriptions'	=> array('subscribethread', 'threadid'),
+		'forum_subscriptions'	=> array('subscribeforum', 'forumid'),
+		'topics'				=> array('thread', 'threadid'),
+		'users'					=> array('user', 'userid'),
 	);
 
 	function initialize()

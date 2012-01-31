@@ -22,20 +22,20 @@ class Merge_FluxBB extends Forum
 	const NO_DB_CLEANUP = true;
 
 	public $steps = array(
-		'groups',
-		'users',
-		'bans',
-		'categories',
-		'censoring',
-		'config',
-		'forums',
-		'forum_perms',
-		'topics',
-		'posts',
-		'ranks',
-		'reports',
-		'topic_subscriptions',
-		'forum_subscriptions',
+		'groups'				=> array('groups', 'g_id', 'g_id > 4'),
+		'users'					=> array('users', 'id', 'id > 1'),
+		'bans'					=> array('bans', 'id'),
+		'categories'			=> array('categories', 'id'),
+		'censoring'				=> array('censoring', 'id'),
+		'config'				=> array('config', 'conf_name'),
+		'forums'				=> array('forums', 'id'),
+		'forum_perms'			=> array('forum_perms', 'id'),
+		'topics'				=> array('topics', 'id'),
+		'posts'					=> array('posts', 'id'),
+		'ranks'					=> array('ranks', 'id'),
+		'reports'				=> array('reports', 'id'),
+		'topic_subscriptions'	=> array('topic_subscriptions', 'topic_id'),
+		'forum_subscriptions'	=> array('forum_subscriptions', 'forum_id'),
 	);
 
 	private $last_id = array();

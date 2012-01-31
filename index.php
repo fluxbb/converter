@@ -245,7 +245,12 @@ foreach ($alerts as $cur_alert)
 							</tr>
 <?php
 	foreach ($_SESSION['fluxbb_converter']['count'] as $table => $count)
-		echo '<tr><td>'.pun_htmlspecialchars($table).'</td>'.'<td>'.intval($count).'</td>'.'<td>'.(isset($_SESSION['fluxbb_converter']['fluxbb_count'][$table]) ? intval($_SESSION['fluxbb_converter']['fluxbb_count'][$table]) : '').'</td></td>';
+	{
+		$old_forum_count = intval($count);
+		$fluxbb_count = (isset($_SESSION['fluxbb_converter']['fluxbb_count'][$table]) ? intval($_SESSION['fluxbb_converter']['fluxbb_count'][$table]) : '');
+
+		echo '<tr><td>'.pun_htmlspecialchars($table).'</td>'.'<td>'.($old_forum_count == -1 ? 'N/A' : $old_forum_count).'</td>'.'<td>'.($fluxbb_count == -1 ? 'N/A' : $fluxbb_count).'</td></td>';
+	}
 ?>
 						</table>
 					</div>
