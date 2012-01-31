@@ -71,6 +71,11 @@ return array(
 'Database converted'			=>	'Your forum has been successfully converted! You may now %s.',
 'go to forum index'				=>	'go to the forum index',
 
+'Conversion details'			=>	'Conversion details',
+'Number of items'				=>	'Number of items',
+'Old forum'						=>	'Old forum',
+'FluxBB'						=>	'FluxBB',
+
 // Command line based
 'Possible values'				=>	'Possible values are: %s',
 'Default value'					=>	'(default: %s)',

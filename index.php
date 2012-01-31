@@ -230,18 +230,18 @@ foreach ($alerts as $cur_alert)
 		</div>
 	</div>
 
-	<h2><span><?php echo $lang_convert['Final instructions'] ?></span></h2>
+	<h2><span><?php echo $lang_convert['Conversion details'] ?></span></h2>
 	<div class="box">
 		<div class="fakeform">
 			<div class="inform">
 				<fieldset>
-					<legend>Number of items</legend>
+					<legend><?php echo $lang_convert['Number of items'] ?></legend>
 					<div class="infldset">
 						<table style="width: 300px">
 							<tr>
 								<th>&nbsp;</th>
-								<th>Old forum</th>
-								<th>FluxBB</th>
+								<th><?php echo $lang_convert['Old forum'] ?></th>
+								<th><?php echo $lang_convert['FluxBB'] ?></th>
 							</tr>
 <?php
 	foreach ($_SESSION['fluxbb_converter']['count'] as $table => $count)
