@@ -129,7 +129,7 @@ if (isset($_POST['form_sent']) || isset($_GET['step']))
 
 	if (!isset($step) || $step != 'results')
 	{
-		// Start the converter. When it do its work, it redirects to the next page
+		// Start the converter
 		$redirect = $converter->convert($step, $start_at);
 
 		if ($redirect === false)

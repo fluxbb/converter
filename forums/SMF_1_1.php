@@ -13,7 +13,7 @@ define('FORUM_DB_REVISION', 15);
 define('FORUM_SI_REVISION', 2);
 define('FORUM_PARSER_REVISION', 2);
 
-class SMF_1_1_11 extends Forum
+class SMF_1_1 extends Forum
 {
 	// Will the passwords be converted?
 	const CONVERTS_PASSWORD = true;

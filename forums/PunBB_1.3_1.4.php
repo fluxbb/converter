@@ -30,7 +30,7 @@ class PunBB_1_3_1_4 extends Forum
 		'ranks'					=> array('ranks', 'id'),
 		'reports'				=> array('reports', 'id'),
 		'topic_subscriptions'	=> array('subscriptions', 'topic_id'),
-		'forum_subscriptions'	=> 0,//array('forum_subscriptions', 'forum_id'),
+		'forum_subscriptions'	=> 0,
 		'topics'				=> array('topics', 'id'),
 		'users'					=> array('users', 'id', 'id > 1'),
 	);

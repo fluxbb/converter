@@ -13,7 +13,7 @@ define('FORUM_DB_REVISION', 15);
 define('FORUM_SI_REVISION', 2);
 define('FORUM_PARSER_REVISION', 2);
 
-class PhpBB_3_0_9 extends Forum
+class PhpBB_3_0 extends Forum
 {
 	// Will the passwords be converted?
 	const CONVERTS_PASSWORD = false;

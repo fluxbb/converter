@@ -120,7 +120,7 @@ class ConverterTest extends PHPUnit_Framework_TestCase
 
 	function testPhpbb3()
 	{
-		$this->convert('PhpBB_3_0_9', 'phpbb__test', 'phpbb_');
+		$this->convert('PhpBB_3_0', 'phpbb__test', 'phpbb_');
 	}
 
 	function testPunBB()
@@ -130,7 +130,7 @@ class ConverterTest extends PHPUnit_Framework_TestCase
 
 	function testSmf1()
 	{
-		$this->convert('SMF_1_1_11', 'smf1__test', 'smf_');
+		$this->convert('SMF_1_1', 'smf1__test', 'smf_');
 	}
 
 	function testSmf2()
