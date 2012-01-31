@@ -38,7 +38,7 @@ class Forum
 			else
 				$this->path = PUN_ROOT.$forum_config['path'];
 
-			$this->path = rtrim($this->path, '/').'/';
+			$this->path = realpath(rtrim($this->path, '/')).'/';
 			conv_log('Will convert avatars', true);
 			conv_log('Forum path: '.$this->path, true);
 		}

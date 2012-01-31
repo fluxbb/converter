@@ -390,7 +390,7 @@ class MyBB_1 extends Forum
 			$this->fluxbb->db->add_field('users', 'salt', 'VARCHAR(255)', true, '', 'password') or error('Unable to add field', __FILE__, __LINE__, $this->db->error());
 
 		$result = $this->db->query_build(array(
-			'SELECT'	=> 'uid AS id, username AS username, password AS password, salt AS salt, website AS url, icq AS icq, msn AS msn, aim AS aim, yahoo AS yahoo, postnum AS num_posts, IF(hideemail=1, 1, 0) AS email_setting, timezone, lastvisit AS last_visit, signature, email, regdate AS registered, usergroup AS group_id',
+			'SELECT'	=> 'uid AS id, username AS username, password AS password, email, avatar, salt AS salt, website AS url, icq AS icq, msn AS msn, aim AS aim, yahoo AS yahoo, postnum AS num_posts, IF(hideemail=1, 1, 0) AS email_setting, timezone, lastvisit AS last_visit, signature, regdate AS registered, usergroup AS group_id',
 			'FROM'		=> 'users',
 			'WHERE'		=> 'uid > '.$start_at,
 			'ORDER BY'	=> 'uid ASC',
@@ -408,6 +408,9 @@ class MyBB_1 extends Forum
 			$cur_user['group_id'] = $this->grp2grp($cur_user['group_id']);
 			$cur_user['signature'] = $this->convert_message($cur_user['signature']);
 			$cur_user['id'] = $this->uid2uid($cur_user['id']);
+
+			$this->convert_avatar($cur_user);
+			unset($cur_user['avatar']);
 
 			$this->fluxbb->add_row('users', $cur_user);
 		}
@@ -485,5 +488,34 @@ class MyBB_1 extends Forum
 			);
 		}
 		return preparse_bbcode(str_replace(array_keys($replacements), array_values($replacements), $message), $errors);
+	}
+
+
+	/**
+	 * Copy avatar file to the FluxBB avatars dir
+	 */
+	function convert_avatar($cur_user)
+	{
+		static $config;
+
+		if (empty($cur_user['avatar']))
+			return false;
+
+		if (($pos = strpos($cur_user['avatar'], '?dateline=')) !== false)
+			$cur_user['avatar'] = substr($cur_user['avatar'], 0, $pos);
+
+		// Fetch avatar from remote url
+		if (strpos($cur_user['avatar'], '://') !== false)
+			return $this->fluxbb->save_avatar($cur_user['avatar'], $cur_user['id']);
+
+		// Copy local avatar file
+		else if (isset($this->path))
+		{
+			$cur_avatar_file = $this->path.$cur_user['avatar'];
+			if (file_exists($cur_avatar_file))
+				return $this->fluxbb->save_avatar($cur_avatar_file, $cur_user['id']);
+		}
+
+		return false;
 	}
 }

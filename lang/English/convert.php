@@ -23,7 +23,7 @@ return array(
 'Convert info 2'				=>	'Choose the forum software you want to convert from. If you cannot find the exact version, the conversion might still be possible with just a minor version number change.',
 'Forum software'				=>	'Forum software',
 'Enter old forum path'			=>	'Enter old forum path',
-'Old forum path info'			=>	'Type the absolute (or relative to the FluxBB directory) path to the old forum. When you uploaded FluxBB to the subdirectory of the old forum folder, enter ".." (without quotes). It is needed for the avatar conversion. Leave empty if you do not want to convert avatars.',
+'Old forum path info'			=>	'Type the absolute (or relative to the FluxBB directory) path to the old forum. When you uploaded FluxBB to the subdirectory of the old forum folder, enter ".." (without quotes). When you do not fill this field, local avatars will not be converted.',
 'Old forum path'				=>	'Old forum path',
 'Select old database'			=>	'Select old database',
 'Convert info 3'				=>	'Enter your old database parameters',
