@@ -110,6 +110,8 @@ if (defined('CONV_LOG') && file_exists(CONV_LOG))
 conv_log('Running command line based converter for: '.$forum_config['type'].' ('.gmdate('Y-m-d H:i:s').')');
 conv_log('PHP version: '.PHP_VERSION.', OS: '.PHP_OS);
 
+$session = array();
+
 // Create a wrapper for fluxbb (has easy functions for adding users etc.)
 require CONV_ROOT.'include/fluxbb.class.php';
 $fluxbb = new FluxBB($pun_config);
@@ -141,7 +143,7 @@ if (!$forum->converts_password())
 
 $fluxbb->close_database();
 
-if (!empty($_SESSION['converter']['dupe_users']))
+if (!empty($session['dupe_users']))
 {
 	conv_message("\n".'---------------------------'."\n");
 	conv_message($lang_convert['Username dupes head']);
@@ -156,10 +158,7 @@ if (!empty($_SESSION['converter']['dupe_users']))
 	$handle = fopen('php://stdin', 'r');
 	$line = trim(fgets($handle));
 	if ($line == 'yes')
-	{
 		alert_dupe_users();
-		unset($_SESSION['converter']['dupe_users']);
-	}
 }
 
 if (!empty($alerts))
@@ -169,8 +168,8 @@ if (!empty($alerts))
 }
 
 conv_message();
-conv_message($lang_convert['Conversion completed in'], round($_SESSION['fluxbb_converter']['time'], 4));
+conv_message($lang_convert['Conversion completed in'], round($session['time'], 4));
 
-conv_log('Conversion completed in '.$_SESSION['fluxbb_converter']['time'], false, true);
+conv_log('Conversion completed in '.$session['time'], false, true);
 
 exit(0);

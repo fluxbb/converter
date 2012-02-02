@@ -75,6 +75,7 @@ return array(
 'Number of items'				=>	'Number of items',
 'Old forum'						=>	'Old forum',
 'FluxBB'						=>	'FluxBB',
+'Not available'					=>	'N/A',
 
 // Command line based
 'Possible values'				=>	'Possible values are: %s',

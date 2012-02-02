@@ -128,10 +128,12 @@ class FluxBB
 	 */
 	function error_users($cur_user)
 	{
-		if (!isset($_SESSION['converter']['dupe_users']))
-			$_SESSION['converter']['dupe_users'] = array();
+		global $session;
 
-		$_SESSION['converter']['dupe_users'][$cur_user['id']] = $cur_user;
+		if (!isset($session['dupe_users']))
+			$session['dupe_users'] = array();
+
+		$session['dupe_users'][$cur_user['id']] = $cur_user;
 	}
 
 	/**
@@ -141,6 +143,8 @@ class FluxBB
 	 */
 	function convert_users_dupe($cur_user)
 	{
+		global $session;
+
 		$old_username = $cur_user['username'];
 		$suffix = 1;
 
@@ -154,7 +158,7 @@ class FluxBB
 				break;
 		}
 
-		$_SESSION['converter']['dupe_users'][$cur_user['id']]['username'] = $cur_user['username'] = $username;
+		$session['dupe_users'][$cur_user['id']]['username'] = $cur_user['username'] = $username;
 
 		$temp = array();
 		foreach ($cur_user as $idx => $value)
@@ -196,9 +200,20 @@ class FluxBB
 			}
 		}
 
-		$_SESSION['converter']['dupe_users'][$cur_user['id']]['old_username'] = $old_username;
+		$session['dupe_users'][$cur_user['id']]['old_username'] = $old_username;
 	}
 
+	/**
+	 * Save user avatar to the FluxBB avatar directory
+	 *
+	 * @param string $file
+	 *  	A path to the file or image url
+	 *
+	 * @param integer $user_id
+	 * 		Id of the user
+	 *
+	 * @return bool
+	 */
 	function save_avatar($file, $user_id)
 	{
 		// Download remote file
@@ -262,6 +277,11 @@ class FluxBB
 		return false;
 	}
 
+	/**
+	 * Recount all posts, topics after conversion
+	 *
+	 * @return type
+	 */
 	function sync_db()
 	{
 		conv_log('Updating post count for each user');

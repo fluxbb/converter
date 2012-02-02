@@ -287,7 +287,8 @@ class PhpBB_3_0 extends Forum
 			'LIMIT'		=> PER_PAGE,
 		)) or conv_error('Unable to fetch posts', __FILE__, __LINE__, $this->db->error());
 
-		conv_message('Processing range', 'posts', $this->db->num_rows($result), $start_at, $start_at + PER_PAGE);
+//		conv_message('Processing range', 'posts', $this->db->num_rows($result), $start_at, $start_at + PER_PAGE, ceil($this->fetch_item_count('posts') / ));
+		conv_processing_message('posts', $start_at, $this->db->num_rows($result));
 
 		if (!$this->db->num_rows($result))
 			return false;
@@ -375,7 +376,7 @@ class PhpBB_3_0 extends Forum
 			'LIMIT'		=> PER_PAGE,
 		)) or conv_error('Unable to fetch topics', __FILE__, __LINE__, $this->db->error());
 
-		conv_message('Processing range', 'topics', $this->db->num_rows($result), $start_at, $start_at + PER_PAGE);
+		conv_message('Processing range', 'topics', $this->db->num_rows($result), $start_at, $start_at + PER_PAGE, ceil());
 
 		if (!$this->db->num_rows($result))
 			return false;

@@ -31,15 +31,18 @@ if (!defined('PUN'))
 	exit;
 }
 
+$session = isset($_SESSION['fluxbb_converter']) ? $_SESSION['fluxbb_converter'] : null;
+
 $default_style = 'Air';
 
 if (isset($_GET['alert_dupe_users']))
 {
-	if (empty($_SESSION['converter']['dupe_users']))
+	if (empty($session['dupe_users']))
 		conv_error($lang_convert['Bad request']);
 
 	alert_dupe_users();
-	unset($_SESSION['converter']['dupe_users']);
+	unset($session['dupe_users']);
+	$_SESSION = $session;
 }
 
 // We submited the form, store data in session as we'll redirect to the next page
@@ -69,7 +72,7 @@ if (isset($_POST['form_sent']))
 	if (!in_array($old_db_config['type'], $engines))
 		conv_error('Invalid database type');
 
-	$_SESSION['converter'] = array('forum_config' => $forum_config, 'old_db_config' => $old_db_config, 'lang' => $convert_lang);
+	$_SESSION['fluxbb_converter'] = $session = array('forum_config' => $forum_config, 'old_db_config' => $old_db_config, 'lang' => $convert_lang);
 
 	if (defined('CONV_LOG') && file_exists(CONV_LOG))
 		@unlink(CONV_LOG);
@@ -79,11 +82,11 @@ if (isset($_POST['form_sent']))
 }
 
 // Fetch data from session
-else if (isset($_SESSION['converter']))
+else if (isset($session))
 {
-	$forum_config = $_SESSION['converter']['forum_config'];
-	$old_db_config = $_SESSION['converter']['old_db_config'];
-	$convert_lang = $_SESSION['converter']['lang'];
+	$forum_config = $session['forum_config'];
+	$old_db_config = $session['old_db_config'];
+	$convert_lang = $session['lang'];
 }
 else
 {
@@ -132,14 +135,16 @@ if (isset($_POST['form_sent']) || isset($_GET['step']))
 		// Start the converter
 		$redirect = $converter->convert($step, $start_at);
 
+		$_SESSION['fluxbb_converter'] = $session;
+
 		if ($redirect === false)
 			conv_redirect('results');
 		else
 			conv_redirect($redirect[0], isset($redirect[1]) ? $redirect[1] : 0);
 	}
 
-	if (empty($_SESSION['converter']['dupe_users']))
-		unset($_SESSION['converter']);
+	if (empty($session['dupe_users']))
+		unset($_SESSION['fluxbb_converter']);
 
 	// We're done
 	$alerts = array($lang_convert['Rebuild search index note']);
@@ -149,7 +154,7 @@ if (isset($_POST['form_sent']) || isset($_GET['step']))
 
 	$fluxbb->close_database();
 	$forum->close_database();
-	conv_log('Conversion completed in '.$_SESSION['fluxbb_converter']['time'], false, true);
+	conv_log('Conversion completed in '.$session['time'], false, true);
 
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
@@ -170,7 +175,7 @@ if (isset($_POST['form_sent']) || isset($_GET['step']))
 	<div class="box">
 		<div id="brdtitle" class="inbox">
 			<h1><span><?php echo sprintf($lang_convert['FluxBB converter'], CONV_VERSION) ?></span></h1>
-			<div id="brddesc"><p><?php echo sprintf($lang_convert['Conversion completed in'], round($_SESSION['fluxbb_converter']['time'], 4)) ?></p></div>
+			<div id="brddesc"><p><?php echo sprintf($lang_convert['Conversion completed in'], round($session['time'], 4)) ?></p></div>
 		</div>
 	</div>
 </div>
@@ -179,7 +184,7 @@ if (isset($_POST['form_sent']) || isset($_GET['step']))
 
 <div class="blockform">
 
-<?php if (!empty($_SESSION['fluxbb_converter']['dupe_users'])) : ?>
+<?php if (!empty($session['dupe_users'])) : ?>
 	<h2><span><?php echo $lang_convert['Username dupes head'] ?></span></h2>
 	<div class="box">
 		<form method="post" action="index.php?stage=results&amp;alert_dupe_users">
@@ -195,7 +200,7 @@ if (isset($_POST['form_sent']) || isset($_GET['step']))
 					<div class="infldset">
 						<p>
 <?php
-			foreach ($_SESSION['fluxbb_converter']['dupe_users'] as $id => $cur_user)
+			foreach ($session['dupe_users'] as $id => $cur_user)
 				echo sprintf($lang_convert['was renamed to'], '<strong>'.pun_htmlspecialchars($cur_user['old_username']).'</strong>', '<strong>'.pun_htmlspecialchars($cur_user['username']).'</strong>').'<br />'."\n";
 
 ?>
@@ -244,12 +249,12 @@ foreach ($alerts as $cur_alert)
 								<th><?php echo $lang_convert['FluxBB'] ?></th>
 							</tr>
 <?php
-	foreach ($_SESSION['fluxbb_converter']['count'] as $table => $count)
+	foreach ($session['count'] as $table => $count)
 	{
 		$old_forum_count = intval($count);
-		$fluxbb_count = (isset($_SESSION['fluxbb_converter']['fluxbb_count'][$table]) ? intval($_SESSION['fluxbb_converter']['fluxbb_count'][$table]) : '');
+		$fluxbb_count = (isset($session['fluxbb_count'][$table]) ? intval($session['fluxbb_count'][$table]) : '');
 
-		echo '<tr><td>'.pun_htmlspecialchars($table).'</td>'.'<td>'.($old_forum_count == -1 ? 'N/A' : $old_forum_count).'</td>'.'<td>'.($fluxbb_count == -1 ? 'N/A' : $fluxbb_count).'</td></td>';
+		echo '<tr><td>'.pun_htmlspecialchars($table).'</td>'.'<td>'.($old_forum_count == -1 ? $lang_convert['Not available'] : $old_forum_count).'</td>'.'<td>'.($fluxbb_count == -1 ? $lang_convert['Not available'] : $fluxbb_count).'</td></td>';
 	}
 ?>
 						</table>

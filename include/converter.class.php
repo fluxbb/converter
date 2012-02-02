@@ -14,8 +14,13 @@ class Converter
 
 	function __construct($fluxbb, $forum)
 	{
+		global $session;
+
 		$this->forum = $forum;
 		$this->fluxbb = $fluxbb;
+
+		if (!isset($session))
+			$session = array();
 	}
 
 	/**
@@ -56,6 +61,8 @@ class Converter
 	 */
 	function convert($step = null, $start_at = 0)
 	{
+		global $session;
+
 		$steps = array_keys($this->forum->steps);
 
 		// Start from beginning
@@ -63,12 +70,12 @@ class Converter
 		{
 			conv_log();
 			conv_message('Converting', 'start');
-			$_SESSION['fluxbb_converter']['start_time'] = get_microtime();
+			$session['start_time'] = get_microtime();
 
 			// Validate only first time we run converter (check whether database configuration is valid)
 			$this->validate();
 
-			$_SESSION['fluxbb_converter']['count'] = $this->forum->fetch_count();
+			$session['count'] = $this->forum->fetch_item_count();
 
 			// Drop the FluxBB database tables (when there is no NO_DB_CLEANUP constant defined for forum)
 			if (!defined(get_class($this->forum).'::NO_DB_CLEANUP'))
@@ -146,13 +153,15 @@ class Converter
 
 	function finish()
 	{
+		global $session;
+
 		// Handle users dupe
-		if (!empty($_SESSION['converter']['dupe_users']))
+		if (!empty($session['dupe_users']))
 		{
 			conv_log('Converting dupe users');
 			$start = get_microtime();
 
-			foreach ($_SESSION['converter']['dupe_users'] as $cur_user)
+			foreach ($session['dupe_users'] as $cur_user)
 				$this->fluxbb->convert_users_dupe($cur_user);
 
 			conv_log('Done in '.round(get_microtime() - $start, 6)."\n");
@@ -165,24 +174,18 @@ class Converter
 		$this->generate_cache();
 		conv_log('Done in '.round(get_microtime() - $start, 6)."\n");
 
-		$_SESSION['fluxbb_converter']['fluxbb_count'] = $this->fluxbb->fetch_count();
-		$_SESSION['fluxbb_converter']['time'] = get_microtime() - $_SESSION['fluxbb_converter']['start_time'];
+		$session['fluxbb_count'] = $this->fluxbb->fetch_count();
+		$session['time'] = get_microtime() - $session['start_time'];
 	}
 
-	function get_forum_item_count()
+	function get_forum_item_count($table = null)
 	{
-		if (isset($_SESSION['fluxbb_converter']['count']))
-			return $_SESSION['fluxbb_converter']['count'];
-		else
-			return $_SESSION['fluxbb_converter']['count'] = $this->forum->fetch_count();
+		return $this->forum->fetch_item_count($table);
 	}
 
-	function get_fluxbb_item_count()
+	function get_fluxbb_item_count($table = null)
 	{
-		if (isset($_SESSION['fluxbb_converter']['fluxbb_count']))
-			return $_SESSION['fluxbb_converter']['fluxbb_count'];
-		else
-			return $_SESSION['fluxbb_converter']['fluxbb_count'] = $this->fluxbb->fetch_count();
+		return $this->fluxbb->fetch_item_count($table);
 	}
 
 	/**
@@ -203,6 +206,7 @@ class Converter
 		clear_feed_cache();
 	}
 
+	// TODO:
 	function get_time()
 	{
 		return get_microtime() - $this->start;

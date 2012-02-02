@@ -105,31 +105,46 @@ class Forum
 		return false;
 	}
 
-	function fetch_count()
+	function fetch_item_count($table = null)
 	{
-		$tables = array();
-		foreach ($this->steps as $cur_step => $table_info)
+		global $session;
+
+		// First we look for whether we have this data stored in $session
+		if (isset($session['forum_item_count']))
+			$tables = $session['forum_item_count'];
+
+		// When not found, get item count and save in $session for futher use
+		else
 		{
-			$count = 0;
-
-			if (is_numeric($table_info))
-				$count = $table_info;
-
-			else if (is_array($table_info))
+			$tables = array();
+			foreach ($this->steps as $cur_step => $table_info)
 			{
-				$query = array(
-					'SELECT'	=> 'COUNT('.$this->db->escape($table_info[1]).')',
-					'FROM'		=> $this->db->escape($table_info[0])
-				);
-				if (isset($table_info[2]))
-					$query['WHERE'] = $table_info[2];
+				$count = 0;
 
-				$result = $this->db->query_build($query) or conv_error('Unable to fetch num rows for '.$cur_step, __FILE__, __LINE__, $this->db->error());
-				$count = $this->db->result($result);
+				if (is_numeric($table_info))
+					$count = $table_info;
+
+				else if (is_array($table_info))
+				{
+					$query = array(
+						'SELECT'	=> 'COUNT('.$this->db->escape($table_info[1]).')',
+						'FROM'		=> $this->db->escape($table_info[0])
+					);
+					if (isset($table_info[2]))
+						$query['WHERE'] = $table_info[2];
+
+					$result = $this->db->query_build($query) or conv_error('Unable to fetch num rows for '.$cur_step, __FILE__, __LINE__, $this->db->error());
+					$count = $this->db->result($result);
+				}
+
+				$tables[$cur_step] = $count;
 			}
-
-			$tables[$cur_step] = $count;
+			$session['forum_item_count'] = $tables;
 		}
+
+		if (isset($table))
+			return isset($tables[$table]) ? $tables[$table] : -1;
+
 		return $tables;
 	}
 

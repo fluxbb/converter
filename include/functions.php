@@ -6,6 +6,18 @@
  * @package FluxBB
  */
 
+function conv_processing_message($table, $start_at, $num_rows)
+{
+	global $session;
+
+	if (!isset($session['num_done'][$table]))
+		$session['num_done'][$table] = 0;
+
+	conv_message('Processing rows', $num_rows, $start_at, $start_at + PER_PAGE);
+
+	$session['num_done'][$table] += $num_rows;
+}
+
 function validate_params($forum_config, $old_db_config)
 {
 	global $pun_config;
@@ -155,11 +167,11 @@ function converter_list_langs()
  */
 function alert_dupe_users()
 {
-	global $pun_config;
+	global $pun_config, $session;
 
 	require PUN_ROOT.'include/email.php';
 
-	foreach ($_SESSION['converter']['dupe_users'] as $cur_user)
+	foreach ($$session['dupe_users'] as $cur_user)
 	{
 		// Email the user alerting them of the change
 		if (file_exists(PUN_ROOT.'lang/'.$cur_user['language'].'/mail_templates/rename.tpl'))
@@ -184,7 +196,20 @@ function alert_dupe_users()
 	}
 }
 
-
+/**
+ * Log message to the file
+ *
+ * @param string $message
+ * 		A message
+ *
+ * @param bool $first_time_only
+ * 		Should we log message for first step only
+ *
+ * @param bool $close
+ * 		When true, closes file handle
+ *
+ * @return type
+ */
 function conv_log($message = '', $first_time_only = false, $close = false)
 {
 	static $prev_time, $fh, $pun_start;
@@ -207,6 +232,16 @@ function conv_log($message = '', $first_time_only = false, $close = false)
 		fclose($fh);
 }
 
+/**
+ * Converter error handler
+ * Writes messages to the log file
+ *
+ * @param integer $errno
+ * @param string $errstr
+ * @param string $errfile
+ * @param integer $errline
+ * @return type
+ */
 function conv_error_handler($errno, $errstr, $errfile, $errline)
 {
 	ob_start();

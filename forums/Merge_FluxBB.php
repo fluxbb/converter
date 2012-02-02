@@ -42,13 +42,15 @@ class Merge_FluxBB extends Forum
 
 	function initialize()
 	{
+		global $session;
+
 		$this->db->set_names('utf8');
 
 		if (!session_id())
 			session_start();
 
-		if (isset($_SESSION['converter']['last_id']))
-			$this->last_id = $_SESSION['converter']['last_id'];
+		if (isset($session['last_id']))
+			$this->last_id = $session['last_id'];
 		else
 		{
 			$check_id = array('groups' => 'g_id', 'users', 'bans', 'categories', 'censoring', 'forums', 'topics', 'posts', 'ranks', 'reports');
@@ -71,7 +73,7 @@ class Merge_FluxBB extends Forum
 
 				$this->last_id[$cur_table] = $this->fluxbb->db->num_rows($result) ? $this->db->result($result) : 0;
 			}
-			$_SESSION['converter']['last_id'] = $this->last_id;
+			$session['last_id'] = $this->last_id;
 		}
 	}
 
