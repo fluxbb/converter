@@ -66,7 +66,7 @@ class FluxBB
 		$this->db->close();
 	}
 
-	function fetch_count()
+	function fetch_item_count()
 	{
 		$tables = array();
 		foreach ($this->tables as $cur_table => $table_info)

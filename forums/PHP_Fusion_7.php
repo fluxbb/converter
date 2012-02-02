@@ -293,7 +293,7 @@ class PHP_Fusion_7 extends Forum
 			'LIMIT'		=> PER_PAGE,
 		)) or conv_error('Unable to fetch posts', __FILE__, __LINE__, $this->db->error());
 
-		conv_message('Processing range', 'posts', $this->db->num_rows($result), $start_at, $start_at + PER_PAGE);
+		conv_processing_message('posts', $this->db->num_rows($result), $start_at);
 
 		if (!$this->db->num_rows($result))
 			return false;
@@ -393,7 +393,7 @@ class PHP_Fusion_7 extends Forum
 			'LIMIT'		=> PER_PAGE,
 		)) or conv_error('Unable to fetch topics', __FILE__, __LINE__, $this->db->error());
 
-		conv_message('Processing range', 'topics', $this->db->num_rows($result), $start_at, $start_at + PER_PAGE);
+		conv_processing_message('topics', $this->db->num_rows($result), $start_at);
 
 		if (!$this->db->num_rows($result))
 			return false;
@@ -426,7 +426,7 @@ class PHP_Fusion_7 extends Forum
 			'LIMIT'		=> PER_PAGE,
 		)) or conv_error('Unable to fetch users', __FILE__, __LINE__, $this->db->error());
 
-		conv_message('Processing range', 'users', $this->db->num_rows($result), $start_at, $start_at + PER_PAGE);
+		conv_processing_message('users', $this->db->num_rows($result), $start_at);
 
 		if (!$this->db->num_rows($result))
 			return false;

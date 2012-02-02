@@ -174,7 +174,7 @@ class Converter
 		$this->generate_cache();
 		conv_log('Done in '.round(get_microtime() - $start, 6)."\n");
 
-		$session['fluxbb_count'] = $this->fluxbb->fetch_count();
+		$session['fluxbb_count'] = $this->fluxbb->fetch_item_count();
 		$session['time'] = get_microtime() - $session['start_time'];
 	}
 

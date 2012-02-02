@@ -53,6 +53,7 @@ return array(
 
 'Not implemented'				=>	'%s: Not implemented',
 'Converting'					=>	'Converting %s',
+'Pages left'					=>	'%d pages left',
 'Done in'						=>	'Done in %s',
 
 // Username dupes

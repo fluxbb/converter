@@ -6,14 +6,20 @@
  * @package FluxBB
  */
 
-function conv_processing_message($table, $start_at, $num_rows)
+function conv_processing_message($table, $num_rows, $start_at = null)
 {
-	global $session;
+	global $session, $lang_convert;
 
 	if (!isset($session['num_done'][$table]))
 		$session['num_done'][$table] = 0;
 
-	conv_message('Processing rows', $num_rows, $start_at, $start_at + PER_PAGE);
+	$count = isset($session['forum_item_count'][$table]) ? intval($session['forum_item_count'][$table]) : 0;
+	$pages_left = floor(($count - $session['num_done'][$table]) / PER_PAGE);
+
+	conv_message('Processing range', $table, $num_rows, $start_at, $start_at + PER_PAGE);
+
+	if ($pages_left > 0)
+		conv_message('Pages left', $pages_left);
 
 	$session['num_done'][$table] += $num_rows;
 }
