@@ -94,6 +94,20 @@ class FluxBB
 		return $tables;
 	}
 
+	function preparse_bbcode($message, &$errors)
+	{
+		global $re_list, $lang_common;
+
+		$errors = array();
+		require_once PUN_ROOT.'include/parser.php';
+
+		$message = preparse_bbcode($message, $errors);
+		if (!empty($errors))
+			conv_log('convert_message: bbcode error: '.implode(', ', $errors));
+
+		return $message;
+	}
+
 	/**
 	 * Adds a row to the FluxBB table with specified data
 	 *

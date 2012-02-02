@@ -6,22 +6,30 @@
  * @package FluxBB
  */
 
-function conv_processing_message($table, $num_rows, $start_at = null)
+function conv_processing_message($table, $num_rows = null, $start_at = null)
 {
 	global $session, $lang_convert;
 
-	if (!isset($session['num_done'][$table]))
-		$session['num_done'][$table] = 0;
+	if (isset($num_rows))
+	{
+		if (isset($start_at))
+		{
+			if (!isset($session['num_done'][$table]))
+				$session['num_done'][$table] = 0;
 
-	$count = isset($session['forum_item_count'][$table]) ? intval($session['forum_item_count'][$table]) : 0;
-	$pages_left = floor(($count - $session['num_done'][$table]) / PER_PAGE);
+			$count = isset($session['forum_item_count'][$table]) ? intval($session['forum_item_count'][$table]) : 0;
+			$pages_left = floor(($count - $session['num_done'][$table]) / PER_PAGE);
 
-	conv_message('Processing range', $table, $num_rows, $start_at, $start_at + PER_PAGE);
+			conv_message('Processing range', $table, $num_rows, $start_at, $start_at + PER_PAGE);
+			conv_message('Pages left', $pages_left);
 
-	if ($pages_left > 0)
-		conv_message('Pages left', $pages_left);
-
-	$session['num_done'][$table] += $num_rows;
+			$session['num_done'][$table] += $num_rows;
+		}
+		else
+			conv_message('Processing num', $table, $num_rows);
+	}
+	else
+		conv_message('Processing', $table);
 }
 
 function validate_params($forum_config, $old_db_config)
@@ -256,7 +264,7 @@ function conv_error_handler($errno, $errstr, $errfile, $errline)
 
 	/* Don't execute PHP internal error handler */
 	return true;
- }
+}
 
 /**
  * Determines whether $str is UTF-8 encoded or not

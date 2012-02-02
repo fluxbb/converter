@@ -62,7 +62,7 @@ class VBulletin_4_1 extends Forum
 			'FROM'		=> 'userban AS b',
 		)) or conv_error('Unable to fetch bans', __FILE__, __LINE__, $this->db->error());
 
-		conv_message('Processing num', 'bans', $this->db->num_rows($result));
+		conv_processing_message('bans', $this->db->num_rows($result));
 		while ($cur_ban = $this->db->fetch_assoc($result))
 		{
 			$this->fluxbb->add_row('bans', $cur_ban);
@@ -77,7 +77,7 @@ class VBulletin_4_1 extends Forum
 			'WHERE'		=> 'parentid = -1'
 		)) or conv_error('Unable to fetch categories', __FILE__, __LINE__, $this->db->error());
 
-		conv_message('Processing num', 'categories', $this->db->num_rows($result));
+		conv_processing_message('categories', $this->db->num_rows($result));
 		while ($cur_cat = $this->db->fetch_assoc($result))
 		{
 			$this->fluxbb->add_row('categories', $cur_cat);
@@ -91,7 +91,7 @@ class VBulletin_4_1 extends Forum
 //			'FROM'		=> 'censoring',
 //		)) or conv_error('Unable to fetch censoring', __FILE__, __LINE__, $this->db->error());
 //
-//		conv_message('Processing num', 'censors', $this->db->num_rows($result));
+//		conv_processing_message('censoring', $this->db->num_rows($result));
 //		while ($cur_censor = $this->db->fetch_assoc($result))
 //		{
 //			$this->fluxbb->add_row('censoring', $cur_censor);
@@ -107,7 +107,7 @@ class VBulletin_4_1 extends Forum
 			'FROM'		=> 'setting',
 		)) or conv_error('Unable to fetch config', __FILE__, __LINE__, $this->db->error());
 
-		conv_message('Processing', 'config');
+		conv_processing_message('config');
 		while ($cur_config = $this->db->fetch_assoc($result))
 			$old_config[$cur_config['varname']] = $cur_config['value'];
 
@@ -210,7 +210,7 @@ class VBulletin_4_1 extends Forum
 			'WHERE'		=> 'parentid <> -1'
 		)) or conv_error('Unable to fetch forums', __FILE__, __LINE__, $this->db->error());
 
-		conv_message('Processing num', 'forums', $this->db->num_rows($result));
+		conv_processing_message('forums', $this->db->num_rows($result));
 		while ($cur_forum = $this->db->fetch_assoc($result))
 		{
 			$parent_list = explode(',', $cur_forum['cat_id']);
@@ -230,7 +230,7 @@ class VBulletin_4_1 extends Forum
 //			'FROM'		=> 'forum_perms',
 //		)) or conv_error('Unable to fetch forum perms', __FILE__, __LINE__, $this->db->error());
 //
-//		conv_message('Processing num', 'forum_perms', $this->db->num_rows($result));
+//		conv_processing_message('forum_perms', $this->db->num_rows($result));
 //		while ($cur_perm = $this->db->fetch_assoc($result))
 //		{
 //			$cur_perm['group_id'] = $this->grp2grp($cur_perm['group_id']);
@@ -247,7 +247,7 @@ class VBulletin_4_1 extends Forum
 			'WHERE'		=> 'usergroupid > 8',
 		)) or conv_error('Unable to fetch groups', __FILE__, __LINE__, $this->db->error());
 
-		conv_message('Processing num', 'groups', $this->db->num_rows($result));
+		conv_processing_message('groups', $this->db->num_rows($result));
 		while ($cur_group = $this->db->fetch_assoc($result))
 		{
 			$cur_group['g_id'] = $this->grp2grp($cur_group['g_id']);
@@ -301,7 +301,7 @@ class VBulletin_4_1 extends Forum
 			'FROM'		=> 'usertitle',
 		)) or conv_error('Unable to fetch ranks', __FILE__, __LINE__, $this->db->error());
 
-		conv_message('Processing num', 'ranks', $this->db->num_rows($result));
+		conv_processing_message('ranks', $this->db->num_rows($result));
 		while ($cur_rank = $this->db->fetch_assoc($result))
 		{
 			$this->fluxbb->add_row('ranks', $cur_rank);
@@ -315,7 +315,7 @@ class VBulletin_4_1 extends Forum
 //			'FROM'		=> 'reports',
 //		)) or conv_error('Unable to fetch reports', __FILE__, __LINE__, $this->db->error());
 //
-//		conv_message('Processing num', 'reports', $this->db->num_rows($result));
+//		conv_processing_message('reports', $this->db->num_rows($result));
 //		while ($cur_report = $this->db->fetch_assoc($result))
 //		{
 //			$this->fluxbb->add_row('reports', $cur_report);
@@ -329,7 +329,7 @@ class VBulletin_4_1 extends Forum
 			'FROM'		=> 'subscribethread',
 		)) or conv_error('Unable to fetch subscriptions', __FILE__, __LINE__, $this->db->error());
 
-		conv_message('Processing num', 'topic subscriptions', $this->db->num_rows($result));
+		conv_processing_message('topic subscriptions', $this->db->num_rows($result));
 		while ($cur_sub = $this->db->fetch_assoc($result))
 		{
 			$this->fluxbb->add_row('topic_subscriptions', $cur_sub);
@@ -343,7 +343,7 @@ class VBulletin_4_1 extends Forum
 			'FROM'		=> 'subscribeforum',
 		)) or conv_error('Unable to fetch subscriptions', __FILE__, __LINE__, $this->db->error());
 
-		conv_message('Processing num', 'forum subscriptions', $this->db->num_rows($result));
+		conv_processing_message('forum subscriptions', $this->db->num_rows($result));
 		while ($cur_sub = $this->db->fetch_assoc($result))
 		{
 			$this->fluxbb->add_row('forum_subscriptions', $cur_sub);
@@ -460,10 +460,6 @@ class VBulletin_4_1 extends Forum
 	function convert_message($message)
 	{
 		static $patterns, $replacements;
-		global $re_list;
-
-		$errors = array();
-		require_once PUN_ROOT.'include/parser.php';
 
 		$message = html_entity_decode($message, ENT_QUOTES, 'UTF-8');
 
@@ -497,6 +493,6 @@ class VBulletin_4_1 extends Forum
 			);
 		}
 
-		return preparse_bbcode(str_replace(array_keys($replacements), array_values($replacements), $message), $errors);
+		return $this->fluxbb->preparse_bbcode(str_replace(array_keys($replacements), array_values($replacements), $message), $errors);
 	}
 }

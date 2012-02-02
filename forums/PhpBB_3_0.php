@@ -22,7 +22,7 @@ class PhpBB_3_0 extends Forum
 		'bans'					=> array('banlist', 'ban_id'),
 		'categories'			=> array('forums', 'forum_id', 'forum_type = 0'),
 		'censoring'				=> array('words', 'word_id'),
-		'config'				=> 0,
+		'config'				=> -1,
 		'forums'				=> array('forums', 'forum_id', 'forum_type <> 0'),
 //		'forum_perms'			=> 0,
 		'groups'				=> array('groups', 'group_id', 'group_id > 7'),
@@ -62,7 +62,7 @@ class PhpBB_3_0 extends Forum
 			'FROM'		=> 'banlist AS b',
 		)) or conv_error('Unable to fetch bans', __FILE__, __LINE__, $this->db->error());
 
-		conv_message('Processing num', 'bans', $this->db->num_rows($result));
+		conv_processing_message('bans', $this->db->num_rows($result));
 		while ($cur_ban = $this->db->fetch_assoc($result))
 		{
 			$this->fluxbb->add_row('bans', $cur_ban);
@@ -79,7 +79,7 @@ class PhpBB_3_0 extends Forum
 			'ORDER BY'	=> 'left_id ASC'
 		)) or conv_error('Unable to fetch categories', __FILE__, __LINE__, $this->db->error());
 
-		conv_message('Processing num', 'categories', $this->db->num_rows($result));
+		conv_processing_message('categories', $this->db->num_rows($result));
 		$i = 1;
 		while ($cur_cat = $this->db->fetch_assoc($result))
 		{
@@ -96,7 +96,7 @@ class PhpBB_3_0 extends Forum
 			'FROM'		=> 'words',
 		)) or conv_error('Unable to fetch words', __FILE__, __LINE__, $this->db->error());
 
-		conv_message('Processing num', 'censors', $this->db->num_rows($result));
+		conv_processing_message('censoring', $this->db->num_rows($result));
 		while ($cur_censor = $this->db->fetch_assoc($result))
 		{
 			$this->fluxbb->add_row('censoring', $cur_censor);
@@ -112,7 +112,7 @@ class PhpBB_3_0 extends Forum
 			'FROM'		=> 'config',
 		)) or conv_error('Unable to fetch config', __FILE__, __LINE__, $this->db->error());
 
-		conv_message('Processing', 'config');
+		conv_processing_message('config');
 		while ($cur_config = $this->db->fetch_assoc($result))
 			$old_config[$cur_config['config_name']] = $cur_config['config_value'];
 
@@ -217,7 +217,7 @@ class PhpBB_3_0 extends Forum
 			'ORDER BY'	=> 'left_id ASC'
 		)) or conv_error('Unable to fetch forums', __FILE__, __LINE__, $this->db->error());
 
-		conv_message('Processing num', 'forums', $this->db->num_rows($result));
+		conv_processing_message('forums', $this->db->num_rows($result));
 		while ($cur_forum = $this->db->fetch_assoc($result))
 		{
 			$parents = unserialize($cur_forum['forum_parents']);
@@ -245,7 +245,7 @@ class PhpBB_3_0 extends Forum
 //			'FROM'		=> 'forum_perms',
 //		)) or conv_error('Unable to fetch forum perms', __FILE__, __LINE__, $this->db->error());
 
-//		conv_message('Processing num', 'forum_perms', $this->db->num_rows($result));
+//		conv_processing_message('forum_perms', $this->db->num_rows($result));
 //		while ($cur_perm = $this->db->fetch_assoc($result))
 //		{
 //			$cur_perm['group_id'] = $this->grp2grp($cur_perm['group_id']);
@@ -262,7 +262,7 @@ class PhpBB_3_0 extends Forum
 			'WHERE'		=> 'group_id > 7'
 		)) or conv_error('Unable to fetch groups', __FILE__, __LINE__, $this->db->error());
 
-		conv_message('Processing num', 'groups', $this->db->num_rows($result));
+		conv_processing_message('groups', $this->db->num_rows($result));
 		while ($cur_group = $this->db->fetch_assoc($result))
 		{
 //			$cur_group['g_id'] = $this->grp2grp($cur_group['g_id']);
@@ -287,7 +287,6 @@ class PhpBB_3_0 extends Forum
 			'LIMIT'		=> PER_PAGE,
 		)) or conv_error('Unable to fetch posts', __FILE__, __LINE__, $this->db->error());
 
-//		conv_message('Processing range', 'posts', $this->db->num_rows($result), $start_at, $start_at + PER_PAGE, ceil($this->fetch_item_count('posts') / ));
 		conv_processing_message('posts', $this->db->num_rows($result), $start_at);
 
 		if (!$this->db->num_rows($result))
@@ -311,7 +310,7 @@ class PhpBB_3_0 extends Forum
 			'FROM'		=> 'ranks',
 		)) or conv_error('Unable to fetch ranks', __FILE__, __LINE__, $this->db->error());
 
-		conv_message('Processing num', 'ranks', $this->db->num_rows($result));
+		conv_processing_message('ranks', $this->db->num_rows($result));
 		while ($cur_rank = $this->db->fetch_assoc($result))
 		{
 			$this->fluxbb->add_row('ranks', $cur_rank);
@@ -331,7 +330,7 @@ class PhpBB_3_0 extends Forum
 			'FROM'		=> 'reports AS r',
 		)) or conv_error('Unable to fetch reports', __FILE__, __LINE__, $this->db->error());
 
-		conv_message('Processing num', 'reports', $this->db->num_rows($result));
+		conv_processing_message('reports', $this->db->num_rows($result));
 		while ($cur_report = $this->db->fetch_assoc($result))
 		{
 			$this->fluxbb->add_row('reports', $cur_report);
@@ -345,7 +344,7 @@ class PhpBB_3_0 extends Forum
 			'FROM'		=> 'topics_watch',
 		)) or conv_error('Unable to fetch topic subscriptions', __FILE__, __LINE__, $this->db->error());
 
-		conv_message('Processing num', 'topic subscriptions', $this->db->num_rows($result));
+		conv_processing_message('topic subscriptions', $this->db->num_rows($result));
 		while ($cur_sub = $this->db->fetch_assoc($result))
 		{
 			$this->fluxbb->add_row('topic_subscriptions', $cur_sub);
@@ -359,7 +358,7 @@ class PhpBB_3_0 extends Forum
 			'FROM'		=> 'forums_watch',
 		)) or conv_error('Unable to fetch forum subscriptions', __FILE__, __LINE__, $this->db->error());
 
-		conv_message('Processing num', 'forum subscriptions', $this->db->num_rows($result));
+		conv_processing_message('forum subscriptions', $this->db->num_rows($result));
 		while ($cur_sub = $this->db->fetch_assoc($result))
 		{
 			$this->fluxbb->add_row('forum_subscriptions', $cur_sub);
@@ -446,10 +445,6 @@ class PhpBB_3_0 extends Forum
 	function convert_message($message)
 	{
 		static $patterns, $replacements;
-		global $re_list;
-
-		$errors = array();
-		require_once PUN_ROOT.'include/parser.php';
 
 		$message = html_entity_decode($message, ENT_QUOTES, 'UTF-8');
 
@@ -480,11 +475,7 @@ class PhpBB_3_0 extends Forum
 			);
 		}
 
-		$message = preparse_bbcode(str_replace(array_keys($replacements), array_values($replacements), $message), $errors);
-		if (!empty($errors))
-			conv_log('convert_message: bbcode error: '.implode(', ', $errors));
-
-		return $message;
+		return $this->fluxbb->preparse_bbcode(str_replace(array_keys($replacements), array_values($replacements), $message), $errors);
 	}
 
 	/**

@@ -93,7 +93,7 @@ class Merge_FluxBB extends Forum
 			'FROM'		=> 'bans',
 		)) or conv_error('Unable to fetch bans', __FILE__, __LINE__, $this->db->error());
 
-		conv_message('Processing num', 'bans', $this->db->num_rows($result));
+		conv_processing_message('bans', $this->db->num_rows($result));
 		while ($cur_ban = $this->db->fetch_assoc($result))
 		{
 			$cur_ban['id'] += $this->last_id['bans'];
@@ -117,7 +117,7 @@ class Merge_FluxBB extends Forum
 			'FROM'		=> 'categories',
 		)) or conv_error('Unable to fetch categories', __FILE__, __LINE__, $this->db->error());
 
-		conv_message('Processing num', 'categories', $this->db->num_rows($result));
+		conv_processing_message('categories', $this->db->num_rows($result));
 		while ($cur_cat = $this->db->fetch_assoc($result))
 		{
 			$cur_cat['id'] += $this->last_id['categories'];
@@ -133,7 +133,7 @@ class Merge_FluxBB extends Forum
 			'FROM'		=> 'censoring',
 		)) or conv_error('Unable to fetch censoring', __FILE__, __LINE__, $this->db->error());
 
-		conv_message('Processing num', 'censors', $this->db->num_rows($result));
+		conv_processing_message('censoring', $this->db->num_rows($result));
 		while ($cur_censor = $this->db->fetch_assoc($result))
 		{
 			$cur_censor['id'] += $this->last_id['censoring'];
@@ -153,7 +153,7 @@ class Merge_FluxBB extends Forum
 			'FROM'		=> 'forums',
 		)) or conv_error('Unable to fetch forums', __FILE__, __LINE__, $this->db->error());
 
-		conv_message('Processing num', 'forums', $this->db->num_rows($result));
+		conv_processing_message('forums', $this->db->num_rows($result));
 		while ($cur_forum = $this->db->fetch_assoc($result))
 		{
 			$cur_forum['id'] += $this->last_id['forums'];
@@ -171,7 +171,7 @@ class Merge_FluxBB extends Forum
 			'FROM'		=> 'forum_perms',
 		)) or conv_error('Unable to fetch forum perms', __FILE__, __LINE__, $this->db->error());
 
-		conv_message('Processing num', 'forum_perms', $this->db->num_rows($result));
+		conv_processing_message('forum_perms', $this->db->num_rows($result));
 		while ($cur_perm = $this->db->fetch_assoc($result))
 		{
 			$cur_perm['group_id'] += $this->last_id['groups'];
@@ -189,7 +189,7 @@ class Merge_FluxBB extends Forum
 			'WHERE'		=> 'g_id > 4',
 		)) or conv_error('Unable to fetch groups', __FILE__, __LINE__, $this->db->error());
 
-		conv_message('Processing num', 'groups', $this->db->num_rows($result));
+		conv_processing_message('groups', $this->db->num_rows($result));
 		while ($cur_group = $this->db->fetch_assoc($result))
 		{
 			$cur_group['g_id'] += $this->last_id['groups'] - 4;
@@ -233,7 +233,7 @@ class Merge_FluxBB extends Forum
 			'FROM'		=> 'ranks',
 		)) or conv_error('Unable to fetch ranks', __FILE__, __LINE__, $this->db->error());
 
-		conv_message('Processing num', 'ranks', $this->db->num_rows($result));
+		conv_processing_message('ranks', $this->db->num_rows($result));
 		while ($cur_rank = $this->db->fetch_assoc($result))
 		{
 			$cur_rank['id'] += $this->last_id['ranks'];
@@ -249,7 +249,7 @@ class Merge_FluxBB extends Forum
 			'FROM'		=> 'reports',
 		)) or conv_error('Unable to fetch reports', __FILE__, __LINE__, $this->db->error());
 
-		conv_message('Processing num', 'reports', $this->db->num_rows($result));
+		conv_processing_message('reports', $this->db->num_rows($result));
 		while ($cur_report = $this->db->fetch_assoc($result))
 		{
 			$cur_report['id'] += $this->last_id['reports'];
@@ -273,7 +273,7 @@ class Merge_FluxBB extends Forum
 			'FROM'		=> 'topic_subscriptions AS s',
 		)) or conv_error('Unable to fetch subscriptions', __FILE__, __LINE__, $this->db->error());
 
-		conv_message('Processing num', 'topic subscriptions', $this->db->num_rows($result));
+		conv_processing_message('topic subscriptions', $this->db->num_rows($result));
 		while ($cur_sub = $this->db->fetch_assoc($result))
 		{
 			$cur_sub['user_id'] = $this->fetchUid($cur_sub['username']);
@@ -298,7 +298,7 @@ class Merge_FluxBB extends Forum
 			'FROM'		=> 'forum_subscriptions AS s',
 		)) or conv_error('Unable to fetch subscriptions', __FILE__, __LINE__, $this->db->error());
 
-		conv_message('Processing num', 'forum subscriptions', $this->db->num_rows($result));
+		conv_processing_message('forum subscriptions', $this->db->num_rows($result));
 		while ($cur_sub = $this->db->fetch_assoc($result))
 		{
 			$cur_sub['user_id'] = $this->fetchUid($cur_sub['username']);

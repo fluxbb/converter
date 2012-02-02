@@ -81,6 +81,7 @@ class Converter
 			if (!defined(get_class($this->forum).'::NO_DB_CLEANUP'))
 				$this->cleanup_database();
 
+			conv_message('Done in', round(get_microtime() - $session['start_time'], 6));
 			$step = $steps[0];
 
 			return array($step);
