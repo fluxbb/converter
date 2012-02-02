@@ -67,7 +67,8 @@ return array(
 'Alert users'					=>	'Alert users',
 
 'Final instructions'			=>	'Final instructions',
-'Rebuild search index note'		=>	'Don\'t forget to rebuild the search index!',
+'Rebuild search index note'		=>	'Do not forget to %s!',
+'rebuild search index'			=>	'rebuild the search index',
 'Password converter mod'		=>	'This converter does not support converting passwords for specified forum. You have to install Password Converter Mod (file password_converter_mod.txt in converter directory) or you will not be able to login!',
 'Database converted'			=>	'Your forum has been successfully converted! You may now %s.',
 'go to forum index'				=>	'go to the forum index',

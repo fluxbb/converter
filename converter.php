@@ -136,7 +136,7 @@ while ($next_step !== false)
 }
 
 // We're done
-$alerts = array($lang_convert['Rebuild search index note']);
+$alerts = array(sprintf($lang_convert['Rebuild search index note'], $lang_convert['rebuild search index']));
 
 if (!$forum->converts_password())
 	$alerts[] = $lang_convert['Password converter mod'];

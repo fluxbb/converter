@@ -147,7 +147,7 @@ if (isset($_POST['form_sent']) || isset($_GET['step']))
 		unset($_SESSION['fluxbb_converter']);
 
 	// We're done
-	$alerts = array($lang_convert['Rebuild search index note']);
+	$alerts = array(sprintf($lang_convert['Rebuild search index note'], '<a href="../admin_maintenance.php">'.$lang_convert['rebuild search index'].'</a>'));
 
 	if (!$forum->converts_password())
 		$alerts[] = $lang_convert['Password converter mod'];
