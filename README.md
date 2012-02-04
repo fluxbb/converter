@@ -3,32 +3,32 @@
 FluxBB converter tool
 
 ## Supported forums
- - Invision Power Board 3.2
- - MyBB 1
- - PHP Fusion 7
- - PhpBB 3.0
- - SMF 1.1
- - SMF 2
- - vBulletin 4.1
- - Merge FluxBB - merge two fluxbb installations into one database. Categories, forums, topics and posts are added to the current database and the users are merged from the both installations.
+- IP.Board 3.2
+- miniBB 3.0
+- MyBB 1
+- PHP Fusion 7
+- phpBB 3.0
+- SMF 1.1
+- SMF 2
+- vBulletin 4.1
+- Merge FluxBB - merge two fluxbb installations into one database. Categories, forums, topics and posts are added to the current database and the users are merged from the both installations.
 
-**Note**: Because FluxBB is a fork of PunBB you are able to convert from PunBB 1.2, 1.3 and 1.4 by following the [upgrading process](http://fluxbb.org/downloads/upgrade.html)
+**Note**: Because FluxBB is a fork of PunBB you are able to convert from PunBB 1.2, 1.3 and 1.4 by following the [upgrading process](http://fluxbb.org/downloads/upgrade.html).
 
 ## Notes
-- All FluxBB tables are dumped.
+- All FluxBB tables are dumped (not applicable to Merge FluxBB converter)
 - MAKE BACKUP BEFORE USING THIS CONVERTER!
-- The passwords in some forums are NOT converted due to differences in password storing between the forums.
 
 ## Installation instructions
- - Install FluxBB on the server (example: http://example.com/fluxbb/).
- - Create a subdirectory in the FluxBB directory (example name: "converter").
- - Put all files from the converter zipfile in that directory.
- - Go to the converter page (http://example.com/fluxbb/converter/).
- - Choose which forum software you want to convert from.
- - Enter database connection information
- - Press 'Start converter'.
- - When the converter is done, remove the converter files.
- - Done! You're now ready to use FluxBB!
+- Install FluxBB on the server (example: http://example.com/fluxbb/).
+- Create a subdirectory in the FluxBB directory (example name: "converter").
+- Put all files from the converter zipfile in that directory.
+- Go to the converter page (http://example.com/fluxbb/converter/).
+- Choose which forum software you want to convert from.
+- Enter database connection information
+- Press 'Start converter'.
+- When the converter is done, remove the converter files.
+- Done! You're now ready to use FluxBB!
 
 ## Running from command line
 
