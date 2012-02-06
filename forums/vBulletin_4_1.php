@@ -25,7 +25,7 @@ class VBulletin_4_1 extends Forum
 		'config'				=> -1,
 		'forums'				=> array('forum', 'forumid', 'parentid <> -1'),
 //		'forum_perms'			=> 0,
-		'groups'				=> array('usergroup', 'usergroup', 'usergroupid > 8'),
+		'groups'				=> array('usergroup', 'usergroupid', 'usergroupid > 8'),
 		'posts'					=> array('post', 'postid'),
 		'ranks'					=> array('usertitle', 'usertitleid'),
 		// 'reports'				=> array('reports', 'report_id'),
