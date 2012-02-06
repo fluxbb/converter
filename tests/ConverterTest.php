@@ -108,6 +108,21 @@ class ConverterTest extends PHPUnit_Framework_TestCase
 		$fluxbb->close_database();
 	}
 
+	function testIPBoard()
+	{
+		$this->convert('IP_Board_3_2', 'ipb__test', 'ipb_');
+	}
+
+	function testMergeFluxBB()
+	{
+		$this->convert('Merge_FluxBB', 'merge__fluxbb', 'flux_');
+	}
+
+	function testminiBB()
+	{
+		$this->convert('miniBB_3_0', 'minibb__test', 'minibbtable_');
+	}
+
 	function testMyBB()
 	{
 		$this->convert('MyBB_1', 'mybb__test', 'mybb_');
@@ -136,5 +151,10 @@ class ConverterTest extends PHPUnit_Framework_TestCase
 	function testSmf2()
 	{
 		$this->convert('SMF_2', 'smf2__test', 'smf_');
+	}
+
+	function testvB()
+	{
+		$this->convert('vBulletin_4_1', 'vb__test', 'vb_');
 	}
 }

@@ -10,7 +10,8 @@ before_script:
   - "cd .. && mkdir sql-dumps && cd sql-dumps"
   - "git clone --quiet git://github.com/daris/sql-dumps.git ."
   - for i in *.sql; do db_name=`echo $i| sed 's/.sql//g'`; echo Importing $db_name; mysql -e "create database $db_name"; mysql $db_name < $db_name.sql ; done
-  - "cd .."
+  - echo Importing merge_fluxbb; mysql -e "create database merge_fluxbb"; mysql merge__fluxbb < fluxbb__test.sql
+ - "cd .."
   - "cp tests/config.php fluxbb/config.php"
   - "php fluxbb/index.php > index.txt" # Generate fluxbb cache
 #  - "psql -c 'create database fluxbb__test;' -U postgres"
