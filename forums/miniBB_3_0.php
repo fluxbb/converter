@@ -248,9 +248,12 @@ class miniBB_3_0 extends Forum
 		if (!isset($patterns))
 		{
 			$patterns = array(
-				'%<em>(.*?)<\/em>%i'						=>	'[i]$1[/i]',
-				'%<strong>(.*?)<\/strong>%i'				=>	'[b]$1[/b]',
-				'%<a href="(.*?)".*>(.*?)</a>%i'			=>	'[url=$1]$2[/url]',
+				'%<em>(.*?)</em>%i'												=>	'[i]$1[/i]',
+				'%<strong>(.*?)</strong>%i'										=>	'[b]$1[/b]',
+				'%<img src="(.*?)".* />%i'										=>	'[img]$1[/img]',
+				'%<span style="color:\s*(#[a-zA-Z0-9]{3,6})\s*">(.*?)</span>%i'	=>	'[color=$1]$2[/color]',
+				'%<a href="(.*?)".*>(.*?)</a>%i'								=>	'[url=$1]$2[/url]',
+				'%[/?align(left|right|center)?]%i'								=>	'',
 			);
 		}
 
@@ -260,6 +263,8 @@ class miniBB_3_0 extends Forum
 		{
 			$replacements = array(
 				'<br />'		=> "\n",
+				'[hl]'			=> '[code]',
+				'[/hl]'			=> '[/code]',
 			);
 		}
 
