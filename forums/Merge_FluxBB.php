@@ -22,20 +22,20 @@ class Merge_FluxBB extends Forum
 	const NO_DB_CLEANUP = true;
 
 	public $steps = array(
-		'groups'				=> array('groups', 'g_id', 'g_id > 4'),
-		'users'					=> array('users', 'id', 'id > 1'),
-		'bans'					=> array('bans', 'id'),
-		'categories'			=> array('categories', 'id'),
-		'censoring'				=> array('censoring', 'id'),
-		'config'				=> array('config', 'conf_name'),
-		'forums'				=> array('forums', 'id'),
-		'forum_perms'			=> array('forum_perms', 'forum_id'),
-		'topics'				=> array('topics', 'id'),
-		'posts'					=> array('posts', 'id'),
-		'ranks'					=> array('ranks', 'id'),
-		'reports'				=> array('reports', 'id'),
-		'topic_subscriptions'	=> array('topic_subscriptions', 'topic_id'),
-		'forum_subscriptions'	=> array('forum_subscriptions', 'forum_id'),
+		'groups'				=> -1,//array('groups', 'g_id', 'g_id > 4'),
+		'users'					=> -1,//array('users', 'id', 'id > 1'),
+		'bans'					=> -1,//array('bans', 'id'),
+		'categories'			=> -1,//array('categories', 'id'),
+		'censoring'				=> -1,//array('censoring', 'id'),
+		'config'				=> -1,//array('config', 'conf_name'),
+		'forums'				=> -1,//array('forums', 'id'),
+		'forum_perms'			=> -1,//array('forum_perms', 'forum_id'),
+		'topics'				=> -1,//array('topics', 'id'),
+		'posts'					=> -1,//array('posts', 'id'),
+		'ranks'					=> -1,//array('ranks', 'id'),
+		'reports'				=> -1,//array('reports', 'id'),
+		'topic_subscriptions'	=> -1,//array('topic_subscriptions', 'topic_id'),
+		'forum_subscriptions'	=> -1,//array('forum_subscriptions', 'forum_id'),
 	);
 
 	private $last_id = array();
@@ -45,9 +45,6 @@ class Merge_FluxBB extends Forum
 		global $session;
 
 		$this->db->set_names('utf8');
-
-		if (!session_id())
-			session_start();
 
 		if (isset($session['last_id']))
 			$this->last_id = $session['last_id'];
