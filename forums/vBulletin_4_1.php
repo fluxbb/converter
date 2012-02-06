@@ -379,7 +379,7 @@ class VBulletin_4_1 extends Forum
 	{
 		// Add salt field to the users table to allow login
 		if ($start_at == 0)
-			$this->fluxbb->db->add_field('users', 'salt', 'VARCHAR(255)', true, '', 'password') or error('Unable to add field', __FILE__, __LINE__, $this->db->error());
+			$this->fluxbb->db->add_field('users', 'salt', 'VARCHAR(255)', true, '', 'password') or conv_error('Unable to add field', __FILE__, __LINE__, $this->db->error());
 
 		$result = $this->db->query_build(array(
 			'SELECT'	=> 'u.userid AS id, u.username, u.password, u.salt, u.timezoneoffset AS timezone, u.posts AS num_posts, u.joindate AS registered, u.lastvisit AS last_visit, u.email, u.usergroupid AS group_id, u.lastpost AS last_post, t.signature, t.rank AS title',

@@ -81,7 +81,7 @@ function connect_database($db_config)
 	if (!class_exists($class))
 	{
 		if (!file_exists(CONV_ROOT.'include/dblayer/'.$db_config['type'].'.php'))
-			error('Unsupported database type: '.$db_config['type'], __FILE__, __LINE__);
+			conv_error('Unsupported database type: '.$db_config['type'], __FILE__, __LINE__);
 
 		require CONV_ROOT.'include/dblayer/'.$db_config['type'].'.php';
 	}
@@ -103,7 +103,7 @@ function load_forum($forum_config, $fluxbb)
 	if (!class_exists($forum_config['type']))
 	{
 		if (!file_exists(CONV_ROOT.'forums/'.$forum_config['type'].'.php'))
-			error('Unsupported forum type: '.$forum_config['type'], __FILE__, __LINE__);
+			conv_error('Unsupported forum type: '.$forum_config['type'], __FILE__, __LINE__);
 
 		require CONV_ROOT.'forums/'.$forum_config['type'].'.php';
 	}

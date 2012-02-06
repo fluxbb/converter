@@ -386,7 +386,7 @@ class IP_Board_3_2 extends Forum
 	{
 		// Add salt field to the users table to allow login
 		if ($start_at == 0)
-			$this->fluxbb->db->add_field('users', 'salt', 'VARCHAR(255)', true, '', 'password') or error('Unable to add field', __FILE__, __LINE__, $this->db->error());
+			$this->fluxbb->db->add_field('users', 'salt', 'VARCHAR(255)', true, '', 'password') or conv_error('Unable to add field', __FILE__, __LINE__, $this->db->error());
 
 		$result = $this->db->query_build(array(
 			'SELECT'	=> 'u.member_id AS id, u.member_group_id AS group_id, u.name AS username, u.members_pass_hash AS password, u.members_pass_salt AS salt, u.title, f.field_3 AS url, f.field_4 AS icq, f.field_2 AS msn, f.field_1 AS aim, f.field_8 AS yahoo, f.field_6 AS location, IF(u.time_offset IS NULL, 0, u.time_offset) AS timezone, u.posts AS num_posts, u.last_post, u.view_img AS show_img, 1 AS show_avatars, u.view_sigs AS show_sig, u.joined AS registered, u.ip_address AS registration_ip, u.last_visit AS last_visit, 1 AS email_setting, u.dst_in_use AS dst, p.signature, p.pp_main_photo',

@@ -138,11 +138,6 @@ class ConverterTest extends PHPUnit_Framework_TestCase
 		$this->convert('PhpBB_3_0', 'phpbb__test', 'phpbb_');
 	}
 
-	function testPunBB()
-	{
-		$this->convert('PunBB_1.3_1.4', 'punbb__test', 'pun_');
-	}
-
 	function testSmf1()
 	{
 		$this->convert('SMF_1_1', 'smf1__test', 'smf_');
