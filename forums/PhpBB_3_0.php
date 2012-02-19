@@ -41,7 +41,7 @@ class PhpBB_3_0 extends Forum
 	}
 
 	/**
-	 * Check whether specified database has valid current forum software strucutre
+	 * Check whether specified database has valid current forum software structure
 	 */
 	function validate()
 	{

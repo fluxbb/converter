@@ -8,11 +8,30 @@
 
 class Forum
 {
+	/**
+	 * @var wrapper_mysql Database instance
+	 */
 	var $db;
+
+	/**
+	 * @var array Database configuration
+	 */
+	var $db_config;
+
+	/**
+	 * @var FluxBB FluxBB instance
+	 */
 	var $fluxbb;
 
-	var $db_config;
+	/**
+	 * @var array Current forum configuration
+	 * 		For example: array('type' = 'phpBB_3_0', 'path' => '../')
+	 */
 	var $forum_config;
+
+	/**
+	 * @var string Full path to the forum root directory
+	 */
 	var $path;
 
 	/**
@@ -105,6 +124,12 @@ class Forum
 		return false;
 	}
 
+	/**
+	 * Fetch row count for each (or one) tables
+	 *
+	 * @param string $table
+	 * @return type
+	 */
 	function fetch_item_count($table = null)
 	{
 		global $session;

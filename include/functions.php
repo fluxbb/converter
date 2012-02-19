@@ -18,10 +18,14 @@ function conv_processing_message($table, $num_rows = null, $start_at = null)
 				$session['num_done'][$table] = 0;
 
 			$count = isset($session['forum_item_count'][$table]) ? intval($session['forum_item_count'][$table]) : 0;
-			$pages_left = floor(($count - $session['num_done'][$table]) / PER_PAGE);
 
 			conv_message('Processing range', $table, $num_rows, $start_at, $start_at + PER_PAGE);
-			conv_message('Pages left', $pages_left);
+
+			if ($count >= 0)
+			{
+				$pages_left = floor(($count - $session['num_done'][$table]) / PER_PAGE);
+				conv_message('Pages left', $pages_left);
+			}
 
 			$session['num_done'][$table] += $num_rows;
 		}

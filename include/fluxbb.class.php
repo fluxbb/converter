@@ -31,6 +31,9 @@ class FluxBB
 	 */
 	var $avatars_dir;
 
+	/**
+	 * @var array FluxBB tables with data count for each table
+	 */
 	var $tables = array(
 		'bans'					=> array('id'),
 		'categories'			=> array('id'),
@@ -48,8 +51,19 @@ class FluxBB
 		'users'					=> array('id', 'id > 1'),
 	);
 
+	/**
+	 * @var array Avatar extensions used to determine whether some file is valid FluxBB avatar
+	 */
 	var $avatar_exts = array('jpg', 'gif', 'png');
-	var $avatar_mimes = array('image/jpg' => 'jpg', 'image/gif' => 'gif', 'image/png' => 'png');
+
+	/**
+	 * @var array Avatar mimetypes and corresponding file extensions
+	 */
+	var $avatar_mimes = array(
+		'image/jpg' => 'jpg',
+		'image/gif' => 'gif',
+		'image/png' => 'png'
+	);
 
 	/**
 	 * Class constructor
@@ -87,6 +101,11 @@ class FluxBB
 		$this->db->close();
 	}
 
+	/**
+	 * Do an initial database cleanup (truncate FluxBB tables and insert default values)
+	 *
+	 * @return type
+	 */
 	function cleanup_database()
 	{
 		global $convert_lang;
@@ -129,6 +148,11 @@ class FluxBB
 
 	}
 
+	/**
+	 * Return row count for each FluxBB table
+	 *
+	 * @return type
+	 */
 	function fetch_item_count()
 	{
 		$tables = array();
@@ -157,6 +181,13 @@ class FluxBB
 		return $tables;
 	}
 
+	/**
+	 * Use FluxBB's parser to preparse BBCode tags for message
+	 *
+	 * @param type $message
+	 * @param type &$errors
+	 * @return type
+	 */
 	function preparse_bbcode($message, &$errors)
 	{
 		global $re_list, $lang_common;

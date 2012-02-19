@@ -41,7 +41,7 @@ class SMF_2 extends Forum
 	}
 
 	/**
-	 * Check whether specified database has valid current forum software strucutre
+	 * Check whether specified database has valid current forum software structure
 	 */
 	function validate()
 	{
