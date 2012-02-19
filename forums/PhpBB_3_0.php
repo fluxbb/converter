@@ -27,7 +27,7 @@ class PhpBB_3_0 extends Forum
 //		'forum_perms'			=> 0,
 		'groups'				=> array('groups', 'group_id', 'group_id > 7'),
 		'posts'					=> array('posts', 'post_id'),
-		'ranks'					=> array('ranks', 'rank_id'),
+		'ranks'					=> array('ranks', 'rank_id', 'rank_special = 0'),
 		'reports'				=> array('reports', 'report_id'),
 		'topic_subscriptions'	=> array('topics_watch', 'topic_id'),
 		'forum_subscriptions'	=> array('forums_watch', 'forum_id'),
