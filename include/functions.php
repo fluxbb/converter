@@ -185,8 +185,11 @@ function alert_dupe_users()
 
 	require PUN_ROOT.'include/email.php';
 
-	foreach ($$session['dupe_users'] as $cur_user)
+	foreach ($session['dupe_users'] as $cur_user)
 	{
+		if (empty($cur_user['language']))
+			$cur_user['language'] = 'English';
+
 		// Email the user alerting them of the change
 		if (file_exists(PUN_ROOT.'lang/'.$cur_user['language'].'/mail_templates/rename.tpl'))
 			$mail_tpl = trim(file_get_contents(PUN_ROOT.'lang/'.$cur_user['language'].'/mail_templates/rename.tpl'));
@@ -292,7 +295,6 @@ function seems_utf8($str)
 	return true;
 }
 
-
 /**
  * Translates the number from a HTML numeric entity into an UTF-8 character
  */
@@ -339,7 +341,6 @@ function dcr2utf8($src)
 	return $dest;
 }
 
-
 /**
  * Attempts to convert $str from $old_charset to UTF-8. Also converts HTML entities (including numeric entities) to UTF-8 characters
  */
@@ -376,12 +377,10 @@ function convert_to_utf8($str, $old_charset)
 	return $str;
 }
 
-
 function utf8_callback_1($matches)
 {
 	return dcr2utf8($matches[1]);
 }
-
 
 function utf8_callback_2($matches)
 {

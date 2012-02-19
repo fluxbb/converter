@@ -416,7 +416,7 @@ class PhpBB_3_0 extends Forum
 			$this->convert_avatar($cur_user);
 			unset($cur_user['user_avatar']);
 
-			$this->fluxbb->add_row('users', $cur_user);
+			$this->fluxbb->add_row('users', $cur_user, array($this->fluxbb, 'error_users'));
 		}
 
 		return $this->redirect('users', 'user_id', $start_at);

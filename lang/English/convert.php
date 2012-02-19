@@ -16,7 +16,7 @@ return array(
 'FluxBB converter'				=>	'FluxBB converter %s',
 'Convert message'				=>	'Welcome to the FluxBB Forum Converter! You can use this simple script to convert your forum to a FluxBB forum with just one click - and take all the data with you!',
 'Note'							=>	'Note',
-'Note info'			=>	'The converter is not used for upgrading forums. In addition, please make sure all modifications or plugins that may interefere with the conversion process are deactivated on your old forum, before you run the converter. It is also strongly recommended to make a backup of both forums before you continue.',
+'Note info'						=>	'The converter is not used for upgrading forums. In addition, please make sure all modifications or plugins that may interefere with the conversion process are deactivated on your old forum, before you run the converter. It is also strongly recommended to make a backup of both forums before you continue.',
 'Convert'						=>	'Convert',
 'Convert info 1'				=>	'Convert from other forum software',
 'Select software'				=>	'Select forum software',
@@ -57,7 +57,7 @@ return array(
 'Done in'						=>	'Done in %s',
 
 // Username dupes
-'Error info 1'					=>	'There was an error when converting some users. This can occur when converting from PunBB v1.3 if multiple users have registered with very similar usernames, for example "bob" and "böb".',
+'Error info 1'					=>	'There was an error when converting some users. This can occur when converting if multiple users have registered with very similar usernames, for example "bob" and "böb".',
 'Error info 2'					=>	'Below is a list of users who failed to convert.',
 'Click alert button'			=>	'Clicking Alert users button will send an email alerting them of the change.',
 'Convert username dupes question'=>	'Alert users by email about the username change? (yes/no).',

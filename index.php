@@ -19,7 +19,7 @@ require CONV_ROOT.'include/functions_web.php';
 require CONV_ROOT.'include/common.php';
 
 // Output log messages to file
-define('CONV_LOG', PUN_ROOT.'cache/converter_'.session_id().'.log');
+define('CONV_LOG', PUN_ROOT.'cache/converter.log');
 
 // The number of items to process per page view (lower this if the script times out)
 define('PER_PAGE', 500);
@@ -35,17 +35,17 @@ $session = isset($_SESSION['fluxbb_converter']) ? $_SESSION['fluxbb_converter'] 
 
 $default_style = 'Air';
 
-if (isset($_GET['alert_dupe_users']))
+if (isset($_POST['alert_dupe_users']))
 {
 	if (empty($session['dupe_users']))
 		conv_error($lang_convert['Bad request']);
 
 	alert_dupe_users();
 	unset($session['dupe_users']);
-	$_SESSION = $session;
+	$_SESSION['fluxbb_converter'] = $session;
 }
 
-// We submited the form, store data in session as we'll redirect to the next page
+// We submitted the form, store data in session as we'll redirect to the next page
 if (isset($_POST['form_sent']))
 {
 	$forum_config = array(
@@ -143,8 +143,8 @@ if (isset($_POST['form_sent']) || isset($_GET['step']))
 			conv_redirect($redirect[0], isset($redirect[1]) ? $redirect[1] : 0);
 	}
 
-	if (empty($session['dupe_users']))
-		unset($_SESSION['fluxbb_converter']);
+	// if (empty($session['dupe_users']))
+	// 	unset($_SESSION['fluxbb_converter']);
 
 	// We're done
 	$alerts = array(sprintf($lang_convert['Rebuild search index note'], '<a href="../admin_maintenance.php">'.$lang_convert['rebuild search index'].'</a>'));
@@ -187,7 +187,8 @@ if (isset($_POST['form_sent']) || isset($_GET['step']))
 <?php if (!empty($session['dupe_users'])) : ?>
 	<h2><span><?php echo $lang_convert['Username dupes head'] ?></span></h2>
 	<div class="box">
-		<form method="post" action="index.php?stage=results&amp;alert_dupe_users">
+		<form method="post" action="index.php?step=results">
+			<input type="hidden" name="alert_dupe_users" value="1" />
 			<div class="inform">
 				<div class="forminfo">
 					<p style="font-size: 1.1em"><?php echo $lang_convert['Error info 1'] ?></p>

@@ -79,8 +79,8 @@ class Forum
 	 */
 	function converts_password()
 	{
-		$class = get_class($this);
-		return defined($class.'::CONVERTS_PASSWORD') && constant($class.'::CONVERTS_PASSWORD');
+		$const = get_class($this).'::CONVERTS_PASSWORD';
+		return defined($const) && constant($const);
 	}
 
 	/**

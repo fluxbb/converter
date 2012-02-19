@@ -13,7 +13,7 @@ require CONV_ROOT.'include/functions_cli.php';
 require CONV_ROOT.'include/common.php';
 
 // Output log messages to file
-define('CONV_LOG', PUN_ROOT.'cache/converter_'.uniqid().'.log');
+define('CONV_LOG', PUN_ROOT.'cache/converter.log');
 
 // The number of items to process per page view (very hackish :P)
 define('PER_PAGE', pow(2, 32));
