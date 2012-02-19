@@ -11,12 +11,27 @@
  */
 class FluxBB
 {
-	public $db;
-	public $db_config;
-	public $pun_config;
-	public $avatars_dir;
+	/**
+	 * @var wrapper_mysql Database instance
+	 */
+	var $db;
 
-	public $tables = array(
+	/**
+	 * @var array Database configuration
+	 */
+	var $db_config;
+
+	/**
+	 * @var array FluxBB configuration
+	 */
+	var $pun_config;
+
+	/**
+	 * @var string Path to the avatars directory
+	 */
+	var $avatars_dir;
+
+	var $tables = array(
 		'bans'					=> array('id'),
 		'categories'			=> array('id'),
 		'censoring'				=> array('id'),
@@ -33,10 +48,16 @@ class FluxBB
 		'users'					=> array('id', 'id > 1'),
 	);
 
-	public $avatar_exts = array('jpg', 'gif', 'png');
-	public $avatar_mimes = array('image/jpg' => 'jpg', 'image/gif' => 'gif', 'image/png' => 'png');
+	var $avatar_exts = array('jpg', 'gif', 'png');
+	var $avatar_mimes = array('image/jpg' => 'jpg', 'image/gif' => 'gif', 'image/png' => 'png');
 
-	function __construct($pun_config)
+	/**
+	 * Class constructor
+	 *
+	 * @param array $pun_config FluxBB configuration array (loaded from database or cache file)
+	 * @return type
+	 */
+	function FluxBB($pun_config)
 	{
 		$this->pun_config = $pun_config;
 		$this->avatars_dir = PUN_ROOT.rtrim($this->pun_config['o_avatars_dir'], '/').'/';
@@ -64,6 +85,48 @@ class FluxBB
 	{
 		$this->db->end_transaction();
 		$this->db->close();
+	}
+
+	function cleanup_database()
+	{
+		global $convert_lang;
+
+		if (file_exists(PUN_ROOT.'lang/'.$convert_lang.'/install.php'))
+			require PUN_ROOT.'lang/'.$convert_lang.'/install.php';
+		else
+			require PUN_ROOT.'lang/English/install.php';
+
+		$this->db->truncate_table('bans');
+		$this->db->truncate_table('categories');
+		$this->db->truncate_table('censoring');
+		$this->db->truncate_table('forums');
+		$this->db->truncate_table('forum_perms');
+		$this->db->truncate_table('groups');
+		$this->db->truncate_table('online');
+		$this->db->truncate_table('posts');
+		$this->db->truncate_table('ranks');
+		$this->db->truncate_table('reports');
+		$this->db->truncate_table('search_cache');
+		$this->db->truncate_table('search_matches');
+		$this->db->truncate_table('search_words');
+		$this->db->truncate_table('topic_subscriptions');
+		$this->db->truncate_table('forum_subscriptions');
+		$this->db->truncate_table('topics');
+		$this->db->truncate_table('users');
+
+		// Insert the four preset groups
+		$this->db->query('INSERT INTO '.$this->db->prefix.'groups ('.($this->db_config['type'] != 'pgsql' ? 'g_id, ' : '').'g_title, g_user_title, g_moderator, g_mod_edit_users, g_mod_rename_users, g_mod_change_passwords, g_mod_ban_users, g_read_board, g_view_users, g_post_replies, g_post_topics, g_edit_posts, g_delete_posts, g_delete_topics, g_set_title, g_search, g_search_users, g_send_email, g_post_flood, g_search_flood, g_email_flood, g_report_flood) VALUES('.($this->db_config['type'] != 'pgsql' ? '1, ' : '').'\''.$this->db->escape($lang_install['Administrators']).'\', \''.$this->db->escape($lang_install['Administrator']).'\', 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0)') or error('Unable to add group', __FILE__, __LINE__, $this->db->error());
+
+		$this->db->query('INSERT INTO '.$this->db->prefix.'groups ('.($this->db_config['type'] != 'pgsql' ? 'g_id, ' : '').'g_title, g_user_title, g_moderator, g_mod_edit_users, g_mod_rename_users, g_mod_change_passwords, g_mod_ban_users, g_read_board, g_view_users, g_post_replies, g_post_topics, g_edit_posts, g_delete_posts, g_delete_topics, g_set_title, g_search, g_search_users, g_send_email, g_post_flood, g_search_flood, g_email_flood, g_report_flood) VALUES('.($this->db_config['type'] != 'pgsql' ? '2, ' : '').'\''.$this->db->escape($lang_install['Moderators']).'\', \''.$this->db->escape($lang_install['Moderator']).'\', 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0)') or error('Unable to add group', __FILE__, __LINE__, $this->db->error());
+
+		$this->db->query('INSERT INTO '.$this->db->prefix.'groups ('.($this->db_config['type'] != 'pgsql' ? 'g_id, ' : '').'g_title, g_user_title, g_moderator, g_mod_edit_users, g_mod_rename_users, g_mod_change_passwords, g_mod_ban_users, g_read_board, g_view_users, g_post_replies, g_post_topics, g_edit_posts, g_delete_posts, g_delete_topics, g_set_title, g_search, g_search_users, g_send_email, g_post_flood, g_search_flood, g_email_flood, g_report_flood) VALUES('.($this->db_config['type'] != 'pgsql' ? '3, ' : '').'\''.$this->db->escape($lang_install['Guests']).'\', NULL, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 60, 30, 0, 0)') or error('Unable to add group', __FILE__, __LINE__, $this->db->error());
+
+		$this->db->query('INSERT INTO '.$this->db->prefix.'groups ('.($this->db_config['type'] != 'pgsql' ? 'g_id, ' : '').'g_title, g_user_title, g_moderator, g_mod_edit_users, g_mod_rename_users, g_mod_change_passwords, g_mod_ban_users, g_read_board, g_view_users, g_post_replies, g_post_topics, g_edit_posts, g_delete_posts, g_delete_topics, g_set_title, g_search, g_search_users, g_send_email, g_post_flood, g_search_flood, g_email_flood, g_report_flood) VALUES('.($this->db_config['type'] != 'pgsql' ? '4, ' : '').'\''.$this->db->escape($lang_install['Members']).'\', NULL, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 60, 30, 60, 60)') or error('Unable to add group', __FILE__, __LINE__, $this->db->error());
+
+		// Insert guest and first admin user
+		$this->db->query('INSERT INTO '.$this->db->prefix.'users (group_id, username, password, email) VALUES(3, \''.$this->db->escape($lang_install['Guest']).'\', \''.$this->db->escape($lang_install['Guest']).'\', \''.$this->db->escape($lang_install['Guest']).'\')')
+			or error('Unable to add guest user. Please check your configuration and try again', __FILE__, __LINE__, $this->db->error());
+
 	}
 
 	function fetch_item_count()

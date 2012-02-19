@@ -16,9 +16,9 @@ define('FORUM_PARSER_REVISION', 2);
 class miniBB_3_0 extends Forum
 {
 	// Will the passwords be converted?
-	const CONVERTS_PASSWORD = true;
+	var $converts_password = true;
 
-	public $steps = array(
+	var $steps = array(
 		'bans'					=> array('banned', 'id'),
 		'categories'			=> array('forums', 'DISTINCT forum_group'),
 		'forums'				=> array('forums', 'forum_id'),

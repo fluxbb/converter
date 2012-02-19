@@ -16,9 +16,9 @@ define('FORUM_PARSER_REVISION', 2);
 class MyBB_1 extends Forum
 {
 	// Will the passwords be converted?
-	const CONVERTS_PASSWORD = false;
+	var $converts_password = false;
 
-	public $steps = array(
+	var $steps = array(
 		'bans'					=> array('banned', 'uid'),
 		'categories'			=> array('forums', 'fid', 'type = \'c\''),
 		'censoring'				=> 0,//array('words', 'word_id'),

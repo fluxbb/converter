@@ -29,7 +29,7 @@ class mysql_wrapper
 	);
 
 
-	function __construct($db_host, $db_username, $db_password, $db_name, $db_prefix, $p_connect)
+	function mysql_wrapper($db_host, $db_username, $db_password, $db_name, $db_prefix, $p_connect)
 	{
 		$this->prefix = $db_prefix;
 

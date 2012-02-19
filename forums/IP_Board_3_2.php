@@ -16,9 +16,9 @@ define('FORUM_PARSER_REVISION', 2);
 class IP_Board_3_2 extends Forum
 {
 	// Will the passwords be converted?
-	const CONVERTS_PASSWORD = false;
+	var $converts_password = false;
 
-	public $steps = array(
+	var $steps = array(
 		'bans'					=> array('banfilters', 'ban_id'),
 		'categories'			=> array('forums', 'id', 'parent_id = -1'),
 		'censoring'				=> array('badwords', 'wid'),

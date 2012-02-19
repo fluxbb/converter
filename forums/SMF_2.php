@@ -16,9 +16,9 @@ define('FORUM_PARSER_REVISION', 2);
 class SMF_2 extends Forum
 {
 	// Will the passwords be converted?
-	const CONVERTS_PASSWORD = false;
+	var $converts_password = false;
 
-	public $steps = array(
+	var $steps = array(
 		'bans'					=> array('ban_items', 'id_ban'),
 		'categories'			=> array('categories', 'id_cat'),
 		'censoring'				=> -1,

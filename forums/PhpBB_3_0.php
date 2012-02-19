@@ -16,9 +16,9 @@ define('FORUM_PARSER_REVISION', 2);
 class PhpBB_3_0 extends Forum
 {
 	// Will the passwords be converted?
-	const CONVERTS_PASSWORD = false;
+	var $converts_password = false;
 
-	public $steps = array(
+	var $steps = array(
 		'bans'					=> array('banlist', 'ban_id'),
 		'categories'			=> array('forums', 'forum_id', 'forum_type = 0'),
 		'censoring'				=> array('words', 'word_id'),
@@ -45,7 +45,7 @@ class PhpBB_3_0 extends Forum
 	 */
 	function validate()
 	{
-		if (!$this->db->field_exists('banlist', 'ban_id'))
+		if (!$this->db->table_exists('banlist'))
 			conv_error('Selected database does not contain valid phpBB installation');
 	}
 
@@ -307,6 +307,7 @@ class PhpBB_3_0 extends Forum
 		$result = $this->db->query_build(array(
 			'SELECT'	=> 'rank_id AS id, rank_title AS rank, rank_min AS min_posts',
 			'FROM'		=> 'ranks',
+			'WHERE'		=> 'rank_special = 0'
 		)) or conv_error('Unable to fetch ranks', __FILE__, __LINE__, $this->db->error());
 
 		conv_processing_message('ranks', $this->db->num_rows($result));
@@ -393,7 +394,7 @@ class PhpBB_3_0 extends Forum
 	function convert_users($start_at)
 	{
 		$result = $this->db->query_build(array(
-			'SELECT'	=> 'user_id AS id, group_id, username, user_password AS password, user_website AS url, user_icq AS icq, user_msnm AS msn, user_aim AS aim, user_yim AS yahoo, user_posts AS num_posts, user_from AS location, user_allow_viewemail AS email_setting, user_timezone AS timezone, user_regdate AS registered, user_lastvisit AS last_visit, user_sig AS signature, user_email AS email, user_avatar',
+			'SELECT'	=> 'user_id AS id, group_id, username, user_password AS password, user_website AS url, user_icq AS icq, user_msnm AS msn, user_aim AS aim, user_yim AS yahoo, user_posts AS num_posts, user_from AS location, user_allow_viewemail AS email_setting, user_timezone AS timezone, user_ip AS registration_ip, user_regdate AS registered, user_lastvisit AS last_visit, user_sig AS signature, user_email AS email, user_avatar',
 			'FROM'		=> 'users',
 			'WHERE'		=> 'group_id <> 6 AND user_id <> 1 AND user_id > '.$start_at,
 			'ORDER BY'	=> 'user_id ASC',

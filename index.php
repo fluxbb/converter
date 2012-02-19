@@ -149,7 +149,7 @@ if (isset($_POST['form_sent']) || isset($_GET['step']))
 	// We're done
 	$alerts = array(sprintf($lang_convert['Rebuild search index note'], '<a href="../admin_maintenance.php">'.$lang_convert['rebuild search index'].'</a>'));
 
-	if (!$forum->converts_password())
+	if (!$forum->converts_password)
 		$alerts[] = $lang_convert['Password converter mod'];
 
 	$fluxbb->close_database();

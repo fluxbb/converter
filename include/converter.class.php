@@ -8,11 +8,11 @@
 
 class Converter
 {
-	protected $forum;
-	protected $fluxbb;
-	public $start;
+	var $forum;
+	var $fluxbb;
+	var $start;
 
-	function __construct($fluxbb, $forum)
+	function Converter($fluxbb, $forum)
 	{
 		global $session;
 
@@ -130,24 +130,7 @@ class Converter
 		conv_log('Cleaning database');
 		$start = get_microtime();
 
-		$this->fluxbb->db->truncate_table('bans');
-		$this->fluxbb->db->truncate_table('categories');
-		$this->fluxbb->db->truncate_table('censoring');
-		$this->fluxbb->db->truncate_table('forums');
-		$this->fluxbb->db->truncate_table('forum_perms');
-		$this->fluxbb->db->truncate_table('online');
-		$this->fluxbb->db->truncate_table('posts');
-		$this->fluxbb->db->truncate_table('ranks');
-		$this->fluxbb->db->truncate_table('reports');
-		$this->fluxbb->db->truncate_table('search_cache');
-		$this->fluxbb->db->truncate_table('search_matches');
-		$this->fluxbb->db->truncate_table('search_words');
-		$this->fluxbb->db->truncate_table('topic_subscriptions');
-		$this->fluxbb->db->truncate_table('forum_subscriptions');
-		$this->fluxbb->db->truncate_table('topics');
-//		$this->fluxbb->db->truncate_table('users');
-		$this->fluxbb->db->query('DELETE FROM '.$this->fluxbb->db->prefix.'users WHERE id > 1');
-		$this->fluxbb->db->query('DELETE FROM '.$this->fluxbb->db->prefix.'groups WHERE g_id > 4');
+		$this->fluxbb->cleanup_database();
 
 		conv_log('Done in '.round(get_microtime() - $start, 6)."\n");
 	}

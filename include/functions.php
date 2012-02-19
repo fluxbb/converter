@@ -262,7 +262,10 @@ function conv_log($message = '', $first_time_only = false, $close = false)
 function conv_error_handler($errno, $errstr, $errfile, $errline)
 {
 	ob_start();
-	debug_print_backtrace();
+	if (function_exists('debug_print_backtrace'))
+		debug_print_backtrace();
+	else
+		echo $errno, $errstr, $errfile, $errline;
 	conv_log("\n".ob_get_clean());
 
 	/* Don't execute PHP internal error handler */

@@ -16,9 +16,9 @@ define('FORUM_PARSER_REVISION', 2);
 class PHP_Fusion_7 extends Forum
 {
 	// Will the passwords be converted?
-	const CONVERTS_PASSWORD = false;
+	var $converts_password = false;
 
-	public $steps = array(
+	var $steps = array(
 		'bans'					=> array('blacklist', 'blacklist_id'),
 		'categories'			=> array('forums', 'forum_id', 'forum_cat = 0'),
 		'censoring'				=> -1,

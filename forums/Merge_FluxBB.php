@@ -16,12 +16,12 @@ define('FORUM_PARSER_REVISION', 2);
 class Merge_FluxBB extends Forum
 {
 	// Will the passwords be converted?
-	const CONVERTS_PASSWORD = true;
+	var $converts_password = true;
 
 	// Do not truncate FluxBB database tables
 	const NO_DB_CLEANUP = true;
 
-	public $steps = array(
+	var $steps = array(
 		'groups'				=> -1,//array('groups', 'g_id', 'g_id > 4'),
 		'users'					=> -1,//array('users', 'id', 'id > 1'),
 		'bans'					=> -1,//array('bans', 'id'),
@@ -38,7 +38,7 @@ class Merge_FluxBB extends Forum
 		'forum_subscriptions'	=> -1,//array('forum_subscriptions', 'forum_id'),
 	);
 
-	private $last_id = array();
+	var $last_id = array();
 
 	function initialize()
 	{

@@ -8,12 +8,12 @@
 
 class Forum
 {
-	protected $db;
-	protected $fluxbb;
+	var $db;
+	var $fluxbb;
 
-	protected $db_config;
-	protected $forum_config;
-	protected $path;
+	var $db_config;
+	var $forum_config;
+	var $path;
 
 	/**
 	 * Constructor
@@ -24,7 +24,7 @@ class Forum
 	 * @param type FluxBB $fluxbb
 	 * 		FluxBB instance
 	 */
-	function __construct(array $forum_config, FluxBB $fluxbb)
+	function Forum($forum_config, $fluxbb)
 	{
 		$this->forum_config = $forum_config;
 

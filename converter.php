@@ -138,7 +138,7 @@ while ($next_step !== false)
 // We're done
 $alerts = array(sprintf($lang_convert['Rebuild search index note'], $lang_convert['rebuild search index']));
 
-if (!$forum->converts_password())
+if (!$forum->converts_password)
 	$alerts[] = $lang_convert['Password converter mod'];
 
 $fluxbb->close_database();
