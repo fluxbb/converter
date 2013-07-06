@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @copyright (C) 2013 FluxBB (http://fluxbb.org)
+ * @copyright (C) 2012 FluxBB (http://fluxbb.org)
  * @license GPL - GNU General Public License (http://www.gnu.org/licenses/gpl.html)
  * @package FluxBB
  */
@@ -183,6 +183,7 @@ class Converter
 		// Generate cache
 		generate_config_cache();
 		generate_bans_cache();
+		generate_ranks_cache();
 		generate_quickjump_cache();
 		generate_censoring_cache();
 		generate_users_info_cache();
