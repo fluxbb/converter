@@ -1,6 +1,6 @@
 # FluxBB converter ![Build status](https://secure.travis-ci.org/fluxbb/converter.png?branch=master)
 
-FluxBB converter tool
+This is the FluxBB converter tool. Please note that this is currently a pre-beta and only works with FluxBB 1.4.x.
 
 ## Supported forums
 - IP.Board 3.2
@@ -20,7 +20,7 @@ FluxBB converter tool
 - MAKE BACKUP BEFORE USING THIS CONVERTER!
 
 ## Installation instructions
-- Install FluxBB on the server (example: http://example.com/fluxbb/).
+- Install FluxBB v1.4.10 on your server (example: http://example.com/fluxbb/).
 - Create a subdirectory in the FluxBB directory (example name: "converter").
 - Put all files from the converter zipfile in that directory.
 - Go to the converter page (http://example.com/fluxbb/converter/).
@@ -28,6 +28,9 @@ FluxBB converter tool
 - Enter database connection information
 - Press 'Start converter'.
 - When the converter is done, remove the converter files.
+- Replace all the FluxBB 1.4.10 files with a clean FluxBB 1.5 installation.
+- Fill in the password of your database.
+- Press 'Update'.
 - Done! You're now ready to use FluxBB!
 
 ## Running from command line
