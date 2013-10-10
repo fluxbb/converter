@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @copyright (C) 2012 FluxBB (http://fluxbb.org)
+ * @copyright (C) 2013 FluxBB (http://fluxbb.org)
  * @license GPL - GNU General Public License (http://www.gnu.org/licenses/gpl.html)
  * @package FluxBB
  */
@@ -43,7 +43,6 @@ class FluxBB
 		'forum_perms'			=> array('forum_id'),
 		'groups'				=> array('g_id', 'g_id > 4'),
 		'posts'					=> array('id'),
-		'ranks'					=> array('id'),
 		'reports'				=> array('id'),
 		'topic_subscriptions'	=> array('topic_id'),
 		'forum_subscriptions'	=> array('forum_id'),
@@ -123,7 +122,6 @@ class FluxBB
 		$this->db->truncate_table('groups');
 		$this->db->truncate_table('online');
 		$this->db->truncate_table('posts');
-		$this->db->truncate_table('ranks');
 		$this->db->truncate_table('reports');
 		$this->db->truncate_table('search_cache');
 		$this->db->truncate_table('search_matches');
