@@ -1,15 +1,15 @@
 <?php
 
 /**
- * @copyright (C) 2012 FluxBB (http://fluxbb.org)
+ * @copyright (C) 2013 FluxBB (http://fluxbb.org)
  * @license GPL - GNU General Public License (http://www.gnu.org/licenses/gpl.html)
  * @package FluxBB
  */
 
 // Define the version and database revision that this code was written for
-define('FORUM_VERSION', '1.4.8');
+define('FORUM_VERSION', '1.5.3');
 
-define('FORUM_DB_REVISION', 15);
+define('FORUM_DB_REVISION', 18);
 define('FORUM_SI_REVISION', 2);
 define('FORUM_PARSER_REVISION', 2);
 
@@ -27,7 +27,6 @@ class IP_Board_3_2 extends Forum
 //		'forum_perms'			=> 0,
 		'groups'				=> array('groups', 'g_id', 'g_id > 6'),
 		'posts'					=> array('posts', 'pid'),
-		'ranks'					=> array('titles', 'id'),
 		'reports'				=> array('rc_reports', 'rid'),
 		'topic_subscriptions'	=> 0, // TODO:
 		'forum_subscriptions'	=> 0, // TODO:
@@ -146,7 +145,6 @@ class IP_Board_3_2 extends Forum
 			'o_quickpost'				=> 1,
 			'o_users_online'			=> 1,
 			'o_censoring'				=> 0,
-			'o_ranks'					=> 1,
 			'o_show_dot'				=> 0,
 			'o_topic_views'				=> 1,
 			'o_quickjump'				=> 1,
@@ -299,20 +297,6 @@ class IP_Board_3_2 extends Forum
 		}
 
 		return $this->redirect('posts', 'pid', $start_at);
-	}
-
-	function convert_ranks()
-	{
-		$result = $this->db->query_build(array(
-			'SELECT'	=> 'id, title AS rank, posts AS min_posts',
-			'FROM'		=> 'titles',
-		)) or conv_error('Unable to fetch ranks', __FILE__, __LINE__, $this->db->error());
-
-		conv_processing_message('ranks', $this->db->num_rows($result));
-		while ($cur_rank = $this->db->fetch_assoc($result))
-		{
-			$this->fluxbb->add_row('ranks', $cur_rank);
-		}
 	}
 
 	function convert_reports()
