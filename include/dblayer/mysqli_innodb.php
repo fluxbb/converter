@@ -2,7 +2,7 @@
 /**
  * A database layer class that relies on the MySQLi PHP extension.
  *
- * @copyright Copyright (C) 2008 FluxBB.org, based on code copyright (C) 2002-2008 PunBB.org
+ * @copyright Copyright (C) 2008-2013 FluxBB.org, based on code copyright (C) 2002-2008 PunBB.org
  * @license http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  * @package FluxBB
  */

@@ -21,7 +21,7 @@
  * @category	FluxBB
  * @package		Flux_Database
  * @subpackage	Tests
- * @copyright	Copyright (c) 2011 FluxBB (http://fluxbb.org)
+ * @copyright	Copyright (c) 2013 FluxBB (http://fluxbb.org)
  * @license		http://www.gnu.org/licenses/lgpl.html	GNU Lesser General Public License
  */
 
