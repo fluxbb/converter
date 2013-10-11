@@ -1,15 +1,15 @@
 <?php
 
 /**
- * @copyright (C) 2012 FluxBB (http://fluxbb.org)
+ * @copyright (C) 2013 FluxBB (http://fluxbb.org)
  * @license GPL - GNU General Public License (http://www.gnu.org/licenses/gpl.html)
  * @package FluxBB
  */
 
 // Define the version and database revision that this code was written for
-define('FORUM_VERSION', '1.4.8');
+define('FORUM_VERSION', '1.5.3');
 
-define('FORUM_DB_REVISION', 15);
+define('FORUM_DB_REVISION', 18);
 define('FORUM_SI_REVISION', 2);
 define('FORUM_PARSER_REVISION', 2);
 
@@ -20,22 +20,21 @@ class Merge_FluxBB extends Forum
 
 	// Do not truncate FluxBB database tables
 	const NO_DB_CLEANUP = true;
-
-	var $steps = array(
-		'groups'				=> -1,//array('groups', 'g_id', 'g_id > 4'),
-		'users'					=> -1,//array('users', 'id', 'id > 1'),
-		'bans'					=> -1,//array('bans', 'id'),
-		'categories'			=> -1,//array('categories', 'id'),
-		'censoring'				=> -1,//array('censoring', 'id'),
-		'config'				=> -1,//array('config', 'conf_name'),
-		'forums'				=> -1,//array('forums', 'id'),
-		'forum_perms'			=> -1,//array('forum_perms', 'forum_id'),
-		'topics'				=> -1,//array('topics', 'id'),
-		'posts'					=> -1,//array('posts', 'id'),
-		'ranks'					=> -1,//array('ranks', 'id'),
-		'reports'				=> -1,//array('reports', 'id'),
-		'topic_subscriptions'	=> -1,//array('topic_subscriptions', 'topic_id'),
-		'forum_subscriptions'	=> -1,//array('forum_subscriptions', 'forum_id'),
+	
+	public $steps = array(
+		'groups'				=> array('groups', 'g_id', 'g_id > 4'),
+		'users'					=> array('users', 'id', 'id > 1'),
+		'bans'					=> array('bans', 'id'),
+		'categories'			=> array('categories', 'id'),
+		'censoring'				=> array('censoring', 'id'),
+		'config'				=> array('config', 'conf_name'),
+		'forums'				=> array('forums', 'id'),
+		'forum_perms'			=> array('forum_perms', 'forum_id'),
+		'topics'				=> array('topics', 'id'),
+		'posts'					=> array('posts', 'id'),
+		'reports'				=> array('reports', 'id'),
+		'topic_subscriptions'	=> array('topic_subscriptions', 'topic_id'),
+		'forum_subscriptions'	=> array('forum_subscriptions', 'forum_id'),
 	);
 
 	var $last_id = array();
@@ -50,7 +49,7 @@ class Merge_FluxBB extends Forum
 			$this->last_id = $session['last_id'];
 		else
 		{
-			$check_id = array('groups' => 'g_id', 'users', 'bans', 'categories', 'censoring', 'forums', 'topics', 'posts', 'ranks', 'reports');
+			$check_id = array('groups' => 'g_id', 'users', 'bans', 'categories', 'censoring', 'forums', 'topics', 'posts', 'reports');
 
 			foreach ($check_id as $key => $cur_table)
 			{
@@ -221,22 +220,6 @@ class Merge_FluxBB extends Forum
 		}
 
 		return $this->redirect('posts', 'id', $start_at);
-	}
-
-	function convert_ranks()
-	{
-		$result = $this->db->query_build(array(
-			'SELECT'	=> 'id, rank, min_posts',
-			'FROM'		=> 'ranks',
-		)) or conv_error('Unable to fetch ranks', __FILE__, __LINE__, $this->db->error());
-
-		conv_processing_message('ranks', $this->db->num_rows($result));
-		while ($cur_rank = $this->db->fetch_assoc($result))
-		{
-			$cur_rank['id'] += $this->last_id['ranks'];
-
-			$this->fluxbb->add_row('ranks', $cur_rank);
-		}
 	}
 
 	function convert_reports()
