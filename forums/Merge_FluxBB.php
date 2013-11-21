@@ -25,7 +25,7 @@ class Merge_FluxBB extends Forum
 		'groups'				=> array('groups', 'g_id', 'g_id > 4'),
 		'users'					=> array('users', 'id', 'id > 1'),
 		'bans'					=> array('bans', 'id'),
-		'categories'			=> array('categories', 'id'),
+		'categories'			=> array('categories', 'id', 'id > 1'),
 		'censoring'				=> array('censoring', 'id'),
 		'config'				=> array('config', 'conf_name'),
 		'forums'				=> array('forums', 'id'),
