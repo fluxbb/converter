@@ -1,15 +1,15 @@
 <?php
 
 /**
- * @copyright (C) 2012 FluxBB (http://fluxbb.org)
+ * @copyright (C) 2013 FluxBB (http://fluxbb.org)
  * @license GPL - GNU General Public License (http://www.gnu.org/licenses/gpl.html)
  * @package FluxBB
  */
 
 // Define the version and database revision that this code was written for
-define('FORUM_VERSION', '1.4.8');
+define('FORUM_VERSION', '1.5.3');
 
-define('FORUM_DB_REVISION', 15);
+define('FORUM_DB_REVISION', 18);
 define('FORUM_SI_REVISION', 2);
 define('FORUM_PARSER_REVISION', 2);
 
@@ -27,7 +27,6 @@ class PHP_Fusion_7 extends Forum
 //		'forum_perms'			=> 0,
 		'groups'				=> array('user_groups', 'group_id'),
 		'posts'					=> array('posts', 'post_id'),
-		'ranks'					=> 0,//array('ranks', 'rank_id'),
 		'reports'				=> 0,//array('reports', 'report_id'),
 		'topic_subscriptions'	=> array('thread_notify', 'thread_id'),
 		'forum_subscriptions'	=> 0,//array('forums_watch', 'forum_id'),
@@ -145,7 +144,6 @@ class PHP_Fusion_7 extends Forum
 			'o_quickpost'				=> 1,
 			'o_users_online'			=> 1,
 			'o_censoring'				=> $old_config['bad_words_enabled'],
-			'o_ranks'					=> 1,
 			'o_show_dot'				=> 0,
 			'o_topic_views'				=> 1,
 			'o_quickjump'				=> 1,
@@ -310,20 +308,6 @@ class PHP_Fusion_7 extends Forum
 
 		return $this->redirect('posts', 'post_id', $start_at);
 	}
-
-//	function convert_ranks()
-//	{
-//		$result = $this->db->query_build(array(
-//			'SELECT'	=> 'rank_id AS id, rank_title AS rank, rank_min AS min_posts',
-//			'FROM'		=> 'ranks',
-//		)) or conv_error('Unable to fetch ranks', __FILE__, __LINE__, $this->db->error());
-
-//		conv_processing_message('ranks', $this->db->num_rows($result));
-//		while ($cur_rank = $this->db->fetch_assoc($result))
-//		{
-//			$this->fluxbb->add_row('ranks', $cur_rank);
-//		}
-//	}
 
 //	function convert_reports()
 //	{

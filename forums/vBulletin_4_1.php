@@ -1,15 +1,15 @@
 <?php
 
 /**
- * @copyright (C) 2012 FluxBB (http://fluxbb.org)
+ * @copyright (C) 2013 FluxBB (http://fluxbb.org)
  * @license GPL - GNU General Public License (http://www.gnu.org/licenses/gpl.html)
  * @package FluxBB
  */
 
 // Define the version and database revision that this code was written for
-define('FORUM_VERSION', '1.4.8');
+define('FORUM_VERSION', '1.5.3');
 
-define('FORUM_DB_REVISION', 15);
+define('FORUM_DB_REVISION', 18);
 define('FORUM_SI_REVISION', 2);
 define('FORUM_PARSER_REVISION', 2);
 
@@ -27,7 +27,6 @@ class VBulletin_4_1 extends Forum
 //		'forum_perms'			=> 0,
 		'groups'				=> array('usergroup', 'usergroupid', 'usergroupid > 8'),
 		'posts'					=> array('post', 'postid'),
-		'ranks'					=> array('usertitle', 'usertitleid'),
 		// 'reports'				=> array('reports', 'report_id'),
 		'topic_subscriptions'	=> array('subscribethread', 'threadid'),
 		'forum_subscriptions'	=> array('subscribeforum', 'forumid'),
@@ -142,7 +141,6 @@ class VBulletin_4_1 extends Forum
 			'o_quickpost'				=> $old_config['quickedit'],
 			'o_users_online'			=> 1,
 			'o_censoring'				=> $old_config['enablecensor'],
-			'o_ranks'					=> 1,
 			'o_show_dot'				=> $old_config['showdots'],
 			'o_topic_views'				=> $old_config['threadpreview'],
 			'o_quickjump'				=> 1,
@@ -292,20 +290,6 @@ class VBulletin_4_1 extends Forum
 		}
 
 		return $this->redirect('post', 'postid', $start_at);
-	}
-
-	function convert_ranks()
-	{
-		$result = $this->db->query_build(array(
-			'SELECT'	=> 'usertitleid AS id, title AS rank, minposts AS min_posts',
-			'FROM'		=> 'usertitle',
-		)) or conv_error('Unable to fetch ranks', __FILE__, __LINE__, $this->db->error());
-
-		conv_processing_message('ranks', $this->db->num_rows($result));
-		while ($cur_rank = $this->db->fetch_assoc($result))
-		{
-			$this->fluxbb->add_row('ranks', $cur_rank);
-		}
 	}
 
 //	function convert_reports()
