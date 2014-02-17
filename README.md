@@ -1,6 +1,6 @@
 # FluxBB converter ![Build status](https://secure.travis-ci.org/fluxbb/converter.png?branch=master)
 
-This is the FluxBB converter tool. Please note that this is currently a pre-beta and only works with FluxBB 1.4.x.
+This is the FluxBB converter tool. Please note that this is currently a pre-beta.
 
 ## Supported forums
 - IP.Board 3.2
