@@ -1,15 +1,15 @@
 <?php
 
 /**
- * @copyright (C) 2013 FluxBB (http://fluxbb.org)
+ * @copyright (C) 2012-2014 FluxBB (http://fluxbb.org)
  * @license GPL - GNU General Public License (http://www.gnu.org/licenses/gpl.html)
  * @package FluxBB
  */
 
 // Define the version and database revision that this code was written for
-define('FORUM_VERSION', '1.5.3');
+define('FORUM_VERSION', '1.5.6');
 
-define('FORUM_DB_REVISION', 18);
+define('FORUM_DB_REVISION', 20);
 define('FORUM_SI_REVISION', 2);
 define('FORUM_PARSER_REVISION', 2);
 

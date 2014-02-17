@@ -20,17 +20,14 @@ This is the FluxBB converter tool. Please note that this is currently a pre-beta
 - MAKE BACKUP BEFORE USING THIS CONVERTER!
 
 ## Installation instructions
-- Install FluxBB v1.4.10 on your server (example: http://example.com/fluxbb/).
+- Install FluxBB v1.5.6 on your server (example: http://example.com/fluxbb/).
 - Create a subdirectory in the FluxBB directory (example name: "converter").
 - Put all files from the converter zipfile in that directory.
 - Go to the converter page (http://example.com/fluxbb/converter/).
 - Choose which forum software you want to convert from.
 - Enter database connection information
 - Press 'Start converter'.
-- When the converter is done, remove the converter files.
-- Replace all the FluxBB 1.4.10 files with a clean FluxBB 1.5 installation.
-- Fill in the password of your database.
-- Press 'Update'.
+- When the converter is done, remove the converter files
 - Done! You're now ready to use FluxBB!
 
 ## Running from command line
