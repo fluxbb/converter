@@ -18,7 +18,7 @@ before_script:
   - "php fluxbb/index.php > index.txt" # Generate fluxbb cache
 #  - "psql -c 'create database fluxbb__test;' -U postgres"
 
-script: "cd tests && phpunit --bootstrap bootstrap.example.php ConverterTest.php"
+script: "cd tests && phpunit --bootstrap bootstrap.php ConverterTest.php"
 
 notifications:
   email:
