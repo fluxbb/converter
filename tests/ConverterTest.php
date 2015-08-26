@@ -14,8 +14,6 @@ define('CONV_ROOT', realpath(dirname(__FILE__).'/..').'/');
 if (is_dir(CONV_ROOT.'fluxbb/'))
 	define('PUN_ROOT', CONV_ROOT.'fluxbb/');
 
-require_once 'PHPUnit/Framework/TestCase.php';
-
 require CONV_ROOT.'include/functions_cli.php';
 require CONV_ROOT.'include/common.php';
 
