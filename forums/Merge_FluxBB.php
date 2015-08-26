@@ -286,7 +286,7 @@ class Merge_FluxBB extends Forum
 
 			unset($cur_sub['username']);
 
-			$this->fluxbb->add_row('topic_subscriptions', $cur_sub);
+			$this->fluxbb->add_row('forum_subscriptions', $cur_sub);
 		}
 	}
 
